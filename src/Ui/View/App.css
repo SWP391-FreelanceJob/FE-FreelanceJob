@@ -15,3 +15,27 @@
   @apply bg-[#0cc5f8] border-[#0cc5f8] hover:bg-[#00b1e2] hover:border-[#00b1e2]
   active:bg-[#21a3c7] active:border-[#21a3c7] !important;
 }
+.chat-box{
+  box-shadow: 0px 5px 10px 5px rgb(0 0 0 / 10%);
+  @apply h-full m-2 w-80 bg-white z-10 rounded-t-md flex flex-col;
+}
+.chat-box .chat-header{
+  @apply py-2 px-3 rounded-t-md border-b-[1px] border-b-[#ECF0F1];
+}
+.chat-box .chat-container{
+  @apply flex-grow;
+}
+.chat{
+  @apply flex flex-col h-full;
+}
+.chat .chat-detail{
+  @apply overflow-hidden overflow-y-auto flex-grow;
+  padding: 10px 10px 10px 15px;
+}
+.chat-username {
+  font-size: 15px;
+  font-weight: 600;
+}
+.chat-min-close > i {
+  @apply text-2xl cursor-pointer;
+}
