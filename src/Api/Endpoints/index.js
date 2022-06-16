@@ -1,3 +1,4 @@
 export const Endpoints = {
-    "TODO":"/todos"
+    "TODO":"/todos",
+    "TEST":"/gura"
 }

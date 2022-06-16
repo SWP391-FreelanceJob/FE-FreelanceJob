@@ -1,41 +1,74 @@
-import { useState } from "react";
-import { Badge, Button } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { getFirestore } from "@firebase/firestore";
+import { FirestoreProvider, useFirebaseApp } from "reactfire";
+
+import {
+  get401,
+  get403,
+  get404,
+  get500,
+  getTodos,
+} from "@/Api/Service/TodoService";
 
 import "./App.css";
-import { DecreaseButton } from "@/Ui/Components/DecreaseButton";
-import { IncreaseButton } from "@/Ui/Components/IncreaseButton";
-import { getTodos } from "@/Api/Service/TodoService";
+import { notyf } from "@/App/Utils/NotyfSetting";
+import { mqttClient } from "@/App/Utils/Mqtt";
+import MasterPage from "../Components/MasterPage";
+import { Routes, Route } from "react-router-dom";
+import RequireAuth from "@/App/Router/GuardRouter";
+import LandingPage from "./LandingPage/LandingPage";
+import Profile from "./Profile/Profile";
+import Jobs from "./Jobs/Jobs";
+import Freelancers from "./Freelancers/Freelancers";
+import ScrollToTop from "../Components/ScrollToTop";
+import JobDetail from "./Jobs/JobDetail/JobDetail";
+import Settings from "./Settings/Settings";
+import SignIn from "./Auth/SignIn/SignIn";
+import SignUp from "./Auth/SignUp/SignUp";
+
 
 function App() {
-  const [count, setCount] = useState(0);
-  const reduxCount = useSelector((state) => state.counter.value);
+  const fireStoreInstance = getFirestore(useFirebaseApp())
+
+  // mqttClient.on("message", (topic, msg) => {
+  //   const noti = msg.toString()
+  //   console.log(noti);
+  //   // notyf.success(noti);
+  // });
+
+  mqttClient.onMessageArrived = onMessageArrived;
+
+  function onMessageArrived(message) {
+    notyf.success(message.payloadString);
+  }
+
+  useEffect(() => {}, []);
 
   return (
-    <div className="App">
-      <div className="local-state">
-        <Button colorScheme="red" onClick={() => setCount(count - 1)}>
-          Local Decrease
-        </Button>
-        <Badge>Hi this is the local state counting: {count}</Badge>
-        <Button colorScheme="blue" onClick={() => setCount(count + 1)}>
-          Local Increase
-        </Button>
-      </div>
-      <div className="redux-state">
-        <DecreaseButton />
-        <Badge>Hi this is the redux state counting: {reduxCount}</Badge>
-        <IncreaseButton />
-      </div>
-      <div className="todo">
-        <Button
-          colorScheme="yellow"
-          onClick={() => getTodos().then((res) => console.log(res))}
-        >
-          Get Todo
-        </Button>
-      </div>
-    </div>
+    <FirestoreProvider sdk={fireStoreInstance}>
+      <ScrollToTop>
+        <Routes>
+          {/* <Route
+          path="/"
+          element={
+            <RequireAuth children={<MasterPage />} requiredRoles={[""]} />
+          }
+        ></Route> */}
+          <Route path="/" element={<MasterPage />}>
+            <Route path="" element={<LandingPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings/*" element={<Settings />} />
+            <Route path="/all-jobs" element={<Jobs />} />
+            <Route path="/job/:id" element={<JobDetail/>} />
+            <Route path="/all-freelancers" element={<Freelancers />} />
+          </Route>
+          <Route path="/sign-in" element={<SignIn/>}/>
+          <Route path="/sign-up" element={<SignUp/>}/>
+          {/* <Route path="*" element={<NotFound/>}/> */}
+        </Routes>
+      </ScrollToTop>
+    </FirestoreProvider>
   );
 }
 

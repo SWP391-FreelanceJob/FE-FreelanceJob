@@ -1,0 +1,20 @@
+.usr-avatar {
+  width: 150px !important;
+}
+.portfo-size {
+  flex: 1 0 auto !important;
+}
+
+.portfo-overflow::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.portfo-overflow {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.upd-btn {
+  @apply bg-blue-400 border-blue-400 hover:bg-blue-500 hover:border-blue-500 active:bg-blue-600 active:border-blue-600 !important;
+}

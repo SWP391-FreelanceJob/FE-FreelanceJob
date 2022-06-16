@@ -5,11 +5,18 @@ import { BrowserRouter } from "react-router-dom";
 import { store } from "@/App/Store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
-import { ChakraProvider } from '@chakra-ui/react'
+import { FirebaseAppProvider } from "reactfire";
+
+import { firebaseConfig } from "@/App/Firebase/firebaseconfig";
 
 import App from "./Ui/View/App";
 
 import "./index.css";
+import "notyf/notyf.min.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 let persistor = persistStore(store);
 
@@ -18,9 +25,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <ChakraProvider>
+          <FirebaseAppProvider firebaseConfig={firebaseConfig}>
             <App />
-          </ChakraProvider>
+          </FirebaseAppProvider>
         </PersistGate>
       </Provider>
     </BrowserRouter>

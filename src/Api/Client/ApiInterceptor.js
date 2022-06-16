@@ -21,8 +21,6 @@ const axiosInterceptor = (instance) => {
       return response.data;
     } else if (response.status === 201) {
       return response.data;
-    } else if (response.status === 201) {
-      return response.data;
     } else if (response.status === 401) {
       //** Insert refresh token code here */
       return Promise.reject({ messages: ["Phiên làm việc hết hạn"] });

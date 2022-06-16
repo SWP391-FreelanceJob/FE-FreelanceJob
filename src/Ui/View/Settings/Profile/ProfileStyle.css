@@ -1,0 +1,24 @@
+.active {
+  @apply !bg-accent !text-white;
+}
+
+/* Override background */
+.menu :where(li:not(.menu-title):not(:empty)) > :where(*:not(ul):active) {
+  @apply active:bg-emerald-300 !important;
+}
+
+/* Override background of inpt grp*/
+.input-group :where(span) {
+  @apply bg-white font-semibold pl-0 !important;
+}
+.form-input {
+  @apply flex;
+}
+
+.form-input > span {
+  @apply w-1/5 font-semibold;
+}
+
+.form-input > input {
+  @apply w-1/3;
+}

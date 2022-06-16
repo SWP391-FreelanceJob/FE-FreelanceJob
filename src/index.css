@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+ol,
+ul {
+  list-style: none;
+  list-style-image: none;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background-color: #fff;
+  color: #62646a !important;
+  font: 400 16px/24px "Helvetica Neue" !important;
+  position: relative;
+  width: 100%;
+}
+input{
+  font: 400 16px/24px "Helvetica Neue" !important;
+}
