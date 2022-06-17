@@ -1,0 +1,24 @@
+.create-job-icon {
+    @apply text-4xl border-2 rounded-xl p-1;
+}
+.create-job-icon.icon-colour{
+    @apply border-[#45c9ed] text-[#45c9ed];
+}
+.vnd-border {
+    border-color: hsl(var(--bc) / var(--tw-border-opacity));
+    /* Animation to synchronize with input border color */
+    transition-property: color, background-color, border-color,
+      text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+      backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    @apply input-bordered rounded-tr-lg rounded-br-lg;
+  }
+  .input:focus + .vnd-border {
+    --tw-border-opacity: 1;
+    border-color: rgb(0 0 0 / var(--tw-border-opacity));
+  }
+  .offer-btn {
+    @apply border-red-400 bg-red-400 hover:border-red-500 hover:bg-red-500 !important;
+  }
+  

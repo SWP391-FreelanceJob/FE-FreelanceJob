@@ -10,7 +10,7 @@ const MasterPage = () => {
         <div className="mx-7 2xl:mx-0">
           <Outlet />
         </div>
-        <div className="fixed bottom-0 right-0">
+        {/* <div className="fixed bottom-0 right-0">
           <div className="flex justify-end h-96 w-auto z-40 mx-3">
             <div className="chat-box">
               <div className="chat-header">
@@ -40,7 +40,7 @@ const MasterPage = () => {
             </div>
             <div className="flex flex-col justify-end">B</div>
           </div>
-        </div>
+        </div> */}
       </div>
       <CustomFooter />
     </div>

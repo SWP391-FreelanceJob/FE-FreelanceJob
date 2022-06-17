@@ -19,3 +19,7 @@ body {
 input {
   font: 400 16px/24px "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
+/* 
+[data-theme=fvn]{
+  --nc: #FFF !important;
+} */

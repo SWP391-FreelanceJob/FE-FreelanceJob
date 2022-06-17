@@ -26,6 +26,9 @@ import JobDetail from "./Jobs/JobDetail/JobDetail";
 import Settings from "./Settings/Settings";
 import SignIn from "./Auth/SignIn/SignIn";
 import SignUp from "./Auth/SignUp/SignUp";
+import CreateJob from "./Jobs/CreateJob/CreateJob";
+import ManageJobRoute from "./Jobs/ManageJob/ManageJobRoute";
+import Project from "./Project/Project";
 
 
 function App() {
@@ -59,7 +62,10 @@ function App() {
             <Route path="" element={<LandingPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings/*" element={<Settings />} />
+            <Route path="/project/:id" element={<Project />} />
             <Route path="/all-jobs" element={<Jobs />} />
+            <Route path="/manage-job/*" element={<ManageJobRoute/>} />
+            <Route path="/create-job" element={<CreateJob/>} />
             <Route path="/job/:id" element={<JobDetail/>} />
             <Route path="/all-freelancers" element={<Freelancers />} />
           </Route>
