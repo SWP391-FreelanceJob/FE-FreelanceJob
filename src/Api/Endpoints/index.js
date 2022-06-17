@@ -10,5 +10,10 @@ export const Endpoints = {
     "JOB":"/job",
     "OFFER":"/offer",
     "OFFER_STATUS":"/offer-status",
+    "PORTFOLIO":"/portfolio",
+    "PROJECTS":"/projects",
+    "PROJECT":"/project",
+    "RECRUITER": "/recruiter",
+    "SKILL":"/skill",
 
 }

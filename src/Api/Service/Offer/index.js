@@ -1,7 +1,11 @@
+import _ from "lodash";
+import { apiClient } from "../../Client/ApiClient";
+import { Endpoints } from "../../Endpoints";
+
 /**
  * @method
  * @param {number} jobId
- * @returns {IOfferRequest}
+ * @returns {IOffer}
  */
 export const getOffersByJobId = async (jobId) => {
   return await apiClient.get(`${Endpoints.OFFER}/${jobId}`);
@@ -10,21 +14,21 @@ export const getOffersByJobId = async (jobId) => {
 /**
  * @method
  * @param {number} jobId
- * @param {IJob} jobInfo
- * @returns {IJob}
+ * @param {IOffer} offerInfo
+ * @returns {IOffer}
  */
-export const createOffer = async (jobId, jobInfo) => {
-  return await apiClient.post(`${Endpoints.OFFER}/${jobId}`, jobInfo);
+export const createOffer = async (jobId, offerInfo) => {
+  return await apiClient.post(`${Endpoints.OFFER}/${jobId}`, offerInfo);
 };
 
 /**
  * @method
  * @param {number} jobId
- * @param {IJob} jobInfo
+ * @param {IOffer} offerInfo
  * @returns {IJob}
  */
-export const updateOffer = async (jobId, jobInfo) => {
-  return await apiClient.put(`${Endpoints.OFFER}/${jobId}`, jobInfo);
+export const updateOffer = async (jobId, offerInfo) => {
+  return await apiClient.put(`${Endpoints.OFFER}/${jobId}`, offerInfo);
 };
 
 /**
