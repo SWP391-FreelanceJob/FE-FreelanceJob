@@ -63,10 +63,11 @@ function App() {
         ></Route> */}
           <Route path="/" element={<MasterPage />}>
             <Route path="" element={<LandingPage />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/manage-profile/*" element={<Settings />} />
             <Route path="/manage-project" element={<ManageProject />} />
             <Route path="/edit-project/:id" element={<EditProject />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/settings/*" element={<Settings />} />
             <Route path="/project/:id" element={<Project />} />
             <Route path="/all-jobs" element={<Jobs />} />
             <Route path="/manage-job/*" element={<ManageJobRoute/>} />
