@@ -57,7 +57,7 @@ function App() {
         ></Route> */}
           <Route path="/" element={<MasterPage />}>
             <Route path="" element={<LandingPage />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:id" element={<Profile />} />
             <Route path="/settings/*" element={<Settings />} />
             <Route path="/all-jobs" element={<Jobs />} />
             <Route path="/job/:id" element={<JobDetail/>} />

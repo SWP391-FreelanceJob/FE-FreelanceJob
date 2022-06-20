@@ -13,6 +13,7 @@
  * @prop {string} priceFrom 
  * @prop {string} priceTo
  * @prop {string} description
+ * @prop {string} shortDescription
  * @prop {Date} duration
  * @prop {ISkill[]} skills
  * @prop {number} status

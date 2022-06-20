@@ -14,7 +14,7 @@ import { Endpoints } from "../../Endpoints";
  */
 
 //pagination params will use default values if their values are not provided
-export const getAllFreelancers = async (skills, name, isAscending = true, pageSize = 10, limit = 10, pageNo = 0) => {
+export const getAllFreelancers = async (skills, name, isAscending = true, pageSize = 10, limit = 10, pageNo = 1) => {
     let requestParam = `limit=${limit}&pageSize=${pageSize}&pageNo=${pageNo}&isAscending=${isAscending}&`;
     if (!_.isNil(skills)) requestParam.concat(`skill=${skills}&`);
     if (!_.isNil(name)) requestParam.concat(`name=${name}&`);
