@@ -186,8 +186,9 @@ const Jobs = () => {
                       <div className="p-2">
                         {/* {job.price_from} đ - {job.price_to} đ */}
                         <span className="w-min">
-                          VND <CurrencyInput
+                          <CurrencyInput
                           className="w-min bg-slate-100"
+                          prefix="VND "
                             allowNegativeValue={false}
                             disabled
                             defaultValue={job.price}

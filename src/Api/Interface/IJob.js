@@ -17,7 +17,7 @@
  * @prop {Date} duration
  * @prop {ISkill[]} skills
  * @prop {number} status
- * @prop {number} noOfOffer
+ * @prop {IOffer[]} offers
  * @prop {IOfferInfo} offerInfo
  * @prop {Date} createdDate
  */
