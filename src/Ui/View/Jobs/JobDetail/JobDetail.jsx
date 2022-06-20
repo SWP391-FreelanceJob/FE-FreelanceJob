@@ -193,7 +193,7 @@ const JobDetail = () => {
                   <span>
                     Kỹ năng: &nbsp;
                     {listOfSkills.map((skill, idx) => (
-                      <span className="text-blue-400">{skill + ", "} </span>
+                      <span key={idx} className="text-blue-400">{skill + ", "} </span>
                     ))}
                   </span>
                 </div>

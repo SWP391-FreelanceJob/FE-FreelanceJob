@@ -29,6 +29,9 @@ import SignUp from "./Auth/SignUp/SignUp";
 import CreateJob from "./Jobs/CreateJob/CreateJob";
 import ManageJobRoute from "./Jobs/ManageJob/ManageJobRoute";
 import Project from "./Project/Project";
+import ManageProject from "./Settings/Profile/ManageProject/ManageProject";
+import EditProject from "./Settings/Profile/ManageProject/EditProject/EditProject";
+import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
 
 
 function App() {
@@ -61,12 +64,15 @@ function App() {
           <Route path="/" element={<MasterPage />}>
             <Route path="" element={<LandingPage />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/settings/*" element={<Settings />} />
+            <Route path="/manage-profile/*" element={<Settings />} />
+            <Route path="/manage-project" element={<ManageProject />} />
+            <Route path="/edit-project/:id" element={<EditProject />} />
             <Route path="/project/:id" element={<Project />} />
             <Route path="/all-jobs" element={<Jobs />} />
             <Route path="/manage-job/*" element={<ManageJobRoute/>} />
             <Route path="/create-job" element={<CreateJob/>} />
             <Route path="/job/:id" element={<JobDetail/>} />
+            <Route path="/offer/:jid" element={<ViewOffer/>} />
             <Route path="/all-freelancers" element={<Freelancers />} />
           </Route>
           <Route path="/sign-in" element={<SignIn/>}/>

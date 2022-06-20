@@ -1,6 +1,6 @@
 import { Route, Routes, NavLink, Outlet } from "react-router-dom";
 import PersonalInfo from "./PersonalInfo/PersonalInfo";
-import Portfolio from "./Portfolio/Portfolio";
+import ManageProject from "./ManageProject/ManageProject"
 import WorkExp from "./WorkExp/WorkExp";
 
 const ProfileLayout = () => {
@@ -11,21 +11,21 @@ const ProfileLayout = () => {
 
   return (
     <>
-      <div className="tabs bg-slate-50 rounded-md">
+      {/* <div className="tabs bg-slate-50 rounded-md">
         <NavLink end to="" className={navLinkActive}>
           Thông tin cá nhân
         </NavLink>
         <NavLink to="work-profile" className={navLinkActive}>
           Hồ sơ làm việc
         </NavLink>
-        <NavLink to="portfolio" className={navLinkActive}>
+        <NavLink to="project" className={navLinkActive}>
           Hồ sơ năng lực
         </NavLink>
-        {/* <NavLink to="h" className={navLinkActive}>
+        <NavLink to="h" className={navLinkActive}>
           Xác thực thông tin
-        </NavLink> */}
-      </div>
-      <div className="px-4 py-7">
+        </NavLink>
+      </div> */}
+      <div className="px-4 pt-4 pb-7 w-[800px] mx-auto">
         <Outlet/>
       </div>
     </>
@@ -37,8 +37,8 @@ const ProfileRoute = () => {
     <Routes>
       <Route path="/" element={<ProfileLayout />}>
         <Route path="" element={<PersonalInfo/>}/>
-        <Route path="work-profile" element={<WorkExp/>}/>
-        <Route path="portfolio" element={<Portfolio/>}/>
+        {/* <Route path="work-profile" element={<WorkExp/>}/> */}
+        {/* <Route path="project" element={<Project/>}/> */}
       </Route>
     </Routes>
   );

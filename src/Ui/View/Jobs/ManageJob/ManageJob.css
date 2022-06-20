@@ -1,0 +1,4 @@
+.job-table:hover .currency{
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--b3, var(--b2)) / var(--tw-bg-opacity));
+}

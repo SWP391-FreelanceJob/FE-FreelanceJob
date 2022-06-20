@@ -16,9 +16,12 @@
 }
 
 .form-input > span {
-  @apply w-1/5 font-semibold;
+  @apply w-1/3 font-semibold;
 }
 
 .form-input > input {
-  @apply w-1/3;
+  @apply w-1/2;
+}
+.form-input > div {
+  @apply w-1/2;
 }

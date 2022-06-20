@@ -1,4 +1,7 @@
 import { Navigate, NavLink, Outlet, Route, Routes } from "react-router-dom";
+import AcceptedJob from "./AcceptedJob";
+import DoneJob from "./DoneJob";
+import PublishedJob from "./PublishedJob";
 
 const ManageJobLayout = () => {
   const navLinkActive = ({ isActive }) => {
@@ -8,11 +11,12 @@ const ManageJobLayout = () => {
 
   return (
     <>
+      <h1 className="text-3xl font-bold">Quản lý việc làm</h1>
       <div className="tabs bg-slate-50 rounded-md justify-center">
-        <NavLink to="offering" className={navLinkActive}>
+        <NavLink to="published" className={navLinkActive}>
           Việc đã đăng
         </NavLink>
-        <NavLink to="doing" className={navLinkActive}>
+        <NavLink to="accepted" className={navLinkActive}>
           Việc đang làm
         </NavLink>
         <NavLink to="done" className={navLinkActive}>
@@ -30,10 +34,10 @@ const ManageJobRoute = () => {
   return (
     <Routes>
       <Route path="/" element={<ManageJobLayout />}>
-        <Route path="" element={<Navigate to="offering"/>} />
-        <Route path="offering" element={<div />} />
-        <Route path="doing" element={<div />} />
-        <Route path="done" element={<div />} />
+        <Route path="" element={<Navigate to="published" />} />
+        <Route path="published" element={<PublishedJob />} />
+        <Route path="accepted" element={<AcceptedJob />} />
+        <Route path="done" element={<DoneJob />} />
       </Route>
     </Routes>
   );
