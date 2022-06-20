@@ -12,10 +12,14 @@ ul {
 body {
   background-color: #fff;
   color: #62646a !important;
-  font: 400 16px/24px "Helvetica Neue" !important;
+  font: 400 16px/24px "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   position: relative;
   width: 100%;
 }
-input{
-  font: 400 16px/24px "Helvetica Neue" !important;
+input {
+  font: 400 16px/24px "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
+/* 
+[data-theme=fvn]{
+  --nc: #FFF !important;
+} */

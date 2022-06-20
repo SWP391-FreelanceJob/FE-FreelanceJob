@@ -25,6 +25,7 @@
     "qs": "^6.10.3",
     "react": "^18.0.0",
     "react-currency-input-field": "^3.6.4",
+    "react-datepicker": "^4.8.0",
     "react-dom": "^18.0.0",
     "react-rating": "^2.0.5",
     "react-redux": "^8.0.1",
