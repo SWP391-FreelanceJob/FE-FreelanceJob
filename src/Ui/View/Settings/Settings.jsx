@@ -5,7 +5,7 @@ import ProfileRoute from "./Profile/ProfileRoute";
 const SettingLayout = () => {
   return (
     <div className="flex">
-      <div className="w-1/5 flex flex-col">
+      {/* <div className="w-1/5 flex flex-col">
         <ul className="menu filter-shadow w-56 p-2 rounded-box">
           <li>
             <NavLink end to="">Cài đặt chung</NavLink>
@@ -20,8 +20,8 @@ const SettingLayout = () => {
             <NavLink to="d">Lịch sử giao dịch</NavLink>
           </li>
         </ul>
-      </div>
-      <div className="w-4/5 flex flex-col">
+      </div> */}
+      <div className="flex flex-col w-full">
         <Outlet />
       </div>
     </div>
