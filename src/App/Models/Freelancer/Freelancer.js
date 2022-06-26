@@ -5,7 +5,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 export const freelancersApi = createApi({
   reducerPath: "freelancersApi",
   baseQuery: axiosBaseQuery({ baseUrl: "" }),
-  keepUnusedDataFor: 10,
+  // keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getFreelancers: builder.query({
       query: (

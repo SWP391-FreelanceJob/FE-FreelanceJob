@@ -187,8 +187,8 @@ const Jobs = () => {
                         {/* {job.price_from} đ - {job.price_to} đ */}
                         <span className="w-min">
                           <CurrencyInput
-                          className="w-min bg-slate-100"
-                          prefix="VND "
+                            className="w-min bg-slate-100"
+                            prefix="VND "
                             allowNegativeValue={false}
                             disabled
                             defaultValue={job.price}
@@ -196,7 +196,8 @@ const Jobs = () => {
                         </span>
                       </div>
                       <div className="p-2">
-                        Hạn nhận hồ sơ: {dayjs(job.duration).format('DD/MM/YYYY').toString()}
+                        Hạn nhận hồ sơ:{" "}
+                        {dayjs(job.duration).format("DD/MM/YYYY").toString()}
                       </div>
                     </div>
                     <div className="mb-3 text-desc">{job.description}</div>
@@ -221,6 +222,12 @@ const Jobs = () => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="btn-group justify-center">
+              <button className="btn btn-secondary btn-disabled">«</button>
+              <button className="btn btn-secondary cursor-default text-white">Page 69 of 420</button>
+              <button className="btn btn-secondary">»</button>
             </div>
           </div>
         </div>
