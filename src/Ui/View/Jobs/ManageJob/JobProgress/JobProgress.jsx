@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
+import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -28,6 +29,12 @@ const JobProgress = () => {
    */
   const [loadedJob, setLoadedJob] = useState({});
   const [isLoadingJob, setIsLoadingJob] = useState(true);
+
+  const {
+    data: msgData,
+    error: msgError,
+    isLoading: msgLoading,
+  } = useGetMessageByIdQuery("1");
 
   useEffect(() => {
     // loadInitialJob();
@@ -51,15 +58,17 @@ const JobProgress = () => {
               <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
                 Hoàn tất
               </button>
-              <span>Trạng thái: <span className="text-emerald-500">Đang làm</span></span>
+              <span>
+                Trạng thái: <span className="text-emerald-500">Đang làm</span>
+              </span>
             </div>
           </div>
           <div className="flex gap-2">
             <button className="btn btn-sm btn-accent text-white">
-             Thông tin công việc
+              Thông tin công việc
             </button>
             <button className="btn btn-sm btn-info text-white">
-             Thông tin chào giá
+              Thông tin chào giá
             </button>
           </div>
           {/* <div việcsName="flex gap-x-4"> */}
@@ -164,32 +173,40 @@ const JobProgress = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <div>
-                        Nakiri Ayame{" "}
-                        <img
-                          src="https://cdn.donmai.us/sample/ea/ab/__nakiri_ayame_hololive_drawn_by_haruhitooo__sample-eaab4cd56f2a051c2dd1b32d606f2aa8.jpg"
-                          className="w-20"
-                          alt="usr-avatar"
-                        />
-                      </div>
-                    </td>
-                    <td className="h-full">
-                      <textarea
-                        name="message-content"
-                        className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
-                        id=""
-                        disabled
-                        rows={5}
-                        defaultValue={`Chào bạn, \n bạn có thể demo giùm mình cái này không? \n\n và bạn nhận thanh toán qua đâu \n ayyy lmao`}
-                      ></textarea>
-                    </td>
-                    <td>
-                      <div>{dayjs().format("DD/MM/YYYY").toString()}</div>
-                      <div>{dayjs().format("HH:mm").toString()}</div>
-                    </td>
-                  </tr>
+                  {msgData &&
+                    msgData.map((msg) => (
+                      <tr>
+                        <td>
+                          <div>
+                            {msg.fromAccount.recruiter
+                              ? msg.fromAccount.recruiter.fullname
+                              : msg.fromAccount.freelancer.fullname}
+                            <img
+                              src={
+                                msg.fromAccount.avatar ??
+                                "https://cdn.donmai.us/sample/ea/ab/__nakiri_ayame_hololive_drawn_by_haruhitooo__sample-eaab4cd56f2a051c2dd1b32d606f2aa8.jpg"
+                              }
+                              className="w-20"
+                              alt="usr-avatar"
+                            />
+                          </div>
+                        </td>
+                        <td className="h-full">
+                          <textarea
+                            name="message-content"
+                            className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                            id=""
+                            disabled
+                            rows={5}
+                            defaultValue={msg.content}
+                          ></textarea>
+                        </td>
+                        <td>
+                          <div>{dayjs(msg.sentTime).format("DD/MM/YYYY HH:mm").toString()}</div>
+                          {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

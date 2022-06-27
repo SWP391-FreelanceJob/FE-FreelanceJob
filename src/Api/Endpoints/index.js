@@ -18,4 +18,6 @@ export const Endpoints = {
     "TOPUP":"/payment/topup",
     "BALANCE":"/payment/balance",
     "PAYMENTHISTORY":"/payment/payment-history",
+    "MESSAGE":"/message",
+    "NEWMESSAGE":"/message/new",
 }

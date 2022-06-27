@@ -9,7 +9,7 @@
 }
 
 .chat-table td:first-child {
-  @apply w-1/6;
+  @apply w-1/5;
 }
 .chat-table td:last-child {
   @apply w-1/6;
