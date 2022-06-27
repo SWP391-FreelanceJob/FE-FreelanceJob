@@ -1,4 +1,5 @@
 import { getAllJobs } from "@/Api/Service/Job";
+import { useGetJobsQuery } from "@/App/Models/Job/Job";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import dayjs from "dayjs";
 import _ from "lodash";
@@ -18,9 +19,9 @@ const Jobs = () => {
   const [loadedJobs, setLoadedJobs] = useState([{}]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
-  useEffect(() => {
-    loadInitialJobs();
-  }, []);
+  // useEffect(() => {
+  //   loadInitialJobs();
+  // }, []);
 
   const loadInitialJobs = async () => {
     setIsLoadingJobs(true);
@@ -31,6 +32,7 @@ const Jobs = () => {
   };
 
   const navigate = useNavigate();
+  const { data, error, isLoading } = useGetJobsQuery();
 
   const listOfJobs = [
     {
@@ -95,7 +97,7 @@ const Jobs = () => {
 
   return (
     <div>
-      {isLoadingJobs ? (
+      {isLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex lg:mx-0 mx-7 gap-x-7">
@@ -169,7 +171,7 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {loadedJobs.map((job, idx) => (
+              {data.map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"

@@ -1,4 +1,5 @@
 import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
+import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import CustomRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import { useEffect, useState } from "react";
@@ -26,6 +27,9 @@ const Freelancers = () => {
   const navigate = useNavigate();
 
   const { data, error, isLoading } = useGetFreelancersQuery();
+  // const {data: skillData, error: skillError, isLoading: isLoadingSkill} = useGetSkillsQuery();
+  // const skillQuery = useGetSkillsQuery("",{selectFromResult: (data) => console.log(data)});
+  const skillQuery = useGetSkillsQuery();
 
   // useEffect(() => {
   //   loadInitialFreelancers();
@@ -80,15 +84,15 @@ const Freelancers = () => {
     },
   ];
 
-  const listOfSkills = [
-    "Java",
-    "C# & .NET",
-    "SQL",
-    "Flutter",
-    "iOS",
-    "Android",
-    "Python",
-  ];
+  // const listOfSkills = [
+  //   "Java",
+  //   "C# & .NET",
+  //   "SQL",
+  //   "Flutter",
+  //   "iOS",
+  //   "Android",
+  //   "Python",
+  // ];
 
   /**
    *
@@ -109,10 +113,11 @@ const Freelancers = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
+                {skillQuery.isLoading ? <div>Loading skill...</div> : 
                 <div className="form-control">
-                  {listOfSkills.map((skill, idx) => (
-                    <label key={idx} className="label cursor-pointer">
-                      <span className="label-text">{skill}</span>
+                  {skillQuery.data.map((skill) => (
+                    <label key={skill.skillId} className="label cursor-pointer">
+                      <span className="label-text">{skill.skillName}</span>
                       <input
                         type="checkbox"
                         readOnly
@@ -120,7 +125,7 @@ const Freelancers = () => {
                       />
                     </label>
                   ))}
-                </div>
+                </div>}
               </div>
             </div>
             <div className="card filter-shadow">
@@ -175,7 +180,7 @@ const Freelancers = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {data.map((job, idx) => (
+              {data.data.map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"

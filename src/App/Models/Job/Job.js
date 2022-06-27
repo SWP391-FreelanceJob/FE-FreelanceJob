@@ -2,12 +2,12 @@ import { axiosBaseQuery } from "@/Api/Client/AxiosBase";
 import { Endpoints } from "@/Api/Endpoints";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
-export const freelancersApi = createApi({
-  reducerPath: "freelancersApi",
+export const jobApi = createApi({
+  reducerPath: "jobApi",
   baseQuery: axiosBaseQuery({ baseUrl: "" }),
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
-    getFreelancers: builder.query({
+    getJobs: builder.query({
       query: (
         skills,
         name,
@@ -16,26 +16,20 @@ export const freelancersApi = createApi({
         limit = 10,
         pageNo = 1
       ) => ({
-        url: Endpoints.FREELANCERS,
+        url: Endpoints.JOBS,
         method: "GET",
         params: { isAscending, pageSize, limit, pageNo },
       }),
     }),
-    getFreelancersByName: builder.query({
+    getJobById: builder.query({
       query: (id) => ({
-        url: "",
+        url: Endpoints.JOB,
         method: "GET",
         params: { isAscending, pageSize, limit, pageNo },
-      }),
-    }),
-    getFreelancerById: builder.query({
-      query: (id) => ({
-        url: `${Endpoints.FREELANCER}/${id}`,
-        method: "GET",
       }),
     }),
   }),
 });
 
-export const { useGetFreelancersQuery, useGetFreelancersByNameQuery, useGetFreelancerByIdQuery } =
-  freelancersApi;
+export const { useGetJobsQuery, useGetJobByIdQuery } =
+  jobApi;
