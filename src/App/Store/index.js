@@ -17,17 +17,19 @@ import storage from "redux-persist/lib/storage";
 import counterReducer from "@/App/Models/Counter/CounterSlice";
 import { freelancersApi } from "../Models/Freelancer/Freelancer";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { paymentApi } from "../Models/Payment/Payment";
 // import thunkMiddleware from 'redux-thunk';
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: [freelancersApi.reducerPath],
+  blacklist: [freelancersApi.reducerPath, paymentApi.reducerPath],
 };
 
 const rootReducer = combineReducers({
   counter: counterReducer,
   [freelancersApi.reducerPath]: freelancersApi.reducer,
+  [paymentApi.reducerPath]: paymentApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -39,7 +41,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(freelancersApi.middleware),
+    }).concat([freelancersApi.middleware, paymentApi.middleware]),
 });
 
 // setupListeners(store.dispatch);
