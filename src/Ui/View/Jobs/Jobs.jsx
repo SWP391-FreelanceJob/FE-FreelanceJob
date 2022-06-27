@@ -1,5 +1,7 @@
 import { getAllJobs } from "@/Api/Service/Job";
 import { useGetJobsQuery } from "@/App/Models/Job/Job";
+import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
+import CustomPagination from "@/Ui/Components/CustomPagination/CustomPagination";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import dayjs from "dayjs";
 import _ from "lodash";
@@ -13,26 +15,35 @@ const Jobs = () => {
   const [isChecked, setIsChecked] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("0");
 
-  /**
-   * @type {[IJob[],Function]}
-   */
-  const [loadedJobs, setLoadedJobs] = useState([{}]);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
+  // /**
+  //  * @type {[IJob[],Function]}
+  //  */
+  // const [loadedJobs, setLoadedJobs] = useState([{}]);
+  // const [isLoadingJobs, setIsLoadingJobs] = useState(true);
 
   // useEffect(() => {
   //   loadInitialJobs();
   // }, []);
 
-  const loadInitialJobs = async () => {
-    setIsLoadingJobs(true);
-    const result = await getAllJobs();
-    console.log(result);
-    setLoadedJobs(result.data);
-    setIsLoadingJobs(false);
+  // const loadInitialJobs = async () => {
+  //   setIsLoadingJobs(true);
+  //   const result = await getAllJobs();
+  //   console.log(result);
+  //   setLoadedJobs(result.data);
+  //   setIsLoadingJobs(false);
+  // };
+
+  const [pageNo, setPageNo] = useState(1);
+  // const {  } =
+  const jobQuery = useGetJobsQuery(pageNo);
+  const goToNewPage = (newPageNo) => {
+    // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
+    setPageNo(newPageNo);
   };
 
+  const skillQuery = useGetSkillsQuery();
+
   const navigate = useNavigate();
-  const { data, error, isLoading } = useGetJobsQuery();
 
   const listOfJobs = [
     {
@@ -97,7 +108,7 @@ const Jobs = () => {
 
   return (
     <div>
-      {isLoading ? (
+      {jobQuery.isLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex lg:mx-0 mx-7 gap-x-7">
@@ -105,10 +116,10 @@ const Jobs = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
-                <div className="form-control">
-                  {listOfSkills.map((skill, idx) => (
-                    <label key={idx} className="label cursor-pointer">
-                      <span className="label-text">{skill}</span>
+                {skillQuery.isLoading ? <div></div> : <div className="form-control">
+                  {skillQuery.data.map((skill) => (
+                    <label key={skill.skillId} className="label cursor-pointer">
+                      <span className="label-text">{skill.skillName}</span>
                       <input
                         type="checkbox"
                         readOnly
@@ -116,7 +127,7 @@ const Jobs = () => {
                       />
                     </label>
                   ))}
-                </div>
+                </div>}
               </div>
             </div>
             <div className="card filter-shadow">
@@ -171,7 +182,7 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {data.map((job, idx) => (
+              {jobQuery.data.data.map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"
@@ -226,11 +237,35 @@ const Jobs = () => {
               ))}
             </div>
 
-            <div className="btn-group justify-center">
-              <button className="btn btn-secondary btn-disabled">«</button>
-              <button className="btn btn-secondary cursor-default text-white">Page 69 of 420</button>
-              <button className="btn btn-secondary">»</button>
-            </div>
+            {/* <div className="btn-group justify-center">
+              <button
+                onClick={() => goToNewPage(jobQuery.data.pageNo - 1)}
+                className={`btn btn-secondary ${
+                  jobQuery.data.pageNo === 1 ? "btn-disabled" : ""
+                }`}
+              >
+                «
+              </button>
+              <button className="btn btn-secondary cursor-default text-white">
+                Trang {jobQuery.data.pageNo} trên {jobQuery.data.totalPage}
+              </button>
+              <button
+                onClick={() => goToNewPage(jobQuery.data.pageNo + 1)}
+                className={`btn btn-secondary ${
+                  jobQuery.data.pageNo === jobQuery.data.totalPage
+                    ? "btn-disabled"
+                    : ""
+                }`}
+              >
+                »
+              </button>
+            </div> */}
+            <CustomPagination
+              prevPage={() => goToNewPage(jobQuery.data.pageNo - 1)}
+              nextPage={() => goToNewPage(jobQuery.data.pageNo + 1)}
+              pageNo={jobQuery.data.pageNo}
+              totalPage={jobQuery.data.totalPage}
+            />
           </div>
         </div>
       )}

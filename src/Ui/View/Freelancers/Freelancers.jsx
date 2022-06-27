@@ -1,5 +1,6 @@
 import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
 import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
+import CustomPagination from "@/Ui/Components/CustomPagination/CustomPagination";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import CustomRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import { useEffect, useState } from "react";
@@ -17,30 +18,35 @@ const Freelancers = () => {
   ];
 
   const [selectedStatus, setSelectedStatus] = useState("0");
-  /**
-   * @type {[IFreelancer[],Function]} loadedFreelancer
-   */
-  const [loadedFreelancers, setLoadedFreelancers] = useState([{}]);
+  // /**
+  //  * @type {[IFreelancer[],Function]} loadedFreelancer
+  //  */
+  // const [loadedFreelancers, setLoadedFreelancers] = useState([{}]);
 
-  const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
+  // const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
 
   const navigate = useNavigate();
-
-  const { data, error, isLoading } = useGetFreelancersQuery();
+  const [ pageNo, setPageNo ] = useState(1);
+  const { data, error, isLoading } = useGetFreelancersQuery(pageNo);
   // const {data: skillData, error: skillError, isLoading: isLoadingSkill} = useGetSkillsQuery();
   // const skillQuery = useGetSkillsQuery("",{selectFromResult: (data) => console.log(data)});
   const skillQuery = useGetSkillsQuery();
+
+  const goToNewPage = (newPageNo) => {
+    // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
+    setPageNo(newPageNo);
+  };
 
   // useEffect(() => {
   //   loadInitialFreelancers();
   // }, []);
 
-  const loadInitialFreelancers = async () => {
-    setIsLoadingFreelancers(true);
-    const result = await getAllFreelancers();
-    setLoadedFreelancers(result);
-    setIsLoadingFreelancers(false);
-  };
+  // const loadInitialFreelancers = async () => {
+  //   setIsLoadingFreelancers(true);
+  //   const result = await getAllFreelancers();
+  //   setLoadedFreelancers(result);
+  //   setIsLoadingFreelancers(false);
+  // };
 
   const listOfJobs = [
     {
@@ -240,6 +246,12 @@ const Freelancers = () => {
                 </div>
               ))}
             </div>
+            <CustomPagination
+              prevPage={() => goToNewPage(data.pageNo - 1)}
+              nextPage={() => goToNewPage(data.pageNo + 1)}
+              pageNo={data.pageNo}
+              totalPage={data.totalPage}
+            />
           </div>
         </div>
       )}

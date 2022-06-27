@@ -8,28 +8,20 @@ export const jobApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getJobs: builder.query({
-      query: (
-        skills,
-        name,
-        isAscending = true,
-        pageSize = 10,
-        limit = 10,
-        pageNo = 1
-      ) => ({
+      query: (pageNo = 1, pageSize = 10, isAscending = true, skills, name) => ({
         url: Endpoints.JOBS,
         method: "GET",
-        params: { isAscending, pageSize, limit, pageNo },
+        params: { isAscending, pageSize, pageNo },
       }),
     }),
-    getJobById: builder.query({
-      query: (id) => ({
-        url: Endpoints.JOB,
-        method: "GET",
-        params: { isAscending, pageSize, limit, pageNo },
-      }),
-    }),
+    // getJobById: builder.query({
+    //   query: (id) => ({
+    //     url: Endpoints.JOB,
+    //     method: "GET",
+    //     params: { isAscending, pageSize, limit, pageNo },
+    //   }),
+    // }),
   }),
 });
 
-export const { useGetJobsQuery, useGetJobByIdQuery } =
-  jobApi;
+export const { useGetJobsQuery } = jobApi;
