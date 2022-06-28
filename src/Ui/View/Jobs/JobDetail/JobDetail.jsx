@@ -58,17 +58,17 @@ const JobDetail = () => {
                   <div className="">
                     <div className="flex">
                       <h1 className="text-2xl font-semibold mb-3 mr-2">
-                        {loadedJob.title}
+                        {jobQuery.data.title}
                       </h1>
                     </div>
                     <p className="text-base mb-3">
                       Khách hàng:{" "}
-                      <b className="text-blue-500">{loadedJob.recruiterName}</b>
+                      <b className="text-blue-500">{jobQuery.data.recruiterName}</b>
                     </p>
                     <div className="flex">
                       <p className="mr-3">Kỹ năng:</p>
                       <div className="flex gap-2 mb-2 pt-1">
-                        {loadedJob.skills.map((e) => (
+                        {jobQuery.data.skills.map((e) => (
                           <div
                             key={e.skillId}
                             className="badge badge-info badge-outline text-white"
@@ -85,7 +85,7 @@ const JobDetail = () => {
                 <h1 className="text-xl text-black mb-2 font-semibold">
                   Thông tin công việc
                 </h1>
-                <div className="ml-1">{loadedJob.description}</div>
+                <div className="ml-1">{jobQuery.data.description}</div>
               </div>
             </div>
             <div className="w-1/3 flex flex-col">
@@ -95,12 +95,12 @@ const JobDetail = () => {
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Ngày đăng</dt>
                     <dd className="w-1/2">
-                      {dayjs(loadedJob.createdDate).format("DD/MM/YYYY")}
+                      {dayjs(jobQuery.data.createdDate).format("DD/MM/YYYY")}
                     </dd>
                   </div>
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Hạn chót chào giá</dt>
-                    <dd className="w-1/2">{dayjs().to(loadedJob.duration)}</dd>
+                    <dd className="w-1/2">{dayjs().to(jobQuery.data.duration)}</dd>
                   </div>
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Ngân sách</dt>
@@ -110,7 +110,7 @@ const JobDetail = () => {
                         prefix="VND "
                         allowNegativeValue={false}
                         disabled
-                        defaultValue={loadedJob.price}
+                        defaultValue={jobQuery.data.price}
                       />
                     </dd>
                   </div>
@@ -121,7 +121,7 @@ const JobDetail = () => {
                 <dl className="flex flex-col gap-1">
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Chào giá</dt>
-                    <dd className="w-1/2">{loadedJob.offers.length}</dd>
+                    <dd className="w-1/2">{jobQuery.data.offers.length}</dd>
                   </div>
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Trung bình</dt>
@@ -131,7 +131,7 @@ const JobDetail = () => {
                         prefix="VND "
                         allowNegativeValue={false}
                         disabled
-                        defaultValue={loadedJob.offerInfo.avg}
+                        defaultValue={jobQuery.data.offerInfo.avg}
                       />
                     </dd>
                   </div>
@@ -143,7 +143,7 @@ const JobDetail = () => {
                         prefix="VND "
                         allowNegativeValue={false}
                         disabled
-                        defaultValue={loadedJob.offerInfo.lowest}
+                        defaultValue={jobQuery.data.offerInfo.lowest}
                       />
                     </dd>
                   </div>
@@ -155,7 +155,7 @@ const JobDetail = () => {
                         prefix="VND "
                         allowNegativeValue={false}
                         disabled
-                        defaultValue={loadedJob.offerInfo.highest}
+                        defaultValue={jobQuery.data.offerInfo.highest}
                       />
                     </dd>
                   </div>
@@ -243,7 +243,7 @@ const JobDetail = () => {
           <div className="px-8 py-5">
             <h1 className="text-xl font-bold pb-2">Danh sách chào giá</h1>
             <div className="flex flex-col gap-2">
-              { jobQuery.isLoading ? <div></div> : loadedJob.offers.map((offer) => (<div className="card card-compact all-shadow border-[1px] rounded-md">
+              { jobQuery.isLoading ? <div></div> : jobQuery.data.offers.map((offer) => (<div className="card card-compact all-shadow border-[1px] rounded-md">
                 <div className="flex pb-2" key={offer.offerId}>
                   <div className="w-1/6 flex flex-col items-center">
                     <div className="avatar justify-center my-2">
@@ -268,7 +268,7 @@ const JobDetail = () => {
                         <span>
                           Kỹ năng: &nbsp;
                           {listOfSkills.map((skill, idx) => (
-                            <span className="text-blue-400">{skill + ", "} </span>
+                            <span key={idx} className="text-blue-400">{skill + ", "} </span>
                           ))}
                         </span>
                       </div>
