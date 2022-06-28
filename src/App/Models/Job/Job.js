@@ -8,7 +8,13 @@ export const jobApi = createApi({
   keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getJobs: builder.query({
-      query: ({pageNo = 1, pageSize = 10, isAscending = true, skills, name}) => ({
+      query: ({
+        pageNo = 1,
+        pageSize = 10,
+        isAscending = true,
+        skills,
+        name,
+      }) => ({
         url: Endpoints.JOBS,
         method: "GET",
         params: { isAscending, pageSize, pageNo },
@@ -21,7 +27,15 @@ export const jobApi = createApi({
         // params: { isAscending, pageSize, limit, pageNo },
       }),
     }),
+    createNewJob: builder.mutation({
+      query: (job) => ({
+        url: Endpoints.JOB,
+        method: "POST",
+        data: job,
+      }),
+    }),
   }),
 });
 
-export const { useGetJobsQuery, useGetJobByIdQuery } = jobApi;
+export const { useGetJobsQuery, useGetJobByIdQuery, useCreateNewJobMutation } =
+  jobApi;
