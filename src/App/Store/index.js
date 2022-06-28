@@ -22,6 +22,7 @@ import { jobApi } from "../Models/Job/Job";
 import { skillApi } from "../Models/Skill/Skill";
 import { paymentApi } from "../Models/Payment/Payment";
 import { messageApi } from "../Models/Message/Message";
+import { offerApi } from "../Models/Offer/Offer";
 // import thunkMiddleware from 'redux-thunk';
 
 const persistConfig = {
@@ -32,7 +33,8 @@ const persistConfig = {
     paymentApi.reducerPath,
     messageApi.reducerPath,
     jobApi.reducerPath,
-    skillApi.reducerPath
+    skillApi.reducerPath,
+    offerApi.reducerPath
   ],
 };
 
@@ -44,6 +46,7 @@ const rootReducer = combineReducers({
   [skillApi.reducerPath]: skillApi.reducer,
   [paymentApi.reducerPath]: paymentApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
+  [offerApi.reducerPath]: offerApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -60,7 +63,8 @@ export const store = configureStore({
       paymentApi.middleware,
       messageApi.middleware,
       jobApi.middleware,
-      skillApi.middleware
+      skillApi.middleware,
+      offerApi.middleware
     ]),
 });
 

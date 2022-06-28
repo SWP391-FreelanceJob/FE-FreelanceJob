@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
 import { useGetJobByIdQuery } from "@/App/Models/Job/Job";
+import { useGetOffersByJobIdQuery } from "@/App/Models/Offer/Offer";
+import defaultAvatar from "@/App/Assets/png/avatar-1577909_1280.webp";
 
 const JobDetail = () => {
   dayjs.locale("vi");
@@ -21,12 +23,11 @@ const JobDetail = () => {
     "Python",
   ];
 
-
-
   const navigate = useNavigate();
   let { id } = useParams();
 
   const jobQuery = useGetJobByIdQuery(id);
+  const offerQuery = useGetOffersByJobIdQuery(id);
 
   // /**
   //  * @type {[IJob,Function]}
@@ -44,7 +45,7 @@ const JobDetail = () => {
   //   setLoadedJob(result);
   //   setIsLoadingJob(false);
   // };
-  const [loadedJob, setLoadedJob] = useState(jobQuery.data);
+  // const [loadedJob, setLoadedJob] = useState(jobQuery.data);
   return (
     <div>
       {jobQuery.isLoading ? (
@@ -63,7 +64,9 @@ const JobDetail = () => {
                     </div>
                     <p className="text-base mb-3">
                       Khách hàng:{" "}
-                      <b className="text-blue-500">{jobQuery.data.recruiterName}</b>
+                      <b className="text-blue-500">
+                        {jobQuery.data.recruiterName}
+                      </b>
                     </p>
                     <div className="flex">
                       <p className="mr-3">Kỹ năng:</p>
@@ -100,7 +103,9 @@ const JobDetail = () => {
                   </div>
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Hạn chót chào giá</dt>
-                    <dd className="w-1/2">{dayjs().to(jobQuery.data.duration)}</dd>
+                    <dd className="w-1/2">
+                      {dayjs().to(jobQuery.data.duration)}
+                    </dd>
                   </div>
                   <div className="flex">
                     <dt className="w-1/2 text-slate-400">Ngân sách</dt>
@@ -243,45 +248,55 @@ const JobDetail = () => {
           <div className="px-8 py-5">
             <h1 className="text-xl font-bold pb-2">Danh sách chào giá</h1>
             <div className="flex flex-col gap-2">
-              { jobQuery.isLoading ? <div></div> : jobQuery.data.offers.map((offer) => (<div className="card card-compact all-shadow border-[1px] rounded-md">
-                <div className="flex pb-2" key={offer.offerId}>
-                  <div className="w-1/6 flex flex-col items-center">
-                    <div className="avatar justify-center my-2">
-                      <div className="rounded-full">
-                        <img
-                          className="usr-avatar !w-24"
-                          src="https://i.pravatar.cc/1000"
-                          alt=""
-                        />
+              {offerQuery.isLoading ? (
+                <div></div>
+              ) : (
+                offerQuery.data.offers.map((offer) => (
+                  <div className={`card card-compact all-shadow border-[1px] rounded-md ${offer.freelancer === null ? 'bg-red-400' : ''}`}>
+                    <div className="flex pb-2" key={offer.offerId}>
+                      <div className="w-1/6 flex flex-col items-center">
+                        <div className="avatar justify-center my-2">
+                          <div className="rounded-full">
+                            <img
+                              className="usr-avatar !w-24"
+                              src={offer.freelancer === null || offer.freelancer.avatar === null ? defaultAvatar : offer.freelancer.avatar}
+                              alt="avatar"
+                            />
+                          </div>
+                        </div>
+                        <ReadOnlyRating name={0} rating={4} />
                       </div>
-                    </div>
-                    <ReadOnlyRating name={0} rating={4} />
-                  </div>
-                  <div className="w-5/6">
-                    <div className="flex">
-                      <div className="flex flex-col gap-2">
-                        <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1>
-                        <h1 className="text-base text-slate-500 mb-2">
-                          {offer.experience}
-                        </h1>
-                        {/* <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1> */}
-                        <span>
-                          Kỹ năng: &nbsp;
-                          {listOfSkills.map((skill, idx) => (
-                            <span key={idx} className="text-blue-400">{skill + ", "} </span>
-                          ))}
-                        </span>
-                      </div>
-                      <div className="flex justify-end flex-grow">
-                        <div className="btn btn-accent text-white mr-3 mt-2">
-                          Liên hệ
+                      <div className="w-5/6">
+                        <div className="flex">
+                          <div className="flex flex-col gap-2">
+                            <h1 className="text-xl text-blue-600 mt-2">
+                              {offer.freelancer === null ? "Freelancer không hợp lệ" : offer.freelancer.fullname}
+                            </h1>
+                            <h1 className="text-base text-slate-500 mb-2">
+                              Kế hoạch: {offer.planning}
+                            </h1>
+                            {/* <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1> */}
+                            <span>
+                              Kỹ năng: &nbsp;
+                              {/* {listOfSkills.map((skill, idx) => (
+                                <span key={idx} className="text-blue-400">
+                                  {skill + ", "}{" "}
+                                </span>
+                              ))} */}
+                              TODO: get skills by another API
+                            </span>
+                          </div>
+                          <div className="flex justify-end flex-grow">
+                            <div className="btn btn-accent text-white mr-3 mt-2">
+                              Liên hệ
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>))}
-              
+                ))
+              )}
             </div>
           </div>
         </div>
