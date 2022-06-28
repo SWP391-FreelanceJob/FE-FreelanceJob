@@ -1,14 +1,14 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { FC  } from "react";
+import { useSelector } from "react-redux";
 // import { IAuthentication } from "../Interface/IAuthentication";
 // import { useTSSelector } from "../Store/hooksHelper";
 
 const RequireAuth = ({ children, requiredRoles }) => {
   // const usr = localStorage.getItem("userInfo");
-  const role = "";
-  const isLoggedIn = true;
-  // const role = useTSSelector((state) => state.user.role);
-  // const isLoggedIn = useTSSelector((state) => state.user.isLogged);
+  // const role = "";
+  // const isLoggedIn = true;
+  const role = useSelector((state) => state.user.role);
+  const isLoggedIn = useSelector((state) => state.user.isLogin);
   let location = useLocation();
 
   if (!isLoggedIn) {

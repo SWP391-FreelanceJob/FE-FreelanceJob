@@ -15,6 +15,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import counterReducer from "@/App/Models/Counter/CounterSlice";
+import userReducer from "@/App/Models/User/UserSlice";
 import { freelancersApi } from "../Models/Freelancer/Freelancer";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { jobApi } from "../Models/Job/Job";
@@ -37,6 +38,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   counter: counterReducer,
+  user: userReducer,
   [freelancersApi.reducerPath]: freelancersApi.reducer,
   [jobApi.reducerPath]: jobApi.reducer,
   [skillApi.reducerPath]: skillApi.reducer,

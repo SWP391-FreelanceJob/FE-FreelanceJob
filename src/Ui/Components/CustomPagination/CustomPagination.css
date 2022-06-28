@@ -1,0 +1,3 @@
+.btn-disabled, .btn-disabled:hover, .btn[disabled], .btn[disabled]:hover{
+    @apply bg-blue-300 !important;
+}

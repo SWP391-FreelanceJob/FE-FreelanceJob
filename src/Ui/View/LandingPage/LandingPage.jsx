@@ -15,44 +15,8 @@ import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const jobQuery = useGetJobsQuery();
+  const jobQuery = useGetJobsQuery({ pageNo: 1, pageSize: 3 });
   const freelancerQuery = useGetFreelancersQuery();
-
-  // const listOfJobs = [
-  //   {
-  //     name: "Làm trang web bán hàng",
-  //     recruiter_name: "Di Di",
-  //     price_from: "2.000.000",
-  //     price_to: "3.500.000",
-  //     offer_deadline: "3 ngày 23 giờ",
-  //     description:
-  //       "Yêu cầu: tối ưu hoá SEO, response time < 10ms, UI/UX hợp mắt, dễ sử dụng, có API cho bên thứ 3, Server Side Rendering, ưu tiên sử dụng NextJS ",
-  //     skills: ["Javascript", "C#", "SQL"],
-  //     offers: 23,
-  //   },
-  //   {
-  //     name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-  //     recruiter_name: "Minh Huấn Lành",
-  //     price_from: "8.000.000",
-  //     price_to: "10.000.000",
-  //     offer_deadline: "3 ngày 23 giờ",
-  //     description:
-  //       "Phần mềm có chức năng đăng ký tài khoản trên giả lập LDplayer - Có fake IP sử dụng dịch vụ có API tích hợp - Thuê số điện thoại, nhận OTP có API - Đăng ký tài khoản, xuất định dạng account theo yêu cầu.",
-  //     skills: ["C#", "Python"],
-  //     offers: 2,
-  //   },
-  //   {
-  //     name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-  //     recruiter_name: "Minh Huấn Lành",
-  //     price_from: "8.000.000",
-  //     price_to: "10.000.000",
-  //     offer_deadline: "3 ngày 23 giờ",
-  //     description:
-  //       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio fugiat aperiam quos quasi accusantium sapiente praesentium iure quidem odit laudantium beatae voluptatibus fugit obcaecati autem voluptas, perferendis excepturi impedit temporibus! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quo neque cum aliquam, iusto provident quae porro repellendus qui quas eligendi consectetur iste labore, dolor aliquid dolorem ducimus obcaecati. Magnam.",
-  //     skills: ["C#", "Python"],
-  //     offers: 2,
-  //   },
-  // ];
 
   const toAllJob = () => {
     navigate("all-jobs");
@@ -90,7 +54,11 @@ const LandingPage = () => {
         ) : (
           <div className="border-2 w-full rounded-lg">
             {jobQuery.data.data.map((job, idx) => (
-              <div key={idx} className="job-card">
+              <div
+                key={idx}
+                className="job-card cursor-pointer"
+                onClick={() => navigate(`/job/${job.id}`)}
+              >
                 <div className="px-5">
                   <div className="overflow-hidden">
                     <h1 className="mb-1 text-2xl text-blue-600">{job.title}</h1>
@@ -175,34 +143,38 @@ const LandingPage = () => {
             onSlideChange={() => console.log("slide change")}
             onSwiper={(swiper) => console.log(swiper)}
           >
-            {freelancerQuery.isLoading ? <div>Loading...</div> : freelancerQuery.data.data.map((freelancer) => {
-              return <SwiperSlide key={freelancer.id}>
-                <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                  <figure>
-                    <img
-                      className="h-[220px] w-full object-cover"
-                      src="https://placekitten.com/1200/1000"
-                      alt=""
-                    />
-                  </figure>
-                  <div className="inline-flex pl-4">
-                    <div className="flex items-center avatar">
-                      <div className="w-14 rounded-full mr-3">
+            {freelancerQuery.isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              freelancerQuery.data.data.map((freelancer) => {
+                return (
+                  <SwiperSlide key={freelancer.id}>
+                    <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
+                      <figure>
                         <img
-                          src={freelancer.avatar}
+                          className="h-[220px] w-full object-cover"
+                          src="https://placekitten.com/1200/1000"
                           alt=""
                         />
+                      </figure>
+                      <div className="inline-flex pl-4">
+                        <div className="flex items-center avatar">
+                          <div className="w-14 rounded-full mr-3">
+                            <img src={freelancer.avatar} alt="" />
+                          </div>
+                        </div>
+                        <div className="card-body">
+                          <h2 className="card-title !text-lg truncate">
+                            {freelancer.shortDescription}
+                          </h2>
+                          <p>{freelancer.name}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="card-body">
-                      <h2 className="card-title">{freelancer.shortDescription}</h2>
-                      <p>{freelancer.name}</p>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            })}
-            
+                  </SwiperSlide>
+                );
+              })
+            )}
           </Swiper>
         </div>
       </div>
@@ -246,28 +218,6 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <input type="checkbox" id="sign-up-modal" className="modal-toggle" />
-      <label htmlFor="sign-up-modal" className="modal cursor-pointer">
-        <label className="modal-box relative flex flex-col items-center">
-          <h1 className="text-2xl font-bold">Đăng ký tài khoản FreelanceVN</h1>
-          <div className="py-4">
-            <div className="btn btn-info text-white">
-              Fake Sign In With Google
-            </div>
-          </div>
-        </label>
-      </label>
-      <input type="checkbox" id="sign-in-modal" className="modal-toggle" />
-      <label htmlFor="sign-in-modal" className="modal cursor-pointer">
-        <label className="modal-box relative flex flex-col items-center">
-          <h1 className="text-2xl font-bold">Đăng nhập vào FreelanceVN</h1>
-          <div className="py-4">
-            <div className="btn btn-info text-white">
-              Fake Sign In With Google
-            </div>
-          </div>
-        </label>
-      </label>
     </>
   );
 };

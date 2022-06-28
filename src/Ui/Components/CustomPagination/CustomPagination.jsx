@@ -1,3 +1,5 @@
+import "./CustomPagination.css";
+
 const CustomPagination = ({ prevPage, nextPage, pageNo, totalPage }) => {
   return (
     <div className="btn-group justify-center">

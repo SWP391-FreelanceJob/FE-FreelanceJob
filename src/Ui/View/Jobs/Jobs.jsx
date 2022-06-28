@@ -130,7 +130,7 @@ const Jobs = () => {
                 </div>}
               </div>
             </div>
-            <div className="card filter-shadow">
+            {/* <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Trạng thái</h1>
                 {listOfStatus.map((stt, idx) => (
@@ -150,7 +150,7 @@ const Jobs = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="w-4/5 flex flex-col gap-2">
             <div className="">
