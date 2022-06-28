@@ -8,17 +8,10 @@ export const freelancersApi = createApi({
   // keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getFreelancers: builder.query({
-      query: (
-        skills,
-        name,
-        isAscending = true,
-        pageSize = 10,
-        limit = 10,
-        pageNo = 1
-      ) => ({
+      query: (pageNo = 1, pageSize = 10, isAscending = true, skills, name) => ({
         url: Endpoints.FREELANCERS,
         method: "GET",
-        params: { isAscending, pageSize, limit, pageNo },
+        params: { isAscending, pageSize, pageNo },
       }),
     }),
     getFreelancersByName: builder.query({
@@ -28,8 +21,17 @@ export const freelancersApi = createApi({
         params: { isAscending, pageSize, limit, pageNo },
       }),
     }),
+    getFreelancerById: builder.query({
+      query: (id) => ({
+        url: `${Endpoints.FREELANCER}/${id}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetFreelancersQuery, useGetFreelancersByNameQuery } =
-  freelancersApi;
+export const {
+  useGetFreelancersQuery,
+  useGetFreelancersByNameQuery,
+  useGetFreelancerByIdQuery,
+} = freelancersApi;

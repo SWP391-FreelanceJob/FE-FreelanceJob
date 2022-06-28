@@ -7,49 +7,56 @@ import handshakeSvg from "@/App/Assets/svg/handshake.svg";
 
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
+import { useGetJobsQuery } from "@/App/Models/Job/Job";
+import CurrencyInput from "react-currency-input-field";
+import dayjs from "dayjs";
+import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const listOfJobs = [
-    {
-      name: "Làm trang web bán hàng",
-      recruiter_name: "Di Di",
-      price_from: "2.000.000",
-      price_to: "3.500.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Yêu cầu: tối ưu hoá SEO, response time < 10ms, UI/UX hợp mắt, dễ sử dụng, có API cho bên thứ 3, Server Side Rendering, ưu tiên sử dụng NextJS ",
-      skills: ["Javascript", "C#", "SQL"],
-      offers: 23,
-    },
-    {
-      name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Phần mềm có chức năng đăng ký tài khoản trên giả lập LDplayer - Có fake IP sử dụng dịch vụ có API tích hợp - Thuê số điện thoại, nhận OTP có API - Đăng ký tài khoản, xuất định dạng account theo yêu cầu.",
-      skills: ["C#", "Python"],
-      offers: 2,
-    },
-    {
-      name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio fugiat aperiam quos quasi accusantium sapiente praesentium iure quidem odit laudantium beatae voluptatibus fugit obcaecati autem voluptas, perferendis excepturi impedit temporibus! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quo neque cum aliquam, iusto provident quae porro repellendus qui quas eligendi consectetur iste labore, dolor aliquid dolorem ducimus obcaecati. Magnam.",
-      skills: ["C#", "Python"],
-      offers: 2,
-    },
-  ];
+  const jobQuery = useGetJobsQuery();
+  const freelancerQuery = useGetFreelancersQuery();
+
+  // const listOfJobs = [
+  //   {
+  //     name: "Làm trang web bán hàng",
+  //     recruiter_name: "Di Di",
+  //     price_from: "2.000.000",
+  //     price_to: "3.500.000",
+  //     offer_deadline: "3 ngày 23 giờ",
+  //     description:
+  //       "Yêu cầu: tối ưu hoá SEO, response time < 10ms, UI/UX hợp mắt, dễ sử dụng, có API cho bên thứ 3, Server Side Rendering, ưu tiên sử dụng NextJS ",
+  //     skills: ["Javascript", "C#", "SQL"],
+  //     offers: 23,
+  //   },
+  //   {
+  //     name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
+  //     recruiter_name: "Minh Huấn Lành",
+  //     price_from: "8.000.000",
+  //     price_to: "10.000.000",
+  //     offer_deadline: "3 ngày 23 giờ",
+  //     description:
+  //       "Phần mềm có chức năng đăng ký tài khoản trên giả lập LDplayer - Có fake IP sử dụng dịch vụ có API tích hợp - Thuê số điện thoại, nhận OTP có API - Đăng ký tài khoản, xuất định dạng account theo yêu cầu.",
+  //     skills: ["C#", "Python"],
+  //     offers: 2,
+  //   },
+  //   {
+  //     name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
+  //     recruiter_name: "Minh Huấn Lành",
+  //     price_from: "8.000.000",
+  //     price_to: "10.000.000",
+  //     offer_deadline: "3 ngày 23 giờ",
+  //     description:
+  //       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio fugiat aperiam quos quasi accusantium sapiente praesentium iure quidem odit laudantium beatae voluptatibus fugit obcaecati autem voluptas, perferendis excepturi impedit temporibus! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quo neque cum aliquam, iusto provident quae porro repellendus qui quas eligendi consectetur iste labore, dolor aliquid dolorem ducimus obcaecati. Magnam.",
+  //     skills: ["C#", "Python"],
+  //     offers: 2,
+  //   },
+  // ];
 
   const toAllJob = () => {
     navigate("all-jobs");
-  }
+  };
 
   return (
     <>
@@ -78,39 +85,55 @@ const LandingPage = () => {
         </h1>
       </div>
       <div className="flex flex-wrap md:mx-7 mb-8">
-        <div className="border-2 w-full rounded-lg">
-          {listOfJobs.map((job, idx) => (
-            <div key={idx} className="job-card">
-              <div className="px-5">
-                <div className="overflow-hidden">
-                  <h1 className="mb-1 text-2xl text-blue-600">{job.name}</h1>
-                  <p className="text-sm">{job.recruiter_name}</p>
-                </div>
-                <div className="mt-5 mb-3 flex justify-between bg-slate-100">
-                  <div className="p-2">
-                    {job.price_from} đ - {job.price_to} đ
+        {jobQuery.isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="border-2 w-full rounded-lg">
+            {jobQuery.data.data.map((job, idx) => (
+              <div key={idx} className="job-card">
+                <div className="px-5">
+                  <div className="overflow-hidden">
+                    <h1 className="mb-1 text-2xl text-blue-600">{job.title}</h1>
+                    <p className="text-sm">{job.recruiterName}</p>
                   </div>
-                  <div className="p-2">
-                    Hạn nhận hồ sơ: {job.offer_deadline}
+                  <div className="mt-5 mb-3 flex justify-between bg-slate-100">
+                    <div className="p-2">
+                      <CurrencyInput
+                        className="w-min bg-slate-100"
+                        prefix="VND "
+                        allowNegativeValue={false}
+                        disabled
+                        defaultValue={job.price}
+                      />
+                    </div>
+                    <div className="p-2">
+                      Hạn nhận hồ sơ:{" "}
+                      {dayjs(job.duration).format("DD/MM/YYYY").toString()}
+                    </div>
                   </div>
-                </div>
-                <div className="mb-3 text-desc">{job.description}</div>
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-1">
-                    {job.skills.map((skill, idx) => (
-                      <div key={idx} className="badge badge-success text-white">
-                        {skill}
-                      </div>
-                    ))}
+                  <div className="mb-3 text-desc">{job.description}</div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-1">
+                      {job.skills.map((skill) => (
+                        <div
+                          key={skill.skillId}
+                          className="badge badge-success text-white"
+                        >
+                          {skill.skillName}
+                        </div>
+                      ))}
+                    </div>
+                    <div>{job.offers} chào giá</div>
                   </div>
-                  <div>{job.offers} chào giá</div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <div className="flex w-full justify-center mt-3">
-          <div onClick={toAllJob} className="btn btn-info text-white">Xem tất cả công việc</div>
+          <div onClick={toAllJob} className="btn btn-info text-white">
+            Xem tất cả công việc
+          </div>
         </div>
       </div>
       <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
@@ -152,131 +175,34 @@ const LandingPage = () => {
             onSlideChange={() => console.log("slide change")}
             onSwiper={(swiper) => console.log(swiper)}
           >
-            <SwiperSlide>
-              <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                <figure>
-                  <img
-                    className="h-[220px] w-full object-cover"
-                    src="https://placekitten.com/1200/1000"
-                    alt="Shoes"
-                  />
-                </figure>
-                <div className="inline-flex pl-4">
-                  <div className="flex items-center avatar">
-                    <div className="w-14 rounded-full mr-3">
-                      <img
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/e4/e4d45936f344687fa18054be7b5cbd396133ca82_full.jpg"
-                        alt=""
-                      />
+            {freelancerQuery.isLoading ? <div>Loading...</div> : freelancerQuery.data.data.map((freelancer) => {
+              return <SwiperSlide key={freelancer.id}>
+                <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
+                  <figure>
+                    <img
+                      className="h-[220px] w-full object-cover"
+                      src="https://placekitten.com/1200/1000"
+                      alt=""
+                    />
+                  </figure>
+                  <div className="inline-flex pl-4">
+                    <div className="flex items-center avatar">
+                      <div className="w-14 rounded-full mr-3">
+                        <img
+                          src={freelancer.avatar}
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <h2 className="card-title">{freelancer.shortDescription}</h2>
+                      <p>{freelancer.name}</p>
                     </div>
                   </div>
-                  <div className="card-body">
-                    <h2 className="card-title">Web Design</h2>
-                    <p>by Anime Girl</p>
-                  </div>
                 </div>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                <figure>
-                  <img
-                    className="h-[220px] w-full object-cover"
-                    src="https://placekitten.com/1200/1000"
-                    alt="Shoes"
-                  />
-                </figure>
-                <div className="inline-flex pl-4">
-                  <div className="flex items-center avatar">
-                    <div className="w-14 rounded-full mr-3">
-                      <img
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/e4/e4d45936f344687fa18054be7b5cbd396133ca82_full.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <h2 className="card-title">Web Design</h2>
-                    <p>by Anime Girl</p>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                <figure>
-                  <img
-                    className="h-[220px] w-full object-cover"
-                    src="https://placekitten.com/1200/1000"
-                    alt="Shoes"
-                  />
-                </figure>
-                <div className="inline-flex pl-4">
-                  <div className="flex items-center avatar">
-                    <div className="w-14 rounded-full mr-3">
-                      <img
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/e4/e4d45936f344687fa18054be7b5cbd396133ca82_full.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <h2 className="card-title">Web Design</h2>
-                    <p>by Anime Girl</p>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                <figure>
-                  <img
-                    className="h-[220px] w-full object-cover"
-                    src="https://placekitten.com/1200/1000"
-                    alt="Shoes"
-                  />
-                </figure>
-                <div className="inline-flex pl-4">
-                  <div className="flex items-center avatar">
-                    <div className="w-14 rounded-full mr-3">
-                      <img
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/e4/e4d45936f344687fa18054be7b5cbd396133ca82_full.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <h2 className="card-title">Web Design</h2>
-                    <p>by Anime Girl</p>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
-                <figure>
-                  <img
-                    className="h-[220px] w-full object-cover"
-                    src="https://placekitten.com/1200/1000"
-                    alt="Shoes"
-                  />
-                </figure>
-                <div className="inline-flex pl-4">
-                  <div className="flex items-center avatar">
-                    <div className="w-14 rounded-full mr-3">
-                      <img
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/e4/e4d45936f344687fa18054be7b5cbd396133ca82_full.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <div className="card-body">
-                    <h2 className="card-title">Web Design</h2>
-                    <p>by Anime Girl</p>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
+              </SwiperSlide>
+            })}
+            
           </Swiper>
         </div>
       </div>
@@ -323,9 +249,7 @@ const LandingPage = () => {
       <input type="checkbox" id="sign-up-modal" className="modal-toggle" />
       <label htmlFor="sign-up-modal" className="modal cursor-pointer">
         <label className="modal-box relative flex flex-col items-center">
-          <h1 className="text-2xl font-bold">
-            Đăng ký tài khoản FreelanceVN
-          </h1>
+          <h1 className="text-2xl font-bold">Đăng ký tài khoản FreelanceVN</h1>
           <div className="py-4">
             <div className="btn btn-info text-white">
               Fake Sign In With Google
@@ -336,9 +260,7 @@ const LandingPage = () => {
       <input type="checkbox" id="sign-in-modal" className="modal-toggle" />
       <label htmlFor="sign-in-modal" className="modal cursor-pointer">
         <label className="modal-box relative flex flex-col items-center">
-          <h1 className="text-2xl font-bold">
-            Đăng nhập vào FreelanceVN
-          </h1>
+          <h1 className="text-2xl font-bold">Đăng nhập vào FreelanceVN</h1>
           <div className="py-4">
             <div className="btn btn-info text-white">
               Fake Sign In With Google

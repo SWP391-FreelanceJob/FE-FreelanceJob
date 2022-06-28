@@ -17,6 +17,8 @@ import storage from "redux-persist/lib/storage";
 import counterReducer from "@/App/Models/Counter/CounterSlice";
 import { freelancersApi } from "../Models/Freelancer/Freelancer";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { jobApi } from "../Models/Job/Job";
+import { skillApi } from "../Models/Skill/Skill";
 import { paymentApi } from "../Models/Payment/Payment";
 import { messageApi } from "../Models/Message/Message";
 // import thunkMiddleware from 'redux-thunk';
@@ -28,12 +30,16 @@ const persistConfig = {
     freelancersApi.reducerPath,
     paymentApi.reducerPath,
     messageApi.reducerPath,
+    jobApi.reducerPath,
+    skillApi.reducerPath
   ],
 };
 
 const rootReducer = combineReducers({
   counter: counterReducer,
   [freelancersApi.reducerPath]: freelancersApi.reducer,
+  [jobApi.reducerPath]: jobApi.reducer,
+  [skillApi.reducerPath]: skillApi.reducer,
   [paymentApi.reducerPath]: paymentApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
 });
@@ -51,6 +57,8 @@ export const store = configureStore({
       freelancersApi.middleware,
       paymentApi.middleware,
       messageApi.middleware,
+      jobApi.middleware,
+      skillApi.middleware
     ]),
 });
 
