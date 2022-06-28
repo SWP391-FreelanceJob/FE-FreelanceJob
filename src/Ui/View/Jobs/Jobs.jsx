@@ -186,7 +186,7 @@ const Jobs = () => {
                 <div
                   key={idx}
                   className="job-card cursor-pointer"
-                  onClick={() => navigate("/job/1")}
+                  onClick={() => navigate(`/job/${job.id}`)}
                 >
                   <div className="px-5">
                     <div className="overflow-hidden">

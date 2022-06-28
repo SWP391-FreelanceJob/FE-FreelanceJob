@@ -19,12 +19,20 @@ import { freelancersApi } from "../Models/Freelancer/Freelancer";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { jobApi } from "../Models/Job/Job";
 import { skillApi } from "../Models/Skill/Skill";
+import { paymentApi } from "../Models/Payment/Payment";
+import { messageApi } from "../Models/Message/Message";
 // import thunkMiddleware from 'redux-thunk';
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: [freelancersApi.reducer, jobApi.reducer, skillApi.reducer]
+  blacklist: [
+    freelancersApi.reducerPath,
+    paymentApi.reducerPath,
+    messageApi.reducerPath,
+    jobApi.reducerPath,
+    skillApi.reducerPath
+  ],
 };
 
 const rootReducer = combineReducers({
@@ -32,6 +40,8 @@ const rootReducer = combineReducers({
   [freelancersApi.reducerPath]: freelancersApi.reducer,
   [jobApi.reducerPath]: jobApi.reducer,
   [skillApi.reducerPath]: skillApi.reducer,
+  [paymentApi.reducerPath]: paymentApi.reducer,
+  [messageApi.reducerPath]: messageApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -43,7 +53,13 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(freelancersApi.middleware).concat(jobApi.middleware).concat(skillApi.middleware),
+    }).concat([
+      freelancersApi.middleware,
+      paymentApi.middleware,
+      messageApi.middleware,
+      jobApi.middleware,
+      skillApi.middleware
+    ]),
 });
 
 // setupListeners(store.dispatch);
