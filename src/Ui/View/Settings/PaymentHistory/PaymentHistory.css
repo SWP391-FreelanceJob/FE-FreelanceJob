@@ -1,0 +1,14 @@
+.payment-table {
+}
+
+.payment-table td:first-child {
+  @apply w-1/5;
+}
+
+.payment-table td:nth-child(2){
+  @apply w-1/6;
+}
+
+.payment-table td:nth-child(4){
+  @apply w-1/6;
+}

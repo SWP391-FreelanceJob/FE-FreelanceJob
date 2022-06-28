@@ -32,6 +32,7 @@ import Project from "./Project/Project";
 import ManageProject from "./Settings/Profile/ManageProject/ManageProject";
 import EditProject from "./Settings/Profile/ManageProject/EditProject/EditProject";
 import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
+import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
 
 
 function App() {
@@ -67,12 +68,13 @@ function App() {
             <Route path="/manage-project" element={<ManageProject />} />
             <Route path="/edit-project/:id" element={<EditProject />} />
             <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/settings/*" element={<Settings />} />
+            <Route path="/setting/*" element={<Settings />} />
             <Route path="/project/:id" element={<Project />} />
             <Route path="/all-jobs" element={<Jobs />} />
             <Route path="/manage-job/*" element={<ManageJobRoute/>} />
             <Route path="/create-job" element={<CreateJob/>} />
             <Route path="/job/:id" element={<JobDetail/>} />
+            <Route path="/job-progress/:id" element={<JobProgress/>} />
             <Route path="/offer/:jid" element={<ViewOffer/>} />
             <Route path="/all-freelancers" element={<Freelancers />} />
           </Route>

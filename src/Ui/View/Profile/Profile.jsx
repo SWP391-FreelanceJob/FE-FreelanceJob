@@ -1,4 +1,5 @@
 import { getFreelancerById } from "@/Api/Service/Freelancer";
+import { useGetFreelancerByIdQuery } from "@/App/Models/Freelancer/Freelancer";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,26 +9,24 @@ const Profile = () => {
   const navigate = useNavigate();
   let { id } = useParams();
 
-  /**
-   * @type {[IFreelancer,Function]}
-   */
-  const [loadedFreelancer, setLoadedFreelancer] = useState({});
-  const [isLoadingFreelancer, setIsLoadingFreelancer] = useState(true);
+  // const [loadedFreelancer, setLoadedFreelancer] = useState({});
+  // const [isLoadingFreelancer, setIsLoadingFreelancer] = useState(true);
 
-  useEffect(() => {
-    loadInitialFreelancer();
-  }, []);
+  // useEffect(() => {
+  //   loadInitialFreelancer();
+  // }, []);
 
-  const loadInitialFreelancer = async () => {
-    setIsLoadingFreelancer(true);
-    const result = await getFreelancerById(id);
-    setLoadedFreelancer(result);
-    setIsLoadingFreelancer(false);
-  };
+  // const loadInitialFreelancer = async () => {
+  //   setIsLoadingFreelancer(true);
+  //   const result = await getFreelancerById(id);
+  //   setLoadedFreelancer(result);
+  //   setIsLoadingFreelancer(false);
+  // };
+  const freelancerQuery = useGetFreelancerByIdQuery(id);
 
   return (
     <>
-      {isLoadingFreelancer ? (
+      {freelancerQuery.isLoading ? (
         <LoadingOverlay/>
       ) : (
         <div>
@@ -39,7 +38,7 @@ const Profile = () => {
                     <div className="rounded-full">
                       <img
                         className="usr-avatar"
-                        src={loadedFreelancer.avatar}
+                        src={freelancerQuery.data.avatar}
                         alt=""
                       />
                     </div>
@@ -49,7 +48,7 @@ const Profile = () => {
                   <div className="mt-5">
                     <div className="flex">
                       <h1 className="text-xl font-semibold mb-3 mr-2">
-                        {loadedFreelancer.name}
+                        {freelancerQuery.data.name}
                       </h1>
                       <button
                         className="btn btn-sm upd-btn text-white"
@@ -60,13 +59,13 @@ const Profile = () => {
                     </div>
                     <p className="text-sm mb-3">
                       <i className="bi bi-bag"></i>{" "}
-                      {loadedFreelancer.roleAtWork}
+                      {freelancerQuery.data.roleAtWork}
                     </p>
                     {/* <p className="text-sm mb-4">
                     <i className="bi bi-geo-alt"></i> Vương quốc Anh
                   </p> */}
                     <div className="flex gap-2 mb-2">
-                      {loadedFreelancer.skills.map((e) => {
+                      {freelancerQuery.data.skills.map((e) => {
                         return (
                           <div
                             key={e.skillId}
@@ -87,14 +86,14 @@ const Profile = () => {
                 <h1 className="text-xl text-black mb-2 font-semibold">
                   Giới thiệu bản thân
                 </h1>
-                <div className="ml-1">{loadedFreelancer.description}</div>
+                <div className="ml-1">{freelancerQuery.data.description}</div>
               </div>
               <div className="py-2">
                 <h1 className="text-xl text-black mb-2 font-semibold">
                   Hồ sơ năng lực
                 </h1>
                 <div className="inline-flex gap-3 flex-nowrap overflow-auto portfo-overflow">
-                  {loadedFreelancer.projects.map((e) => {
+                  {freelancerQuery.data.projects.map((e) => {
                     return (
                       <div
                         key={e.id}
@@ -104,7 +103,7 @@ const Profile = () => {
                           <img
                             className="w-full object-cover"
                             src={e.imageUrl}
-                            alt="Shoes"
+                            alt=""
                           />
                         </figure>
                         <div className="inline-flex pl-1">
@@ -123,10 +122,10 @@ const Profile = () => {
                 <h1 className="text-xl font-bold pb-3">Thông tin liên lạc</h1>
                 <p className="mb-2 text-sm">
                   <i className="bi bi-envelope font"></i>{" "}
-                  {loadedFreelancer.email}
+                  {freelancerQuery.data.email}
                 </p>
                 <p className="text-sm ">
-                  <i className="bi bi-phone"></i> {loadedFreelancer.phone}
+                  <i className="bi bi-phone"></i> {freelancerQuery.data.phone}
                 </p>
               </div>
               {/* <div className="m-7">

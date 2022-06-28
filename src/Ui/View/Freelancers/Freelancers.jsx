@@ -1,3 +1,6 @@
+import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
+import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
+import CustomPagination from "@/Ui/Components/CustomPagination/CustomPagination";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import CustomRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import { useEffect, useState } from "react";
@@ -15,25 +18,35 @@ const Freelancers = () => {
   ];
 
   const [selectedStatus, setSelectedStatus] = useState("0");
-  /**
-   * @type {[IFreelancer[],Function]} loadedFreelancer
-   */
-  const [loadedFreelancers, setLoadedFreelancers] = useState([{}]);
+  // /**
+  //  * @type {[IFreelancer[],Function]} loadedFreelancer
+  //  */
+  // const [loadedFreelancers, setLoadedFreelancers] = useState([{}]);
 
-  const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
+  // const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
 
   const navigate = useNavigate();
+  const [ pageNo, setPageNo ] = useState(1);
+  const { data, error, isLoading } = useGetFreelancersQuery(pageNo);
+  // const {data: skillData, error: skillError, isLoading: isLoadingSkill} = useGetSkillsQuery();
+  // const skillQuery = useGetSkillsQuery("",{selectFromResult: (data) => console.log(data)});
+  const skillQuery = useGetSkillsQuery();
 
-  useEffect(() => {
-    loadInitialFreelancers();
-  }, []);
-
-  const loadInitialFreelancers = async () => {
-    setIsLoadingFreelancers(true);
-    const result = await getAllFreelancers();
-    setLoadedFreelancers(result);
-    setIsLoadingFreelancers(false);
+  const goToNewPage = (newPageNo) => {
+    // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
+    setPageNo(newPageNo);
   };
+
+  // useEffect(() => {
+  //   loadInitialFreelancers();
+  // }, []);
+
+  // const loadInitialFreelancers = async () => {
+  //   setIsLoadingFreelancers(true);
+  //   const result = await getAllFreelancers();
+  //   setLoadedFreelancers(result);
+  //   setIsLoadingFreelancers(false);
+  // };
 
   const listOfJobs = [
     {
@@ -77,15 +90,15 @@ const Freelancers = () => {
     },
   ];
 
-  const listOfSkills = [
-    "Java",
-    "C# & .NET",
-    "SQL",
-    "Flutter",
-    "iOS",
-    "Android",
-    "Python",
-  ];
+  // const listOfSkills = [
+  //   "Java",
+  //   "C# & .NET",
+  //   "SQL",
+  //   "Flutter",
+  //   "iOS",
+  //   "Android",
+  //   "Python",
+  // ];
 
   /**
    *
@@ -98,7 +111,7 @@ const Freelancers = () => {
 
   return (
     <div>
-      {isLoadingFreelancers ? (
+      {isLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex lg:mx-0 mx-7 gap-x-7">
@@ -106,10 +119,11 @@ const Freelancers = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
+                {skillQuery.isLoading ? <div>Loading skill...</div> : 
                 <div className="form-control">
-                  {listOfSkills.map((skill, idx) => (
-                    <label key={idx} className="label cursor-pointer">
-                      <span className="label-text">{skill}</span>
+                  {skillQuery.data.map((skill) => (
+                    <label key={skill.skillId} className="label cursor-pointer">
+                      <span className="label-text">{skill.skillName}</span>
                       <input
                         type="checkbox"
                         readOnly
@@ -117,7 +131,7 @@ const Freelancers = () => {
                       />
                     </label>
                   ))}
-                </div>
+                </div>}
               </div>
             </div>
             <div className="card filter-shadow">
@@ -172,7 +186,7 @@ const Freelancers = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {loadedFreelancers.map((job, idx) => (
+              {data.data.map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"
@@ -232,6 +246,12 @@ const Freelancers = () => {
                 </div>
               ))}
             </div>
+            <CustomPagination
+              prevPage={() => goToNewPage(data.pageNo - 1)}
+              nextPage={() => goToNewPage(data.pageNo + 1)}
+              pageNo={data.pageNo}
+              totalPage={data.totalPage}
+            />
           </div>
         </div>
       )}
