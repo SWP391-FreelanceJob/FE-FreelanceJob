@@ -42,7 +42,7 @@ const PublishedJob = () => {
               <td>{val.status}</td>
               <td>
                 <span className="flex gap-5">
-                  <i onClick={()=>navigate("/job/1")} className="bi bi-eye text-lg text-black cursor-pointer"></i>
+                  <i onClick={()=>navigate("/offer/1")} className="bi bi-eye text-lg text-black cursor-pointer"></i>
                   <i className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
                 </span>
               </td>

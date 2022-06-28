@@ -1,3 +1,4 @@
+import { useGetFreelancersQuery } from "@/App/Models/Freelancer/Freelancer";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import CustomRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import { useEffect, useState } from "react";
@@ -24,9 +25,11 @@ const Freelancers = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadInitialFreelancers();
-  }, []);
+  const { data, error, isLoading } = useGetFreelancersQuery();
+
+  // useEffect(() => {
+  //   loadInitialFreelancers();
+  // }, []);
 
   const loadInitialFreelancers = async () => {
     setIsLoadingFreelancers(true);
@@ -98,7 +101,7 @@ const Freelancers = () => {
 
   return (
     <div>
-      {isLoadingFreelancers ? (
+      {isLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex lg:mx-0 mx-7 gap-x-7">
@@ -172,7 +175,7 @@ const Freelancers = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {loadedFreelancers.map((job, idx) => (
+              {data.map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"
