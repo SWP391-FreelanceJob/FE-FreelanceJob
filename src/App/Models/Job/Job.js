@@ -14,14 +14,14 @@ export const jobApi = createApi({
         params: { isAscending, pageSize, pageNo },
       }),
     }),
-    // getJobById: builder.query({
-    //   query: (id) => ({
-    //     url: Endpoints.JOB,
-    //     method: "GET",
-    //     params: { isAscending, pageSize, limit, pageNo },
-    //   }),
-    // }),
+    getJobById: builder.query({
+      query: (id) => ({
+        url: `${Endpoints.JOB}/${id}`,
+        method: "GET",
+        // params: { isAscending, pageSize, limit, pageNo },
+      }),
+    }),
   }),
 });
 
-export const { useGetJobsQuery } = jobApi;
+export const { useGetJobsQuery, useGetJobByIdQuery } = jobApi;
