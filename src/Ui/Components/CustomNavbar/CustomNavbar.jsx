@@ -127,7 +127,14 @@ const CustomNavbar = () => {
               <img className="fvn-logo" src={logo} alt="logo" />
             </a>
             <div className="form-control flex-grow">
-              {/* <p className="font-sans font-bold">Xem việc làm</p> */}
+              <div className="flex gap-8">
+                <p className="font-sans font-bold text-secondary text-lg">
+                  Tìm việc làm
+                </p>
+                <p className="font-sans font-bold text-secondary text-lg">
+                  Tìm freelancer
+                </p>
+              </div>
             </div>
             <div className="flex ml-8 justify-end fvn-navbar-button">
               {userState.isLogin ? (
@@ -266,7 +273,16 @@ const CustomNavbar = () => {
             <p className="cursor-pointer font-semibold">Quản lý công việc</p>
             <p className="cursor-pointer font-semibold">Quản lý chào giá</p>
           </div>
-          <button className="btn btn-sm btn-info text-white">Đăng công việc</button>
+          {userState.role === "recruiter" ? (
+            <button
+              onClick={() => navigate("/create-job")}
+              className="btn btn-sm btn-info text-white"
+            >
+              Đăng công việc
+            </button>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       {/* <div className="categories py-2">
