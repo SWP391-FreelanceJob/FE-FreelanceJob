@@ -498,17 +498,16 @@ const JobDetail = () => {
                                   : offer.freelancer.fullname}
                               </h1>
                               <h1 className="text-base text-slate-500 mb-2">
-                                Kế hoạch: {offer.planning}
+                                {_.isNil(offer.planning) || offer.planning.length <= 0 ? "Kế hoạch: ---" : `Kế hoạch: ${offer.planning}`}
                               </h1>
                               {/* <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1> */}
                               <span>
-                                Kỹ năng: &nbsp;
-                                {/* {listOfSkills.map((skill, idx) => (
-                              <span key={idx} className="text-blue-400">
-                                {skill + ", "}{" "}
-                              </span>
-                            ))} */}
-                                TODO: get skills by another API
+                                  {_.isEmpty(offer.freelancer.skills) ? "Kỹ năng: ---" : "Kỹ năng: "}
+                                  {offer.freelancer.skills.map((skill, index) => (
+                                    <span key={skill.skillId} className="text-blue-400">
+                                      {`${skill.skillName}${index !== offer.freelancer.skills.length-1 ? ", " : ""}`}
+                                    </span>
+                                  ))}
                               </span>
                             </div>
                           </div>

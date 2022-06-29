@@ -182,7 +182,7 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {jobQuery.data.data.map((job, idx) => (
+              {jobQuery.data.data.filter(job => job.jobStatus === 0).map((job, idx) => (
                 <div
                   key={idx}
                   className="job-card cursor-pointer"
@@ -230,7 +230,7 @@ const Jobs = () => {
                           ))
                         )}
                       </div>
-                      <div>{job.offers ?? "0"} chào giá</div>
+                      <div>{job.noOfOffer ?? "0"} chào giá</div>
                     </div>
                   </div>
                 </div>

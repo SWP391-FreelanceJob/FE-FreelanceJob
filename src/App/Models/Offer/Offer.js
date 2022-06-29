@@ -56,6 +56,14 @@ export const offerApi = createApi({
       }),
       invalidatesTags: ["offer_freelancer"],
     }),
+    updateOfferStatusById: builder.mutation({
+        query: ({ offerId, offerStatusReq }) => ({
+          url: `${Endpoints.OFFER_STATUS}/${offerId}`,
+          method: "PUT",
+          data: offerStatusReq,
+        }),
+        invalidatesTags: ["offer"],
+      }),
   }),
 });
 
@@ -66,4 +74,5 @@ export const {
   useGetOffersByFreelancerIdQuery,
   useUpdateOfferByIdMutation,
   useDeleteOfferByIdMutation,
+  useUpdateOfferStatusByIdMutation
 } = offerApi;

@@ -1,8 +1,9 @@
 import "./ManageJob.css";
 import CurrencyInput from "react-currency-input-field";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 export default function AcceptedJob() {
+  const navigate = useNavigate();
   const [_1, jobData, _2] = useOutletContext();
   // const jobs = [
   //   { name: "Cy Ganderton", price: "10000000", status: "Đang làm" },
@@ -43,10 +44,11 @@ export default function AcceptedJob() {
                     // onValueChange={(value, name) => console.log(value, name)}
                   />
                 </td>
-                <td>{val.jobStatus}</td>
+                <td>{val.jobStatus === 1 ? 'Đang làm':''}</td>
                 <td>
                   <span className="flex gap-5">
-                    <i className="bi bi-eye text-lg text-black cursor-pointer"></i>
+                    <i onClick={() => navigate(`/offer/${val.id}`)}
+                    className="bi bi-eye text-lg text-black cursor-pointer"></i>
                   </span>
                 </td>
               </tr>

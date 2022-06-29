@@ -48,7 +48,7 @@ const PublishedJob = () => {
                 <td>
                   <span className="flex gap-5">
                     <i
-                      onClick={() => navigate("/offer/1")}
+                      onClick={() => navigate(`/offer/${val.id}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
                     <i className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
