@@ -1,9 +1,11 @@
+import { useGetJobsQuery } from "@/App/Models/Job/Job";
+import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import { Navigate, NavLink, Outlet, Route, Routes } from "react-router-dom";
 import AcceptedJob from "./AcceptedJob";
 import DoneJob from "./DoneJob";
 import PublishedJob from "./PublishedJob";
 
-const ManageJobLayout = () => {
+const ManageJobLayout = ({ publishedJobs, acceptedJobs, doneJobs }) => {
   const navLinkActive = ({ isActive }) => {
     const active = isActive ? " tab-active" : "";
     return "tab tab-lg tab-lifted" + active;
@@ -24,16 +26,28 @@ const ManageJobLayout = () => {
         </NavLink>
       </div>
       <div className="px-4 py-7">
-        <Outlet />
+        <Outlet context={[publishedJobs, acceptedJobs, doneJobs]} />
       </div>
     </>
   );
 };
 
 const ManageJobRoute = () => {
-  return (
+  const jobQuery = useGetJobsQuery({});
+  return jobQuery.isLoading ? (
+    <LoadingOverlay />
+  ) : (
     <Routes>
-      <Route path="/" element={<ManageJobLayout />}>
+      <Route
+        path="/"
+        element={
+          <ManageJobLayout
+            publishedJobs={jobQuery.data.data.filter((e) => e.jobStatus === 0)}
+            acceptedJobs={jobQuery.data.data.filter((e) => e.jobStatus === 1)}
+            doneJobs={jobQuery.data.data.filter((e) => e.jobStatus === 2)}
+          />
+        }
+      >
         <Route path="" element={<Navigate to="published" />} />
         <Route path="published" element={<PublishedJob />} />
         <Route path="accepted" element={<AcceptedJob />} />

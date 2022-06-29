@@ -29,6 +29,7 @@ const JobDetail = () => {
   const jobQuery = useGetJobByIdQuery(id);
   const offerQuery = useGetOffersByJobIdQuery(id);
 
+
   // /**
   //  * @type {[IJob,Function]}
   //  */
