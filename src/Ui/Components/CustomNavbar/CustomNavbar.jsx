@@ -20,6 +20,7 @@ import IconDropdown from "../CustomDropdown/IconDropdown";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "@/App/Models/User/UserSlice";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
 
 const ChatIcon = () => {
   return (
@@ -59,6 +60,8 @@ const CustomNavbar = () => {
 
   const userState = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const { data, error } = useGetBalanceByIdQuery(userState.accountId);
 
   const [rooms, setRooms] = useState([]);
 
@@ -128,10 +131,16 @@ const CustomNavbar = () => {
             </a>
             <div className="form-control flex-grow">
               <div className="flex gap-8">
-                <p className="font-sans font-bold text-secondary text-lg">
+                <p
+                  onClick={() => navigate("/all-jobs")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
                   Tìm việc làm
                 </p>
-                <p className="font-sans font-bold text-secondary text-lg">
+                <p
+                  onClick={() => navigate("/all-freelancers")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
                   Tìm freelancer
                 </p>
               </div>
@@ -211,9 +220,10 @@ const CustomNavbar = () => {
                             <div className="text-base">
                               {userState.fullName}
                             </div>
-                            {/* <div className="font-normal text-xs">
-                              iD: 021301231
-                            </div> */}
+                            <div className="font-normal text-xs">
+                              Balance:{" "}
+                              {data && data.balance.toLocaleString("vi")}₫
+                            </div>
                           </div>
                           <div className="flex items-center">
                             {isOpenedModal ? (
@@ -270,8 +280,12 @@ const CustomNavbar = () => {
       <div className="border-b-[1px] border-b-[#e4e5e7]">
         <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
           <div className="flex gap-8">
-            <p className="cursor-pointer font-semibold">Quản lý công việc</p>
-            <p className="cursor-pointer font-semibold">Quản lý chào giá</p>
+            <p onClick={()=>navigate("/manage-job")} className="cursor-pointer font-semibold">Quản lý công việc</p>
+            {userState.role === "freelancer" ? (
+              <p className="cursor-pointer font-semibold">Quản lý chào giá</p>
+            ) : (
+              <></>
+            )}
           </div>
           {userState.role === "recruiter" ? (
             <button

@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
 import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
+import ReactTextareaAutosize from "react-textarea-autosize";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -152,11 +153,12 @@ const JobProgress = () => {
             <div className="w-4/5 flex-col flex gap-2">
               <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
                 <p className="text-lg font-semibold mb-2">Lời nhắn</p>
-                <textarea
+                <ReactTextareaAutosize
                   name="messaging"
                   id=""
+                  maxRows={13}
                   className="bg-white rounded-sm min-h-[100px] mb-3"
-                ></textarea>
+                />
                 <div className="flex justify-between">
                   <p className="link link-secondary">Đính kèm tệm tin</p>
                   <button className="btn btn-sm btn-primary text-white">
@@ -192,17 +194,21 @@ const JobProgress = () => {
                           </div>
                         </td>
                         <td className="h-full">
-                          <textarea
+                          <ReactTextareaAutosize
                             name="message-content"
                             className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
                             id=""
                             disabled
                             rows={5}
                             defaultValue={msg.content}
-                          ></textarea>
+                          />
                         </td>
                         <td>
-                          <div>{dayjs(msg.sentTime).format("DD/MM/YYYY HH:mm").toString()}</div>
+                          <div>
+                            {dayjs(msg.sentTime)
+                              .format("DD/MM/YYYY HH:mm")
+                              .toString()}
+                          </div>
                           {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
                         </td>
                       </tr>

@@ -49,8 +49,10 @@ const MasterPage = () => {
         <CustomFooter />
       </div>
       {isLoading && (
-        <div className="bg-slate-100 absolute top-0 right-0 left-0 mx-auto w-full h-full opacity-80">
-          <div className="loadingio-spinner-rolling-fvn absolute top-80 right-0 left-0 mx-auto">
+        <div
+          className="global-loading-bg absolute top-0 right-0 left-0 mx-auto w-full h-full "
+        >
+          <div className="loadingio-spinner-rolling-fvn absolute top-96 right-0 left-0 mx-auto">
             <div className="fvn-spinner">
               <div></div>
             </div>

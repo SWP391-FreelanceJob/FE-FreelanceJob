@@ -9,6 +9,8 @@ export const Endpoints = {
     "JOBS":"/jobs",
     "JOB":"/job",
     "OFFER":"/offer",
+    "OFFERS_FREELANCER":"/offer-freelancer",
+    "OFFER_FREELANCER_JOB":"/offer-freelancer-job",
     "OFFER_STATUS":"/offer-status",
     "PORTFOLIO":"/portfolio",
     "PROJECTS":"/projects",

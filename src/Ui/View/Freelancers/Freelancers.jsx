@@ -8,6 +8,8 @@ import Rating from "react-rating";
 import { useNavigate } from "react-router-dom";
 import { getAllFreelancers } from "../../../Api/Service/Freelancer/index";
 
+import defaultAva from "@/App/Assets/png/default.webp";
+
 import "./Freelancers.css";
 
 const Freelancers = () => {
@@ -89,16 +91,6 @@ const Freelancers = () => {
       jobDone: 10,
     },
   ];
-
-  // const listOfSkills = [
-  //   "Java",
-  //   "C# & .NET",
-  //   "SQL",
-  //   "Flutter",
-  //   "iOS",
-  //   "Android",
-  //   "Python",
-  // ];
 
   /**
    *
@@ -199,7 +191,7 @@ const Freelancers = () => {
                       <div className="flex">
                         <div className="flex avatar">
                           <div className="w-14 rounded-full mr-3">
-                            <img src={job.avatar} alt="" />
+                            <img src={job.avatar ?? defaultAva} alt="" />
                           </div>
                         </div>
                         <div className="overflow-hidden">

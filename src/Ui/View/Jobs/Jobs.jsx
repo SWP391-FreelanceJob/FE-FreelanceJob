@@ -230,7 +230,7 @@ const Jobs = () => {
                           ))
                         )}
                       </div>
-                      <div>{job.offers} chào giá</div>
+                      <div>{job.offers ?? "0"} chào giá</div>
                     </div>
                   </div>
                 </div>

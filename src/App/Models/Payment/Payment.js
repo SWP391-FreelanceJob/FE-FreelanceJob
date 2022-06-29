@@ -8,10 +8,10 @@ export const paymentApi = createApi({
   // keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getBalanceById: builder.query({
-      query: (userId) => ({
+      query: (accountId) => ({
         url: Endpoints.BALANCE,
         method: "GET",
-        params: { userId },
+        params: { accountId },
       }),
     }),
     getPaymentHistoryById: builder.query({
