@@ -177,8 +177,8 @@ const JobProgress = () => {
                 </thead>
                 <tbody>
                   {msgData &&
-                    msgData.map((msg) => (
-                      <tr>
+                    msgData.map((msg,idx) => (
+                      <tr key={idx}>
                         <td>
                           <div>
                             {msg.fromAccount.recruiter

@@ -13,6 +13,7 @@ import { useFirestore, useFirestoreCollectionData } from "reactfire";
 
 import logo from "@/App/Assets/svg/FreelanceVN.svg";
 import fuLogo from "@/App/Assets/png/logofu.png";
+import defaultAva from "@/App/Assets/png/default.webp";
 
 import { useOnClickOutside } from "@/App/Hooks/useClickOutside";
 import "./CustomNavbar.css";
@@ -207,12 +208,7 @@ const CustomNavbar = () => {
                           <div className="w-1/4 flex items-center justify-center  mr-2">
                             <div className="avatar">
                               <div className="w-12 rounded-full">
-                                <img
-                                  src={
-                                    userState.avatar ??
-                                    "https://i.pravatar.cc/300"
-                                  }
-                                />
+                                <img src={userState.avatar ?? defaultAva} />
                               </div>
                             </div>
                           </div>
@@ -280,11 +276,20 @@ const CustomNavbar = () => {
       <div className="border-b-[1px] border-b-[#e4e5e7]">
         <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
           <div className="flex gap-8">
-            <p onClick={()=>navigate("/manage-job")} className="cursor-pointer font-semibold">Quản lý công việc</p>
             {userState.role === "freelancer" ? (
-              <p className="cursor-pointer font-semibold">Quản lý chào giá</p>
+              <p
+                onClick={() => navigate("/manage-offer")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý chào giá
+              </p>
             ) : (
-              <></>
+              <p
+                onClick={() => navigate("/manage-job")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý công việc
+              </p>
             )}
           </div>
           {userState.role === "recruiter" ? (

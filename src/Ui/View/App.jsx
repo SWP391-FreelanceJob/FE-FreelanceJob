@@ -33,6 +33,7 @@ import ManageProject from "./Settings/Profile/ManageProject/ManageProject";
 import EditProject from "./Settings/Profile/ManageProject/EditProject/EditProject";
 import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
 import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
+import ManageOfferRoute from "./ManageOffer/ManageOfferRoute";
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
             <Route path="/setting/*" element={<Settings />} />
             <Route path="/project/:id" element={<Project />} />
             <Route path="/all-jobs" element={<Jobs />} />
+            <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
             <Route path="/manage-job/*" element={<ManageJobRoute/>} />
             <Route path="/create-job" element={<CreateJob/>} />
             <Route path="/job/:id" element={<JobDetail/>} />

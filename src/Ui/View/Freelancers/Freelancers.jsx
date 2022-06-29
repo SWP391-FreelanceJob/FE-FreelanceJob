@@ -50,47 +50,6 @@ const Freelancers = () => {
   //   setIsLoadingFreelancers(false);
   // };
 
-  const listOfJobs = [
-    {
-      name: "Nguyễn Văn A",
-      recruiter_name: "Di Di",
-      price_from: "2.000.000",
-      price_to: "3.500.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Yêu cầu: tối ưu hoá SEO, response time < 10ms, UI/UX hợp mắt, dễ sử dụng, có API cho bên thứ 3, Server Side Rendering, ưu tiên sử dụng NextJS ",
-      skills: ["Javascript", "C#", "SQL"],
-      offers: 23,
-      rating: 4.23,
-      jobDone: 100,
-    },
-    {
-      name: "Nguyễn Thị B",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Phần mềm có chức năng đăng ký tài khoản trên giả lập LDplayer - Có fake IP sử dụng dịch vụ có API tích hợp - Thuê số điện thoại, nhận OTP có API - Đăng ký tài khoản, xuất định dạng account theo yêu cầu.",
-      skills: ["C#", "Python"],
-      offers: 2,
-      rating: 3.5,
-      jobDone: 20,
-    },
-    {
-      name: "Nguyễn Hoàng C",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio fugiat aperiam quos quasi accusantium sapiente praesentium iure quidem odit laudantium beatae voluptatibus fugit obcaecati autem voluptas, perferendis excepturi impedit temporibus! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quo neque cum aliquam, iusto provident quae porro repellendus qui quas eligendi consectetur iste labore, dolor aliquid dolorem ducimus obcaecati. Magnam.",
-      skills: ["C#", "Python"],
-      offers: 2,
-      rating: 2.7,
-      jobDone: 10,
-    },
-  ];
 
   /**
    *
@@ -124,27 +83,6 @@ const Freelancers = () => {
                     </label>
                   ))}
                 </div>}
-              </div>
-            </div>
-            <div className="card filter-shadow">
-              <div className="p-4">
-                <h1 className="text-xl font-semibold">Trạng thái</h1>
-                {listOfStatus.map((stt, idx) => (
-                  <div key={idx} className="form-control">
-                    <label className="label cursor-pointer">
-                      <span className="label-text">{stt.status}</span>
-                      <input
-                        type="radio"
-                        name="stt"
-                        readOnly
-                        className="radio radio-accent"
-                        checked={stt.value === selectedStatus}
-                        value={stt.value}
-                        onClick={onSelectStatus}
-                      />
-                    </label>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

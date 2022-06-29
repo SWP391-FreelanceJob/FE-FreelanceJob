@@ -9,12 +9,13 @@ export const offerApi = createApi({
   // tagTypes: ["offer"],
   endpoints: (builder) => ({
     getOffersByJobId: builder.query({
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 3,
       query: (jobId) => ({
         url: `${Endpoints.OFFER}/${jobId}`,
         method: "GET",
         params: {},
       }),
+      providesTags: ["offer_job"],
     }),
     getOfferByJobIdAndFreelancerId: builder.query({
       query: ({ jobId, freelancerId }) => ({
@@ -25,11 +26,12 @@ export const offerApi = createApi({
       providesTags: ["offer"],
     }),
     getOffersByFreelancerId: builder.query({
-      query: ({ freelancerId }) => ({
+      query: ( freelancerId ) => ({
         url: `${Endpoints.OFFERS_FREELANCER}/${freelancerId}`,
         method: "GET",
         params: {},
       }),
+      providesTags: ["offer_freelancer"],
     }),
     createOfferByJobId: builder.mutation({
       query: ({ jobId, offer }) => ({
@@ -37,15 +39,22 @@ export const offerApi = createApi({
         method: "POST",
         data: offer,
       }),
-      invalidatesTags: ["offer"],
+      invalidatesTags: ["offer","offer_job"],
     }),
-    updateOfferByJobId: builder.mutation({
+    updateOfferById: builder.mutation({
       query: ({ offerId, offer }) => ({
         url: `${Endpoints.OFFER}/${offerId}`,
         method: "PUT",
         data: offer,
       }),
       invalidatesTags: ["offer"],
+    }),
+    deleteOfferById: builder.mutation({
+      query: (offerId) => ({
+        url: `${Endpoints.OFFER}/${offerId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["offer_freelancer"],
     }),
   }),
 });
@@ -55,5 +64,6 @@ export const {
   useCreateOfferByJobIdMutation,
   useGetOfferByJobIdAndFreelancerIdQuery,
   useGetOffersByFreelancerIdQuery,
-  useUpdateOfferByJobIdMutation,
+  useUpdateOfferByIdMutation,
+  useDeleteOfferByIdMutation,
 } = offerApi;
