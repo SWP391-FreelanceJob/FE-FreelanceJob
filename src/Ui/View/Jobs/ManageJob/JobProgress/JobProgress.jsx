@@ -9,6 +9,7 @@ import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
 import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
 import ReactTextareaAutosize from "react-textarea-autosize";
+import defaultAva from "@/App/Assets/png/default.webp";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -186,7 +187,7 @@ const JobProgress = () => {
                             <img
                               src={
                                 msg.fromAccount.avatar ??
-                                "https://cdn.donmai.us/sample/ea/ab/__nakiri_ayame_hololive_drawn_by_haruhitooo__sample-eaab4cd56f2a051c2dd1b32d606f2aa8.jpg"
+                                defaultAva
                               }
                               className="w-20"
                               alt="usr-avatar"
