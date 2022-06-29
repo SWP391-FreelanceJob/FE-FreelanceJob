@@ -13,6 +13,7 @@ import { useFirestore, useFirestoreCollectionData } from "reactfire";
 
 import logo from "@/App/Assets/svg/FreelanceVN.svg";
 import fuLogo from "@/App/Assets/png/logofu.png";
+import defaultAva from "@/App/Assets/png/default.webp";
 
 import { useOnClickOutside } from "@/App/Hooks/useClickOutside";
 import "./CustomNavbar.css";
@@ -20,6 +21,7 @@ import IconDropdown from "../CustomDropdown/IconDropdown";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "@/App/Models/User/UserSlice";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
 
 const ChatIcon = () => {
   return (
@@ -59,6 +61,8 @@ const CustomNavbar = () => {
 
   const userState = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const { data, error } = useGetBalanceByIdQuery(userState.accountId);
 
   const [rooms, setRooms] = useState([]);
 
@@ -127,7 +131,20 @@ const CustomNavbar = () => {
               <img className="fvn-logo" src={logo} alt="logo" />
             </a>
             <div className="form-control flex-grow">
-              {/* <p className="font-sans font-bold">Xem việc làm</p> */}
+              <div className="flex gap-8">
+                <p
+                  onClick={() => navigate("/all-jobs")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
+                  Tìm việc làm
+                </p>
+                <p
+                  onClick={() => navigate("/all-freelancers")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
+                  Tìm freelancer
+                </p>
+              </div>
             </div>
             <div className="flex ml-8 justify-end fvn-navbar-button">
               {userState.isLogin ? (
@@ -191,12 +208,7 @@ const CustomNavbar = () => {
                           <div className="w-1/4 flex items-center justify-center  mr-2">
                             <div className="avatar">
                               <div className="w-12 rounded-full">
-                                <img
-                                  src={
-                                    userState.avatar ??
-                                    "https://i.pravatar.cc/300"
-                                  }
-                                />
+                                <img src={userState.avatar ?? defaultAva} />
                               </div>
                             </div>
                           </div>
@@ -204,9 +216,10 @@ const CustomNavbar = () => {
                             <div className="text-base">
                               {userState.fullName}
                             </div>
-                            {/* <div className="font-normal text-xs">
-                              iD: 021301231
-                            </div> */}
+                            <div className="font-normal text-xs">
+                              Balance:{" "}
+                              {data && data.balance.toLocaleString("vi")}₫
+                            </div>
                           </div>
                           <div className="flex items-center">
                             {isOpenedModal ? (
@@ -263,10 +276,32 @@ const CustomNavbar = () => {
       <div className="border-b-[1px] border-b-[#e4e5e7]">
         <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
           <div className="flex gap-8">
-            <p className="cursor-pointer font-semibold">Quản lý công việc</p>
-            <p className="cursor-pointer font-semibold">Quản lý chào giá</p>
+            {userState.role === "freelancer" ? (
+              <p
+                onClick={() => navigate("/manage-offer")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý chào giá
+              </p>
+            ) : (
+              <p
+                onClick={() => navigate("/manage-job")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý công việc
+              </p>
+            )}
           </div>
-          <button className="btn btn-sm btn-info text-white">Đăng công việc</button>
+          {userState.role === "recruiter" ? (
+            <button
+              onClick={() => navigate("/create-job")}
+              className="btn btn-sm btn-info text-white"
+            >
+              Đăng công việc
+            </button>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       {/* <div className="categories py-2">

@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
 import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
+import ReactTextareaAutosize from "react-textarea-autosize";
+import defaultAva from "@/App/Assets/png/default.webp";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -152,11 +154,12 @@ const JobProgress = () => {
             <div className="w-4/5 flex-col flex gap-2">
               <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
                 <p className="text-lg font-semibold mb-2">Lời nhắn</p>
-                <textarea
+                <ReactTextareaAutosize
                   name="messaging"
                   id=""
+                  maxRows={13}
                   className="bg-white rounded-sm min-h-[100px] mb-3"
-                ></textarea>
+                />
                 <div className="flex justify-between">
                   <p className="link link-secondary">Đính kèm tệm tin</p>
                   <button className="btn btn-sm btn-primary text-white">
@@ -174,8 +177,8 @@ const JobProgress = () => {
                 </thead>
                 <tbody>
                   {msgData &&
-                    msgData.map((msg) => (
-                      <tr>
+                    msgData.map((msg,idx) => (
+                      <tr key={idx}>
                         <td>
                           <div>
                             {msg.fromAccount.recruiter
@@ -184,7 +187,7 @@ const JobProgress = () => {
                             <img
                               src={
                                 msg.fromAccount.avatar ??
-                                "https://cdn.donmai.us/sample/ea/ab/__nakiri_ayame_hololive_drawn_by_haruhitooo__sample-eaab4cd56f2a051c2dd1b32d606f2aa8.jpg"
+                                defaultAva
                               }
                               className="w-20"
                               alt="usr-avatar"
@@ -192,17 +195,21 @@ const JobProgress = () => {
                           </div>
                         </td>
                         <td className="h-full">
-                          <textarea
+                          <ReactTextareaAutosize
                             name="message-content"
                             className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
                             id=""
                             disabled
                             rows={5}
                             defaultValue={msg.content}
-                          ></textarea>
+                          />
                         </td>
                         <td>
-                          <div>{dayjs(msg.sentTime).format("DD/MM/YYYY HH:mm").toString()}</div>
+                          <div>
+                            {dayjs(msg.sentTime)
+                              .format("DD/MM/YYYY HH:mm")
+                              .toString()}
+                          </div>
                           {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
                         </td>
                       </tr>

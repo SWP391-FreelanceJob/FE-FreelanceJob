@@ -1,10 +1,10 @@
 export const Constant = {
   ERROR_PLACEHOLDER: "placeholder",
 };
-export enum ROLE {
-  Admin = "Admin",
-  User = "User",
-}
+// export enum ROLE {
+//   Admin = "Admin",
+//   User = "User",
+// }
 
 export const TokenConstant = {
   JW_TOKEN: "jwToken",
@@ -15,6 +15,12 @@ export const Status = {
   SUCCESS: "Thành công",
   FAILED: "Thất bại",
 };
+
+export const OfferStatus = {
+  OFFERING: "Đang chào giá",
+  ACCEPTED: "Đã được chấp nhận",
+  REJECTED: "Đã bị từ chối"
+}
 
 export const AppoinmentStatus = {
   "CONFIRM":"0",
