@@ -1,9 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { useGetFreelancerByIdQuery } from "@/App/Models/Freelancer/Freelancer";
+import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
+import { NavLink, useParams } from "react-router-dom";
 import "../ProfileStyle.css";
 
 const PersonalInfo = () => {
+  const { freelancerId } = useParams();
+  const freelancerQuery = useGetFreelancerByIdQuery(freelancerId);
   const introTooltip = `Bản giới thiệu đầy đủ này sẽ giúp người xem hiểu rõ hơn về bạn, chuyên môn và cả những kinh nghiệm mà bạn có được.`;
   return (
+    freelancerQuery.isLoading ? <LoadingOverlay/> : 
     <>
       <h1 className="text-3xl font-bold">Thông tin cá nhân</h1>
       <div className="w-full mt-4">
