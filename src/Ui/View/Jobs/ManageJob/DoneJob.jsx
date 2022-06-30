@@ -22,7 +22,12 @@ export default function DoneJob() {
           ) : (
             jobData.map((val, idx) => (
               <tr className="hover job-table" key={val.id}>
-                <td>{val.title}</td>
+                <td
+                  onClick={() => navigate(`/job/${val.id}`)}
+                  className="cursor-pointer"
+                >
+                  {val.title}
+                </td>
                 <td>
                   <CurrencyInput
                     disabled

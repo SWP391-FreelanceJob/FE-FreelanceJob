@@ -31,7 +31,12 @@ export default function AcceptedJob() {
           <tbody>
             {jobData.map((val, idx) => (
               <tr className="hover job-table" key={val.id}>
-                <td>{val.title}</td>
+                <td
+                  onClick={() => navigate(`/job/${val.id}`)}
+                  className="cursor-pointer"
+                >
+                  {val.title}
+                </td>
                 <td>
                   <CurrencyInput
                     disabled
@@ -44,11 +49,13 @@ export default function AcceptedJob() {
                     // onValueChange={(value, name) => console.log(value, name)}
                   />
                 </td>
-                <td>{val.jobStatus === 1 ? 'Đang làm':''}</td>
+                <td>{val.jobStatus === 1 ? "Đang làm" : ""}</td>
                 <td>
                   <span className="flex gap-5">
-                    <i onClick={() => navigate(`/offer/${val.id}`)}
-                    className="bi bi-eye text-lg text-black cursor-pointer"></i>
+                    <i
+                      onClick={() => navigate(`/offer/${val.id}`)}
+                      className="bi bi-eye text-lg text-black cursor-pointer"
+                    ></i>
                   </span>
                 </td>
               </tr>
@@ -57,9 +64,7 @@ export default function AcceptedJob() {
         )}
       </table>
       {jobData === undefined || jobData.length === 0 ? (
-        <div className="w-full mt-2 text-center">
-          Chưa có việc nào đang làm
-        </div>
+        <div className="w-full mt-2 text-center">Chưa có việc nào đang làm</div>
       ) : (
         <></>
       )}

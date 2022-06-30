@@ -29,15 +29,6 @@ import { notyf } from "@/App/Utils/NotyfSetting";
 
 const JobDetail = () => {
   dayjs.locale("vi");
-  // const listOfSkills = [
-  //   "Java",
-  //   "C# & .NET",
-  //   "SQL",
-  //   "Flutter",
-  //   "iOS",
-  //   "Android",
-  //   "Python",
-  // ];
 
   const navigate = useNavigate();
   let { id } = useParams();
@@ -126,7 +117,6 @@ const JobDetail = () => {
     formState: { errors },
   } = useForm();
 
-
   // /**
   //  * @type {[IJob,Function]}
   //  */
@@ -184,12 +174,28 @@ const JobDetail = () => {
                     Thông tin công việc
                   </h1>
                   <div className="ml-1">
-                    <TextareaAutosize
-                      name="jobDescription"
-                      className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
-                      defaultValue={jobQuery.data.description}
-                      disabled
-                    />
+                    {userState.isLogin ? (
+                      <TextareaAutosize
+                        name="jobDescription"
+                        className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                        defaultValue={jobQuery.data.description}
+                        disabled
+                      />
+                    ) : (
+                      <div className="card card-compact all-shadow w-1/2 p-3 justify-center gap-2">
+                        <div className="text-xl font-bold w-full text-center">
+                          Vui lòng đăng nhập để xem chi tiết
+                        </div>
+                        <button
+                          onClick={() => {navigate("/sign-in")}}
+                          className="flex items-center justify-center gap-2 active:scale-[.98] 
+                          active:duration-75 transition-all hover:scale-[1.01] ease-in-out transform py-2
+                          rounded-xl text-gray-700 font-semibold text-base border-2 border-gray-100 "
+                        >
+                          Đến trang đăng nhập/đăng ký
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -215,7 +221,7 @@ const JobDetail = () => {
                       <dt className="w-1/2 text-slate-400">Ngân sách</dt>
                       <dd className="w-1/2">
                         {/* This mean lower than (<) and a spacebar */}
-                        &lt;{"\u00A0"}
+                        {/* &lt;{"\u00A0"} */}
                         <CurrencyInput
                           className="w-min bg-white"
                           prefix="VND "
@@ -431,17 +437,19 @@ const JobDetail = () => {
                       </p>
                     )}
                   </div>
-                  <input
-                    type="submit"
-                    value={offerData ? "Cập nhật" : "Đăng chào giá"}
-                    disabled={
-                      balanceQuery.data.balance < 500000 ||
-                      (offerData && !isEditOffer)
-                    }
-                    className={`${
-                      offerData ? "btn-accent" : "offer-btn"
-                    } btn btn-sm mt-3 text-white`}
-                  />
+                  <div className="flex w-full justify-center">
+                    <input
+                      type="submit"
+                      value={offerData ? "Cập nhật" : "Đăng chào giá"}
+                      disabled={
+                        balanceQuery.data.balance < 500000 ||
+                        (offerData && !isEditOffer)
+                      }
+                      className={`${
+                        offerData ? "btn-accent" : "offer-btn"
+                      } btn btn-sm mt-3 text-white w-1/4`}
+                    />
+                  </div>
                 </div>
                 {balanceQuery.data.balance < 500000 && (
                   <div className="absolute overlay-bg rounded-xl z-50 top-0 right-0 left-0 bottom-0 h-full w-full">
@@ -463,58 +471,80 @@ const JobDetail = () => {
                 ) : _.isEmpty(offerQuery.data.offers) ? (
                   <p>Không có chào giá nào</p>
                 ) : (
-                  offerQuery.data.offers.map((offer) => (
-                    offer.freelancer &&
-                    <div
-                      key={offer.offerId}
-                      className={`card card-compact all-shadow border-[1px] rounded-md ${
-                        offer.freelancer === null ? "bg-red-400" : ""
-                      }`}
-                    >
-                      <div className="flex pb-2" key={offer.offerId}>
-                        <div className="w-1/6 flex flex-col items-center">
-                          <div className="avatar justify-center my-2">
-                            <div className="rounded-full">
-                              <img
-                                className="usr-avatar !w-24"
-                                src={
-                                  offer.freelancer === null ||
-                                  offer.freelancer.avatar === null
-                                    ? defaultAvatar
-                                    : offer.freelancer.avatar
-                                }
-                                alt="avatar"
-                              />
+                  offerQuery.data.offers.map(
+                    (offer) =>
+                      offer.freelancer && (
+                        <div
+                          key={offer.offerId}
+                          onClick={() =>
+                            navigate(
+                              `/profile/${offer.freelancer.freelancerId}`
+                            )
+                          }
+                          className={`card card-compact all-shadow border-[1px] rounded-md cursor-pointer ${
+                            offer.freelancer === null ? "bg-red-400" : ""
+                          }`}
+                        >
+                          <div className="flex pb-2" key={offer.offerId}>
+                            <div className="w-1/6 flex flex-col items-center">
+                              <div className="avatar justify-center my-2">
+                                <div className="rounded-full">
+                                  <img
+                                    className="usr-avatar !w-24"
+                                    src={
+                                      offer.freelancer === null ||
+                                      offer.freelancer.avatar === null
+                                        ? defaultAvatar
+                                        : offer.freelancer.avatar
+                                    }
+                                    alt="avatar"
+                                  />
+                                </div>
+                              </div>
+                              <ReadOnlyRating name={0} rating={4} />
+                            </div>
+                            <div className="w-5/6">
+                              <div className="flex">
+                                <div className="flex flex-col gap-2">
+                                  <h1 className="text-xl text-blue-600 mt-2">
+                                    {offer.freelancer === null
+                                      ? "Freelancer không hợp lệ"
+                                      : offer.freelancer.fullname}
+                                  </h1>
+                                  <h1 className="text-base text-slate-500 mb-2">
+                                    {_.isNil(offer.planning) ||
+                                    offer.planning.length <= 0
+                                      ? "Kế hoạch: ---"
+                                      : `Kế hoạch: ${offer.planning}`}
+                                  </h1>
+                                  {/* <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1> */}
+                                  <span>
+                                    {_.isEmpty(offer.freelancer.skills)
+                                      ? "Kỹ năng: ---"
+                                      : "Kỹ năng: "}
+                                    {offer.freelancer.skills.map(
+                                      (skill, index) => (
+                                        <span
+                                          key={skill.skillId}
+                                          className="text-blue-400"
+                                        >
+                                          {`${skill.skillName}${
+                                            index !==
+                                            offer.freelancer.skills.length - 1
+                                              ? ", "
+                                              : ""
+                                          }`}
+                                        </span>
+                                      )
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <ReadOnlyRating name={0} rating={4} />
                         </div>
-                        <div className="w-5/6">
-                          <div className="flex">
-                            <div className="flex flex-col gap-2">
-                              <h1 className="text-xl text-blue-600 mt-2">
-                                {offer.freelancer === null
-                                  ? "Freelancer không hợp lệ"
-                                  : offer.freelancer.fullname}
-                              </h1>
-                              <h1 className="text-base text-slate-500 mb-2">
-                                {_.isNil(offer.planning) || offer.planning.length <= 0 ? "Kế hoạch: ---" : `Kế hoạch: ${offer.planning}`}
-                              </h1>
-                              {/* <h1 className="text-xl text-blue-600 mt-2">Tên FL</h1> */}
-                              <span>
-                                  {_.isEmpty(offer.freelancer.skills) ? "Kỹ năng: ---" : "Kỹ năng: "}
-                                  {offer.freelancer.skills.map((skill, index) => (
-                                    <span key={skill.skillId} className="text-blue-400">
-                                      {`${skill.skillName}${index !== offer.freelancer.skills.length-1 ? ", " : ""}`}
-                                    </span>
-                                  ))}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                      )
+                  )
                 )}
               </div>
             </div>

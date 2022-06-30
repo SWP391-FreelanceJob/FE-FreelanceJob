@@ -31,7 +31,7 @@ const PublishedJob = () => {
           <tbody>
             {jobData.map((val, idx) => (
               <tr className="hover job-table" key={idx}>
-                <td>{val.title}</td>
+                <td onClick={() => navigate(`/job/${val.id}`)} className="cursor-pointer">{val.title}</td>
                 <td>
                   <CurrencyInput
                     disabled
@@ -44,7 +44,7 @@ const PublishedJob = () => {
                     // onValueChange={(value, name) => console.log(value, name)}
                   />
                 </td>
-                <td>{val.jobStatus === 0 ? 'Đã đăng':''}</td>
+                <td>{val.jobStatus === 0 ? "Đã đăng" : ""}</td>
                 <td>
                   <span className="flex gap-5">
                     <i

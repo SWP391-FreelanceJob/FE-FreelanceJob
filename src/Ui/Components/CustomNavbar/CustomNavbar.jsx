@@ -88,6 +88,10 @@ const CustomNavbar = () => {
     navigate("/");
   };
 
+  const updProfile = () => {
+    navigate("/setting");
+  }
+
   // const getRoomInfo = async () => {
   //   if (roomsStatus === "success") {
   //     const roomArr = await Promise.all(
@@ -238,10 +242,16 @@ const CustomNavbar = () => {
                         }dropdown-content menu p-2 shadow bg-base-100 rounded-box w-80 gap-2`}
                       >
                         <div
+                          onClick={updProfile}
+                          className="flex gap-2 p-3 text-black hover:bg-slate-200 rounded-md"
+                        >
+                          <i className="bi bi-person" /> Sửa thông tin
+                        </div>
+                        <div
                           onClick={logout}
                           className="flex gap-2 p-3 text-red-600 hover:bg-slate-200 rounded-md"
                         >
-                          <i className="bi bi-box-arrow-right" /> Logout
+                          <i className="bi bi-box-arrow-right" /> Đăng xuất
                         </div>
                       </ul>
                     </div>

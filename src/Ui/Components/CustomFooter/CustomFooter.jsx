@@ -33,7 +33,7 @@ const CustomFooter = () => {
             <img className="w-20" src={logo} alt="" />
             <p className="text-gray-300">© FreelanceVN Grp. 2022</p>
           </div>
-          <div className="md:place-self-center md:justify-self-end">
+          {/* <div className="md:place-self-center md:justify-self-end">
             <div className="grid grid-flow-col gap-4">
               <a>
                 <svg
@@ -69,7 +69,7 @@ const CustomFooter = () => {
                 </svg>
               </a>
             </div>
-          </div>
+          </div> */}
         </footer>
       </div>
     </div>

@@ -50,12 +50,12 @@ const Profile = () => {
                       <h1 className="text-xl font-semibold mb-3 mr-2">
                         {freelancerQuery.data.name}
                       </h1>
-                      <button
+                      {/* <button
                         className="btn btn-sm upd-btn text-white"
                         onClick={() => navigate("/settings/profile")}
                       >
                         Cập nhật thông tin
-                      </button>
+                      </button> */}
                     </div>
                     <p className="text-sm mb-3">
                       <i className="bi bi-bag"></i>{" "}
