@@ -52,7 +52,7 @@ const Profile = () => {
                       </h1>
                       <button
                         className="btn btn-sm upd-btn text-white"
-                        onClick={() => navigate("/settings/profile")}
+                        onClick={() => navigate("/setting/profile")}
                       >
                         Cập nhật thông tin
                       </button>
@@ -108,7 +108,7 @@ const Profile = () => {
                         </figure>
                         <div className="inline-flex pl-1">
                           <div className="card-body">
-                            <h2 className="text-base">{e.name}</h2>
+                            <h2 className="text-base">{""}</h2>
                           </div>
                         </div>
                       </div>
