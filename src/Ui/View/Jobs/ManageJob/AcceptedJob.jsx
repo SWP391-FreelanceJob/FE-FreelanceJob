@@ -53,7 +53,7 @@ export default function AcceptedJob() {
                 <td>
                   <span className="flex gap-5">
                     <i
-                      onClick={() => navigate(`/offer/${val.id}`)}
+                      onClick={() => navigate(`/job-progress/${val.id}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
                   </span>

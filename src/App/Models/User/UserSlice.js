@@ -12,6 +12,8 @@ export const userSlice = createSlice({
     avatar: "",
     userId: "",
     email: "",
+    shortDescription: "",
+    description: "",
   },
   reducers: {
     userLogin: (state, action) => {
@@ -24,6 +26,8 @@ export const userSlice = createSlice({
       state.avatar = action.payload.avatar;
       state.userId = action.payload.userId;
       state.email = action.payload.email;
+      state.shortDescription = action.payload.shortDesc;
+      state.description = action.payload.desc;
     },
     userLogout: (state) => {
       state.isLogin = false;
@@ -35,6 +39,8 @@ export const userSlice = createSlice({
       state.avatar = "";
       state.userId = "";
       state.email = "";
+      state.shortDesc = "";
+      state.desc = "";
     },
   },
 });
