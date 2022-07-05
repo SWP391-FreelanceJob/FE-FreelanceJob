@@ -26,6 +26,7 @@ import { messageApi } from "../Models/Message/Message";
 import { offerApi } from "../Models/Offer/Offer";
 import { profileApi } from "../Models/Profile/Profile";
 import { recruiterApi } from "../Models/Recruiter/Recruiter";
+import { projectApi } from "../Models/Project/Project";
 // import thunkMiddleware from 'redux-thunk';
 
 const persistConfig = {

@@ -35,6 +35,13 @@ export const jobApi = createApi({
         data: job,
       }),
     }),
+    updateJob: builder.mutation({
+      query: ({jobId,job}) => ({
+        url: `${Endpoints.JOB}/${jobId}`,
+        method: "PUT",
+        data: job,
+      }),
+    }),
     deleteJob: builder.mutation({
       query: (jobId) => ({
         url: `${Endpoints.JOB}/${jobId}`,
@@ -49,5 +56,6 @@ export const {
   useGetJobsQuery,
   useGetJobByIdQuery,
   useCreateNewJobMutation,
+  useUpdateJobMutation,
   useDeleteJobMutation,
 } = jobApi;

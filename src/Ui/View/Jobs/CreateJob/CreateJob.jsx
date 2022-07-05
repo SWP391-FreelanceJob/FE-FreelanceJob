@@ -14,9 +14,13 @@ import {
   setNotLoading,
 } from "@/App/Models/GlobalLoading/LoadingSlice";
 import loadingSvg from "@/App/Assets/svg/loading_animated.svg";
-import { useCreateNewJobMutation } from "@/App/Models/Job/Job";
+import {
+  useCreateNewJobMutation,
+  useUpdateJobMutation,
+} from "@/App/Models/Job/Job";
 import MultipleSelect from "@/Ui/Components/MultipleSelect/MultipleSelect";
 import { useEffect } from "react";
+import dayjs from "dayjs";
 
 const CreateJob = () => {
   registerLocale("vi", local);
@@ -33,6 +37,7 @@ const CreateJob = () => {
   const navigate = useNavigate();
 
   const [createJob, { isLoading, isSuccess }] = useCreateNewJobMutation();
+  const [updateJob] = useUpdateJobMutation();
 
   const getJobBudgetError = (errors) => {
     if (errors.jobBudget) {
@@ -69,9 +74,16 @@ const CreateJob = () => {
       recruiterId: userState.userId,
     };
     console.log(jobData);
-    const result = await createJob(jobData);
-    if (result.data) {
-      navigate(`/job/${result.data.id}`);
+    if (isEditingJob) {
+      // const result = await updateJob({ jobId: state.id, job: jobData });
+      // if (result.data) {
+      //   navigate(`/job/${result.data.id}`);
+      // }
+    } else {
+      // const result = await createJob(jobData);
+      // if (result.data) {
+      //   navigate(`/job/${result.data.id}`);
+      // }
     }
   };
 
@@ -141,6 +153,7 @@ const CreateJob = () => {
                 <Controller
                   name="jobSkills"
                   control={control}
+                  defaultValue={state?.skills}
                   rules={{ required: true }}
                   render={({ field }) => (
                     <MultipleSelect
@@ -215,7 +228,7 @@ const CreateJob = () => {
                   <Controller
                     name="jobDeadline"
                     control={control}
-                    // defaultValue={state?.duration}
+                    defaultValue={state && dayjs(state?.duration).toDate()}
                     rules={{ required: true }}
                     render={({ field }) => (
                       <DatePicker
@@ -241,11 +254,21 @@ const CreateJob = () => {
               </div>
             </div>
           </div>
-          <input
-            type="submit"
-            value={isEditingJob ? "Cập nhật công việc" : "Đăng việc"}
-            className="btn btn-secondary btn-md mt-3 text-white"
-          />
+          <div className="flex gap-2">
+            <input
+              type="submit"
+              value={isEditingJob ? "Cập nhật công việc" : "Đăng việc"}
+              className="btn btn-secondary btn-md mt-3 text-white"
+            />
+            {isEditingJob && (
+              <input
+                type="button"
+                onClick={() => navigate(-1)}
+                value="Hủy và quay về"
+                className="btn offer-btn btn-md mt-3 text-white"
+              />
+            )}
+          </div>
         </div>
       </form>
     </div>

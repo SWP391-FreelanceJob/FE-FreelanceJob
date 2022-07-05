@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import "./MultipleSelect.css";
 import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
 import { useOnClickOutside } from "@/App/Hooks/useClickOutside";
+import _ from "lodash";
 
 export default function MultipleSelect({
   selectedSkills = [],
   setSelectedSkills,
-  isError =false,
+  isError = false,
 }) {
   const [isOptOpened, setIsOptOpened] = useState(false);
 
@@ -30,10 +31,12 @@ export default function MultipleSelect({
    * @param {string} selectedSkill
    */
   const addSelected = (selectedSkill) => {
-    if (!selectedSkills.includes(selectedSkill))
+    if (_.some(selectedSkills, selectedSkill)) {
+      setSelectedSkills(
+        selectedSkills.filter((el) => el.skillId != selectedSkill.skillId)
+      );
+    } else {
       setSelectedSkills([...selectedSkills, selectedSkill]);
-    else {
-      setSelectedSkills(selectedSkills.filter((el) => el !== selectedSkill));
     }
   };
 
@@ -46,7 +49,9 @@ export default function MultipleSelect({
       <div
         ref={selectRef}
         onClick={showOptions}
-        className={`${isError ? "border-red-500 ":""} select select-bordered focus:outline-0 w-full items-center flex-wrap rounded-lg h-auto mb-2`}
+        className={`${
+          isError ? "border-red-500 " : ""
+        } select select-bordered focus:outline-0 w-full items-center flex-wrap rounded-lg h-auto mb-2`}
       >
         <div className="flex flex-wrap">
           {selectedSkills.map((selected, idx) => (
@@ -82,7 +87,7 @@ export default function MultipleSelect({
                 <div
                   onClick={() => addSelected(skill)}
                   className={`flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative ${
-                    selectedSkills.includes(skill)
+                    _.some(selectedSkills, skill)
                       ? "border-teal-600"
                       : "hover:border-teal-100"
                   }`}
