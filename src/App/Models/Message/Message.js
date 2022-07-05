@@ -12,10 +12,18 @@ export const messageApi = createApi({
       query: (userId) => ({
         url: `${Endpoints.MESSAGE}/${userId}`,
         method: "GET",
-        params: { },
+        params: {},
+      }),
+    }),
+    getMessageByJobId: builder.query({
+      keepUnusedDataFor: 5,
+      query: (jobId) => ({
+        url: `${Endpoints.MESSAGEJOBID}/${jobId}`,
+        method: "GET",
+        params: {},
       }),
     }),
   }),
 });
 
-export const { useGetMessageByIdQuery } = messageApi;
+export const { useGetMessageByIdQuery, useGetMessageByJobIdQuery } = messageApi;

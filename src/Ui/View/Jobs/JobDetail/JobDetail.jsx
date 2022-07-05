@@ -33,11 +33,12 @@ const JobDetail = () => {
   const navigate = useNavigate();
   let { id } = useParams();
 
-  // if (_.isNaN(id)) navigate("/not-found");
+  if (_.isNaN(id)) navigate("/not-found");
 
   const [isEditOffer, setIsEditOffer] = useState(false);
 
   const userState = useSelector((state) => state.user);
+  const isRecruiter = userState.role === "recruiter";
   const dispatch = useDispatch();
 
   const jobQuery = useGetJobByIdQuery(id);
@@ -47,10 +48,13 @@ const JobDetail = () => {
     data: offerData,
     error: offerError,
     isLoading: isGetOfferLoading,
-  } = useGetOfferByJobIdAndFreelancerIdQuery({
-    jobId: id,
-    freelancerId: userState.userId,
-  });
+  } = useGetOfferByJobIdAndFreelancerIdQuery(
+    {
+      jobId: id,
+      freelancerId: userState.userId,
+    },
+    { skip: isRecruiter }
+  );
 
   const [createOffer] = useCreateOfferByJobIdMutation();
   const [updateOffer] = useUpdateOfferByIdMutation();
@@ -146,19 +150,38 @@ const JobDetail = () => {
                         <h1 className="text-2xl font-semibold mb-3 mr-2">
                           {jobQuery.data.title}
                         </h1>
+                        {isRecruiter &&
+                          userState.userId == jobQuery.data.recruiterId &&
+                          jobQuery.data.jobStatus == 0 && (
+                            <button
+                              onClick={() =>
+                                navigate("/edit-job", { state: jobQuery.data })
+                              }
+                              className="btn btn-sm btn-primary text-white"
+                            >
+                              Sửa công việc
+                            </button>
+                          )}
                       </div>
                       <p className="text-base mb-3">
                         Khách hàng:{" "}
-                        <b className="text-blue-500">
+                        <b
+                          onClick={() =>
+                            navigate(
+                              `/recruiter-profile/${jobQuery.data.recruiterId}`
+                            )
+                          }
+                          className="text-blue-500"
+                        >
                           {jobQuery.data.recruiterName}
                         </b>
                       </p>
                       <div className="flex">
                         <p className="mr-3">Kỹ năng:</p>
                         <div className="flex gap-2 mb-2 pt-1">
-                          {jobQuery.data.skills.map((e) => (
+                          {jobQuery.data.skills.map((e, idx) => (
                             <div
-                              key={e.skillId}
+                              key={idx}
                               className="badge badge-info badge-outline text-white"
                             >
                               {e.skillName}
@@ -187,7 +210,9 @@ const JobDetail = () => {
                           Vui lòng đăng nhập để xem chi tiết
                         </div>
                         <button
-                          onClick={() => {navigate("/sign-in")}}
+                          onClick={() => {
+                            navigate("/sign-in");
+                          }}
                           className="flex items-center justify-center gap-2 active:scale-[.98] 
                           active:duration-75 transition-all hover:scale-[1.01] ease-in-out transform py-2
                           rounded-xl text-gray-700 font-semibold text-base border-2 border-gray-100 "
@@ -472,10 +497,10 @@ const JobDetail = () => {
                   <p>Không có chào giá nào</p>
                 ) : (
                   offerQuery.data.offers.map(
-                    (offer) =>
+                    (offer, idx) =>
                       offer.freelancer && (
                         <div
-                          key={offer.offerId}
+                          key={idx}
                           onClick={() =>
                             navigate(
                               `/profile/${offer.freelancer.freelancerId}`
@@ -485,7 +510,7 @@ const JobDetail = () => {
                             offer.freelancer === null ? "bg-red-400" : ""
                           }`}
                         >
-                          <div className="flex pb-2" key={offer.offerId}>
+                          <div className="flex pb-2" key={idx}>
                             <div className="w-1/6 flex flex-col items-center">
                               <div className="avatar justify-center my-2">
                                 <div className="rounded-full">
@@ -525,7 +550,7 @@ const JobDetail = () => {
                                     {offer.freelancer.skills.map(
                                       (skill, index) => (
                                         <span
-                                          key={skill.skillId}
+                                          key={index}
                                           className="text-blue-400"
                                         >
                                           {`${skill.skillName}${

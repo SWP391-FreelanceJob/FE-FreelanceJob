@@ -22,5 +22,6 @@ export const Endpoints = {
     "BALANCE":"/payment/balance",
     "PAYMENTHISTORY":"/payment/payment-history",
     "MESSAGE":"/message",
+    "MESSAGEJOBID":"/message/by-job-id",
     "NEWMESSAGE":"/message/new",
 }

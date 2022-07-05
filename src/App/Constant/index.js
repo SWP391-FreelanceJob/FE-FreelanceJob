@@ -22,6 +22,12 @@ export const OfferStatus = {
   REJECTED: "Đã bị từ chối"
 }
 
+export const JobStatusFromInt = {
+  0: "Chưa xác nhận",
+  1: "Đang thực hiện",
+  2: "Đã hoàn thành",
+}
+
 export const AppoinmentStatus = {
   "CONFIRM":"0",
   "COMPLETE":"1",

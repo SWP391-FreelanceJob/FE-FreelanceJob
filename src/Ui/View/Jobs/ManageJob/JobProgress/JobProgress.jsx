@@ -7,24 +7,30 @@ import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
-import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
+import {
+  useGetMessageByIdQuery,
+  useGetMessageByJobIdQuery,
+} from "@/App/Models/Message/Message";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import defaultAva from "@/App/Assets/png/default.webp";
+import { useGetJobByIdQuery } from "@/App/Models/Job/Job";
+import { JobStatusFromInt } from "@/App/Constant";
+import { useSelector } from "react-redux";
 
 const JobProgress = () => {
   dayjs.locale("vi");
-  const listOfSkills = [
-    "Java",
-    "C# & .NET",
-    "SQL",
-    "Flutter",
-    "iOS",
-    "Android",
-    "Python",
-  ];
+
+
+  const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
   const navigate = useNavigate();
   let { id } = useParams();
+
+  const userState = useSelector((state) => state.user);
+
+  if (isNaN(id)) {
+    navigate("/not-found");
+  }
 
   /**
    * @type {[IJob,Function]}
@@ -36,122 +42,87 @@ const JobProgress = () => {
     data: msgData,
     error: msgError,
     isLoading: msgLoading,
-  } = useGetMessageByIdQuery("1");
+  } = useGetMessageByJobIdQuery(id);
 
-  useEffect(() => {
-    // loadInitialJob();
-  }, []);
+  const {
+    data: jobData,
+    error: jobError,
+    isLoading: jobLoading,
+  } = useGetJobByIdQuery(id);
 
-  const loadInitialJob = async () => {
-    setIsLoadingJob(true);
-    const result = await getJobById(id);
-    setLoadedJob(result);
-    setIsLoadingJob(false);
-  };
   return (
     <div>
-      {!isLoadingJob ? (
+      {jobLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex flex-col gap-y-3">
-          <div className="flex justify-between">
-            <h1 className="text-2xl font-bold mb-4">*insert tên việc*</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold mb-2 flex flex-wrap w-2/3">
+              {jobData.title}
+            </h1>
             <div className="flex gap-2 items-center">
-              <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
-                Hoàn tất
-              </button>
+              {userState.role === "recruiter" ? (
+                <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
+                  Hoàn tất
+                </button>
+              ) : (
+                <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
+                  Yêu cầu hoàn tất
+                </button>
+              )}
               <span>
-                Trạng thái: <span className="text-emerald-500">Đang làm</span>
+                Trạng thái:{" "}
+                <span
+                  className={`${
+                    jobData.jobStatus == 1
+                      ? "text-blue-500"
+                      : jobData.jobStatus == 2
+                      ? "text-emerald-500"
+                      : "text-slate-500"
+                  }`}
+                >
+                  {JobStatusFromInt[jobData.jobStatus]}
+                </span>
               </span>
             </div>
           </div>
           <div className="flex gap-2">
-            <button className="btn btn-sm btn-accent text-white">
+            <label
+              htmlFor="job-detail-modal"
+              className="btn btn-sm btn-accent text-white"
+            >
               Thông tin công việc
-            </button>
-            <button className="btn btn-sm btn-info text-white">
-              Thông tin chào giá
-            </button>
-          </div>
-          {/* <div việcsName="flex gap-x-4"> */}
-          {/* <div className="flex flex-col w-1/3 gap-3">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold">Thông tin công việc:</h1>
-                <div className="flex flex-col card card-compact all-shadow px-8 py-5">
-                  <div className="flex w-full">
-                    <div className="w-3/4">
-                      <div className="">
-                        <div className="flex">
-                          <h1 className="text-2xl font-semibold mb-3 mr-2">
-                            {loadedJob.title}
-                          </h1>
-                        </div>
-                        <p className="text-base mb-3">
-                          Khách hàng:{" "}
-                          <b className="text-blue-500">
-                            {loadedJob.recruiterName}
-                          </b>
-                        </p>
-                        <div className="flex">
-                          <p className="mr-3">Kỹ năng:</p>
-                          <div className="flex gap-2 mb-2 pt-1">
-                            {loadedJob.skills.map((e) => (
-                              <div
-                                key={e.skillId}
-                                className="badge badge-info badge-outline text-white"
-                              >
-                                {e.skillName}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Mô tả công việc
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold">Thông tin chào giá:</h1>
-                <div className="flex flex-col card card-compact all-shadow px-8 py-5">
-                  <div className="py-2">
-                    <h1 className="text-xl font-semibold mb-2">
-                      Kinh nghiệm và kỹ năng:
-                    </h1>
-                    <p className="ml-1">{loadedJob.recruiterName}</p>
-                  </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Kế hoạch:
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Thời gian thực hiện:
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-          {/* <div className="w-2/3"> */}
-          <div className="w-full min-h-screen flex py-2 pl-2">
-            <div className="w-1/5">
-              <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300 bg-slate-100 rounded-sm">
-                <p className="">Phạm Hoàng Duy</p>
-              </div>
-              <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300">
-                <p className="text-slate-300">Quách Chánh Đại Thanh Thiên</p>
-              </div>
+            </label>
+            <div className="tooltip" data-tip={offerTooltip}>
+              <label
+                htmlFor="offer-detail-modal"
+                className="btn btn-sm btn-info text-white"
+              >
+                Thông tin chào giá
+              </label>
             </div>
-            <div className="divider divider-horizontal" />
-            <div className="w-4/5 flex-col flex gap-2">
+          </div>
+          <div className="w-full min-h-screen flex py-2 pl-2">
+            {userState.role === "recruiter" && (
+              <>
+                <div className="w-1/5">
+                  <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300 bg-slate-100 rounded-sm">
+                    <p className="">Phạm Hoàng Duy</p>
+                  </div>
+                  <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300">
+                    <p className="text-slate-300">
+                      Quách Chánh Đại Thanh Thiên
+                    </p>
+                  </div>
+                </div>
+                <div className="divider divider-horizontal" />
+              </>
+            )}
+            <div
+              className={`${
+                userState.role === "recruiter" ? "w-4/5" : "w-full"
+              } flex-col flex gap-2`}
+            >
               <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
                 <p className="text-lg font-semibold mb-2">Lời nhắn</p>
                 <ReactTextareaAutosize
@@ -177,7 +148,7 @@ const JobProgress = () => {
                 </thead>
                 <tbody>
                   {msgData &&
-                    msgData.map((msg,idx) => (
+                    msgData.map((msg, idx) => (
                       <tr key={idx}>
                         <td>
                           <div>
@@ -185,10 +156,7 @@ const JobProgress = () => {
                               ? msg.fromAccount.recruiter.fullname
                               : msg.fromAccount.freelancer.fullname}
                             <img
-                              src={
-                                msg.fromAccount.avatar ??
-                                defaultAva
-                              }
+                              src={msg.fromAccount.avatar ?? defaultAva}
                               className="w-20"
                               alt="usr-avatar"
                             />
@@ -221,6 +189,78 @@ const JobProgress = () => {
           {/* </div> */}
         </div>
         // </div>
+      )}
+      <input type="checkbox" id="job-detail-modal" className="modal-toggle" />
+      {jobData && (
+        <div className="modal">
+          <div className="modal-box">
+            <span>
+              <div className="font-bold">Mô tả công việc:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                defaultValue={jobData.description}
+              />
+            </span>
+            <div className="my-4">
+              <div className="font-bold">Kỹ năng cần có</div>
+              <div className="flex gap-1 flex-wrap">
+                {jobData.skills.map((e) => (
+                  <div
+                    key={e.skillId}
+                    className="badge badge-info badge-outline text-white"
+                  >
+                    {e.skillName}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="modal-action">
+              <label
+                htmlFor="job-detail-modal"
+                className="btn btn-sm btn-outline"
+              >
+                Đã hiểu
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+      <input type="checkbox" id="offer-detail-modal" className="modal-toggle" />
+      {jobData && (
+        <div className="modal">
+          <div className="modal-box">
+            <span>
+              <div className="font-bold">Mô tả công việc:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                defaultValue={jobData.description}
+              />
+            </span>
+            <div className="my-4">
+              <div className="font-bold">Kỹ năng cần có</div>
+              <div className="flex gap-1 flex-wrap">
+                {jobData.skills.map((e) => (
+                  <div
+                    key={e.skillId}
+                    className="badge badge-info badge-outline text-white"
+                  >
+                    {e.skillName}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="modal-action">
+              <label
+                htmlFor="offer-detail-modal"
+                className="btn btn-sm btn-outline"
+              >
+                Đã hiểu
+              </label>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

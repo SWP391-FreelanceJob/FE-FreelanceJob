@@ -19,6 +19,7 @@ export const jobApi = createApi({
         method: "GET",
         params: { isAscending, pageSize, pageNo },
       }),
+      providesTags: ["jobs"],
     }),
     getJobById: builder.query({
       query: (id) => ({
@@ -34,8 +35,19 @@ export const jobApi = createApi({
         data: job,
       }),
     }),
+    deleteJob: builder.mutation({
+      query: (jobId) => ({
+        url: `${Endpoints.JOB}/${jobId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["jobs"],
+    }),
   }),
 });
 
-export const { useGetJobsQuery, useGetJobByIdQuery, useCreateNewJobMutation } =
-  jobApi;
+export const {
+  useGetJobsQuery,
+  useGetJobByIdQuery,
+  useCreateNewJobMutation,
+  useDeleteJobMutation,
+} = jobApi;

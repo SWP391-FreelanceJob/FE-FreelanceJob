@@ -1,10 +1,17 @@
 import "./ManageJob.css";
 import CurrencyInput from "react-currency-input-field";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { useState } from "react";
+import { notyf } from "@/App/Utils/NotyfSetting";
+import { useDeleteJobMutation } from "@/App/Models/Job/Job";
 
 const PublishedJob = () => {
+  const [jobToDelete, setJobToDelete] = useState();
+
   const navigate = useNavigate();
   const [jobData, _1, _2] = useOutletContext();
+
+  const [delJob] = useDeleteJobMutation();
   // const jobs = [
   //   { name: "Cy Ganderton", price: "10000000", status: "Đã đăng" },
   //   {
@@ -14,6 +21,17 @@ const PublishedJob = () => {
   //   },
   //   { name: "Brice Swyre", price: "3000000", status: "Đã đăng" },
   // ];
+
+  const deleteJob = async () => {
+    console.log("delete offer: ", jobToDelete);
+    const resp = await delJob(jobToDelete);
+    if (resp.error) {
+      notyf.error(resp.error.messages[0].err_msg);
+    } else {
+      notyf.success("Xóa việc thành công");
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="table w-full">
@@ -31,7 +49,12 @@ const PublishedJob = () => {
           <tbody>
             {jobData.map((val, idx) => (
               <tr className="hover job-table" key={idx}>
-                <td onClick={() => navigate(`/job/${val.id}`)} className="cursor-pointer">{val.title}</td>
+                <td
+                  onClick={() => navigate(`/job/${val.id}`)}
+                  className="cursor-pointer"
+                >
+                  {val.title}
+                </td>
                 <td>
                   <CurrencyInput
                     disabled
@@ -51,7 +74,11 @@ const PublishedJob = () => {
                       onClick={() => navigate(`/offer/${val.id}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
-                    <i className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
+                    <label
+                      onClick={() => setJobToDelete(val.id)}
+                      htmlFor="confirm-modal"
+                      className="bi bi-trash text-lg text-red-500 cursor-pointer"
+                    />
                   </span>
                 </td>
               </tr>
@@ -64,6 +91,30 @@ const PublishedJob = () => {
       ) : (
         <></>
       )}
+      <input type="checkbox" id="confirm-modal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Bạn có chắc?</h3>
+          <p className="py-4">
+            Xoá việc này sẽ không thể hoàn tác. Bạn có chắc chắn muốn xoá?
+          </p>
+          <div className="modal-action">
+            <label
+              onClick={deleteJob}
+              htmlFor="confirm-modal"
+              className="btn btn-sm text-white hover:!text-white btn-outline btn-accent"
+            >
+              Chấp nhận xoá
+            </label>
+            <label
+              htmlFor="confirm-modal"
+              className="btn btn-sm offer-btn text-white"
+            >
+              Huỷ và quay về
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

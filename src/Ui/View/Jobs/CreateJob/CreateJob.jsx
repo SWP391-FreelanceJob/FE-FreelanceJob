@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import local from "date-fns/locale/vi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useState } from "react";
 
@@ -25,6 +25,10 @@ const CreateJob = () => {
 
   const userState = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const location = useLocation();
+  const { state, pathname } = location;
+  const [isEditingJob, setIsEditingJob] = useState(pathname == "/edit-job");
 
   const navigate = useNavigate();
 
@@ -100,6 +104,7 @@ const CreateJob = () => {
                 <input
                   type="text"
                   placeholder="VD: Thiết kế trang web bán hàng"
+                  defaultValue={state?.title}
                   {...register("jobName", { required: true })}
                   className={`${
                     errors.jobName ? "border-red-500 " : ""
@@ -119,6 +124,7 @@ const CreateJob = () => {
                   className={`${
                     errors.jobDescription ? "border-red-500 " : ""
                   }textarea textarea-bordered h-24`}
+                  defaultValue={state?.description}
                   placeholder="VD: Các giao diện website cần thiết kế như trang chủ, xem hàng, thanh toán..."
                   {...register("jobDescription", { required: true })}
                 ></textarea>
@@ -168,12 +174,14 @@ const CreateJob = () => {
                       <Controller
                         name="jobBudget"
                         control={control}
+                        defaultValue={state?.price}
                         rules={{ required: true, min: 100000, max: 10000000 }}
                         render={({ field }) => (
                           <>
                             <CurrencyInput
                               id="input-example"
                               allowNegativeValue={false}
+                              defaultValue={state?.price}
                               className={`${
                                 errors.jobBudget ? "border-red-500 " : ""
                               }input input-bordered border-r-0 rounded-tr-none rounded-br-none`}
@@ -207,6 +215,7 @@ const CreateJob = () => {
                   <Controller
                     name="jobDeadline"
                     control={control}
+                    // defaultValue={state?.duration}
                     rules={{ required: true }}
                     render={({ field }) => (
                       <DatePicker
@@ -234,7 +243,7 @@ const CreateJob = () => {
           </div>
           <input
             type="submit"
-            value="Đăng việc"
+            value={isEditingJob ? "Cập nhật công việc" : "Đăng việc"}
             className="btn btn-secondary btn-md mt-3 text-white"
           />
         </div>

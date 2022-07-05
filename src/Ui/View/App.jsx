@@ -35,6 +35,7 @@ import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
 import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
 import ManageOfferRoute from "./ManageOffer/ManageOfferRoute";
 import { getStorage } from "firebase/storage";
+import RecruiterProfile from "./Profile/RecruiterProfile";
 
 function App() {
   const fireStoreInstance = getFirestore(useFirebaseApp());
@@ -70,6 +71,7 @@ function App() {
               {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
               <Route path="/manage-project" element={<ManageProject />} />
               <Route path="/edit-project/:id" element={<EditProject />} />
+              <Route path="/recruiter-profile/:id" element={<RecruiterProfile />} />
               <Route path="/profile/:id" element={<Profile />} />
               <Route path="/setting/*" element={<Settings />} />
               <Route path="/project/:id" element={<Project />} />
@@ -77,6 +79,7 @@ function App() {
               <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
               <Route path="/manage-job/*" element={<ManageJobRoute />} />
               <Route path="/create-job" element={<CreateJob />} />
+              <Route path="/edit-job" element={<CreateJob />} />
               <Route path="/job/:id" element={<JobDetail />} />
               <Route path="/job-progress/:id" element={<JobProgress />} />
               <Route path="/offer/:jid" element={<ViewOffer />} />
