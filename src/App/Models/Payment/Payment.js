@@ -13,6 +13,8 @@ export const paymentApi = createApi({
         method: "GET",
         params: { accountId },
       }),
+      keepUnusedDataFor: 4,
+      providesTags: ["balance"],
     }),
     getPaymentHistoryById: builder.query({
       keepUnusedDataFor: 4,

@@ -13,6 +13,7 @@ export const Endpoints = {
     "OFFERS_FREELANCER":"/offer-freelancer",
     "OFFER_FREELANCER_JOB":"/offer-freelancer-job",
     "PORTFOLIO":"/portfolio",
+    "PORTFOLIORECRUITER":"/portfolio-recruiter",
     "PROJECTS":"/projects",
     "PROJECT":"/project",
     "RECRUITER": "/recruiter",

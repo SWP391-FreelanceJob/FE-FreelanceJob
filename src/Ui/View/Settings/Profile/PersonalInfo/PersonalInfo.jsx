@@ -1,30 +1,73 @@
+import { uploadAvatarToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
 import { useGetFreelancerByIdQuery } from "@/App/Models/Freelancer/Freelancer";
-import { useUpdateProfileMutation } from "@/App/Models/Profile/Profile";
+import {
+  useUpdateProfileMutation,
+  useUpdateRecruiterProfileMutation,
+} from "@/App/Models/Profile/Profile";
 import { notyf } from "@/App/Utils/NotyfSetting";
+import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useStorage } from "reactfire";
 import "../ProfileStyle.css";
 
 const PersonalInfo = () => {
   const [isEdit, setIsEdit] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState();
+  const [previewAvatarLink, setPreviewAvatarLink] = useState();
+
+  const storage = useStorage();
+
+  const navigate = useNavigate();
 
   const userState = useSelector((state) => state.user);
   const introTooltip = `Bản giới thiệu đầy đủ này sẽ giúp người xem hiểu rõ hơn về bạn, chuyên môn và cả những kinh nghiệm mà bạn có được.`;
 
   const [updateProfile, { loading }] = useUpdateProfileMutation();
+  const [updateRecruiterProfile, { loading: recruiterLoading }] =
+    useUpdateRecruiterProfileMutation();
 
   const onSubmit = async (data) => {
     console.log(data);
-    const resp = await updateProfile({ userId: userState.userId, updProfile: data });
-    if (resp.error) {
-      notyf.error(resp.error.messages[0].err_msg);
+    if (selectedAvatar) {
+      const avatarUrl = await uploadAvatarToFirebaseGetDownloadUrl(
+        storage,
+        userState.accountId, // for unique
+        selectedAvatar[0]
+      );
+      data.avatar = avatarUrl;
     }
-    else{
-      notyf.success("Cập nhật thành công");
-      // setIsEdit(false);
+
+    // NOT OPTIMIZE BUT QUICK AND UGLY CODE
+    if (userState.role === "freelancer") {
+      const resp = await updateProfile({
+        userId: userState.userId,
+        updProfile: data,
+      });
+      if (resp.error) {
+        notyf.error(resp.error.messages[0].err_msg);
+      } else {
+        notyf.success("Cập nhật thành công");
+        // setIsEdit(false);
+      }
+      setSelectedAvatar(null);
+      setPreviewAvatarLink(null);
+    } else {
+      const resp = await updateRecruiterProfile({
+        userId: userState.userId,
+        updProfile: data,
+      });
+      if (resp.error) {
+        notyf.error(resp.error.messages[0].err_msg);
+      } else {
+        notyf.success("Cập nhật thành công");
+        // setIsEdit(false);
+      }
+      setSelectedAvatar(null);
+      setPreviewAvatarLink(null);
     }
   };
 
@@ -53,6 +96,10 @@ const PersonalInfo = () => {
     }
   };
 
+  const mngtProject = () => {
+    navigate("/manage-project");
+  };
+
   const {
     register,
     handleSubmit,
@@ -63,7 +110,17 @@ const PersonalInfo = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold">Thông tin cá nhân</h1>
+      <div className="flex w-full items-center justify-between">
+        <h1 className="text-3xl font-bold">Thông tin cá nhân</h1>
+        {userState.role === "freelancer" && (
+          <button
+            onClick={mngtProject}
+            className="btn btn-sm btn-outline btn-info"
+          >
+            Quản lý dự án
+          </button>
+        )}
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="w-full mt-4">
           <div className="form-control gap-3">
@@ -74,17 +131,39 @@ const PersonalInfo = () => {
               <div>
                 <div className="avatar">
                   <div className="w-24 rounded-xl">
-                    <img
-                      src={`${
-                        userState.avatar ?? "https://i.pravatar.cc/300"
-                      } `}
+                    {selectedAvatar && previewAvatarLink ? (
+                      <img src={`${previewAvatarLink} `} />
+                    ) : (
+                      <img
+                        src={`${
+                          userState.avatar ?? "https://i.pravatar.cc/300"
+                        } `}
+                      />
+                    )}
                     />
                   </div>
                 </div>
                 <div className="text-xs text-slate-400">
-                  1. Kích thước không quá 1MB
+                  1. Kích thước không quá 2MB
                   <br />
                   2. Định dạng hỗ trợ: jpg, jpeg, png, gif{" "}
+                </div>
+                <div>
+                  <CustomDropzone
+                    maxSize={2097152} //2MB
+                    multiple={false}
+                    filter={{
+                      "image/jpeg": [],
+                      "image/png": [],
+                      "image/gif": [],
+                      "image/jpg": [],
+                    }}
+                    acceptedFile={(file) => {
+                      setSelectedAvatar(file);
+                      if (file.length > 0)
+                        setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -178,9 +257,24 @@ const PersonalInfo = () => {
             </div>
           </div>
         </div>
-        <button className="btn secondary-btn text-white btn-sm mt-3 w-full">
-          Lưu thay đổi
-        </button>
+        <div className="flex w-full justify-center items-center gap-5">
+          <button className="btn secondary-btn text-white btn-sm mt-3 w-1/3">
+            Lưu thay đổi
+          </button>
+          {selectedAvatar && previewAvatarLink && (
+            <button
+              onClick={() => {
+                setSelectedAvatar(null);
+                setPreviewAvatarLink(null);
+                reset(userState);
+              }}
+              type="button"
+              className="btn btn-sm mt-3 btn-outline"
+            >
+              Huỷ
+            </button>
+          )}
+        </div>
       </form>
     </>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getFirestore } from "@firebase/firestore";
-import { FirestoreProvider, useFirebaseApp } from "reactfire";
+import { FirestoreProvider, StorageProvider, useFirebaseApp } from "reactfire";
 
 import {
   get401,
@@ -34,10 +34,11 @@ import EditProject from "./Settings/Profile/ManageProject/EditProject/EditProjec
 import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
 import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
 import ManageOfferRoute from "./ManageOffer/ManageOfferRoute";
-
+import { getStorage } from "firebase/storage";
 
 function App() {
-  const fireStoreInstance = getFirestore(useFirebaseApp())
+  const fireStoreInstance = getFirestore(useFirebaseApp());
+  const firebaseStorage = getStorage(useFirebaseApp());
 
   // mqttClient.on("message", (topic, msg) => {
   //   const noti = msg.toString()
@@ -55,36 +56,38 @@ function App() {
 
   return (
     <FirestoreProvider sdk={fireStoreInstance}>
-      <ScrollToTop>
-        <Routes>
-          {/* <Route
+      <StorageProvider sdk={firebaseStorage}>
+        <ScrollToTop>
+          <Routes>
+            {/* <Route
           path="/"
           element={
             <RequireAuth children={<MasterPage />} requiredRoles={[""]} />
           }
         ></Route> */}
-          <Route path="/" element={<MasterPage />}>
-            <Route path="" element={<LandingPage />} />
-            {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
-            <Route path="/manage-project" element={<ManageProject />} />
-            <Route path="/edit-project/:id" element={<EditProject />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/setting/*" element={<Settings />} />
-            <Route path="/project/:id" element={<Project />} />
-            <Route path="/all-jobs" element={<Jobs />} />
-            <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
-            <Route path="/manage-job/*" element={<ManageJobRoute/>} />
-            <Route path="/create-job" element={<CreateJob/>} />
-            <Route path="/job/:id" element={<JobDetail/>} />
-            <Route path="/job-progress/:id" element={<JobProgress/>} />
-            <Route path="/offer/:jid" element={<ViewOffer/>} />
-            <Route path="/all-freelancers" element={<Freelancers />} />
-          </Route>
-          <Route path="/sign-in" element={<SignIn/>}/>
-          <Route path="/sign-up" element={<SignUp/>}/>
-          {/* <Route path="*" element={<NotFound/>}/> */}
-        </Routes>
-      </ScrollToTop>
+            <Route path="/" element={<MasterPage />}>
+              <Route path="" element={<LandingPage />} />
+              {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
+              <Route path="/manage-project" element={<ManageProject />} />
+              <Route path="/edit-project/:id" element={<EditProject />} />
+              <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/setting/*" element={<Settings />} />
+              <Route path="/project/:id" element={<Project />} />
+              <Route path="/all-jobs" element={<Jobs />} />
+              <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
+              <Route path="/manage-job/*" element={<ManageJobRoute />} />
+              <Route path="/create-job" element={<CreateJob />} />
+              <Route path="/job/:id" element={<JobDetail />} />
+              <Route path="/job-progress/:id" element={<JobProgress />} />
+              <Route path="/offer/:jid" element={<ViewOffer />} />
+              <Route path="/all-freelancers" element={<Freelancers />} />
+            </Route>
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            {/* <Route path="*" element={<NotFound/>}/> */}
+          </Routes>
+        </ScrollToTop>
+      </StorageProvider>
     </FirestoreProvider>
   );
 }
