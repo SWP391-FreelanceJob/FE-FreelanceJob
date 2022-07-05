@@ -38,7 +38,8 @@ const persistConfig = {
     jobApi.reducerPath,
     skillApi.reducerPath,
     offerApi.reducerPath,
-    profileApi.reducerPath
+    profileApi.reducerPath,
+    projectApi.reducerPath,
   ],
 };
 
