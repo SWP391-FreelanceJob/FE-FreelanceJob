@@ -90,7 +90,8 @@ const CustomNavbar = () => {
 
   const updProfile = () => {
     navigate("/setting");
-  }
+    setIsOpenedModal(false);
+  };
 
   // const getRoomInfo = async () => {
   //   if (roomsStatus === "success") {
@@ -243,7 +244,7 @@ const CustomNavbar = () => {
                       >
                         <div
                           onClick={updProfile}
-                          className="flex gap-2 p-3 text-black hover:bg-slate-200 rounded-md"
+                          className="flex gap-2 p-3 txt-black hover:bg-slate-200 rounded-md"
                         >
                           <i className="bi bi-person" /> Sửa thông tin
                         </div>

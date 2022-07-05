@@ -20,7 +20,18 @@ export const profileApi = createApi({
         data: updProfile,
       }),
     }),
+    updateRecruiterProfile: builder.mutation({
+      query: ({ userId, updProfile }) => ({
+        url: `${Endpoints.PORTFOLIORECRUITER}/${userId}`,
+        method: "PUT",
+        data: updProfile,
+      }),
+    }),
   }),
 });
 
-export const { useGetProfilesQuery, useUpdateProfileMutation } = profileApi;
+export const {
+  useGetProfilesQuery,
+  useUpdateProfileMutation,
+  useUpdateRecruiterProfileMutation,
+} = profileApi;

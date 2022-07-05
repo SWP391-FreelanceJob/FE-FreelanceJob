@@ -25,7 +25,7 @@ const ProfileLayout = () => {
           Xác thực thông tin
         </NavLink>
       </div> */}
-      <div className="px-4 pt-4 pb-7 w-[800px] mx-auto">
+      <div className=" pb-7 w-[800px] mx-auto">
         <Outlet/>
       </div>
     </>
