@@ -1,4 +1,4 @@
-import { login } from "@/Api/Service/AuthService";
+import { login, register } from "@/Api/Service/AuthService";
 import { userLogin } from "@/App/Models/User/UserSlice";
 import { notyf } from "@/App/Utils/NotyfSetting";
 import {
@@ -7,52 +7,106 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
 const SignIn = () => {
+  const [selectedRole, setSelectedRole] = useState("");
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const userState = useSelector((state) => state.user);
 
-  const signInGoogle = () => {
+  const signInGooglePopup = async () => {
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
-    signInWithPopup(auth, provider)
-      .then(async (res) => {
-        const cred = GoogleAuthProvider.credentialFromResult(res);
-        const usr = res.user;
-        const idToken = await usr.getIdToken();
+    const res = await signInWithPopup(auth, provider).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
 
-        // console.log(idToken);
-        if (idToken) {
-          try {
-            const user = await login(idToken);
-            // console.log(user);
-            dispatch(userLogin(user));
-            localStorage.setItem("token", user.jwt);
-            navigate("/");
-          } catch (error) {
-            notyf.error("Đã có lỗi xảy ra khi đăng nhập ", error.err_msg);
-          }
-        } else {
-          notyf.error("Đăng nhập thất bại");
+      notyf.error("Đã có lỗi xảy ra: " + errorMessage);
+    });
+    return res;
+  };
+
+  const signIn = async () => {
+    const res = await signInGooglePopup();
+    // const cred = GoogleAuthProvider.credentialFromResult(res);
+    const usr = res.user;
+    const idToken = await usr.getIdToken();
+    // console.log(idToken);
+    if (idToken) {
+      try {
+        const user = await login(idToken);
+        // console.log(user);
+        dispatch(userLogin(user));
+        localStorage.setItem("token", user.jwt);
+        navigate("/");
+      } catch (error) {
+        switch (error.messages[0].err_msg) {
+          case "User not found in DB!":
+            notyf.error(
+              "Tài khoản chưa được đăng ký, vui lòng đăng ký tài khoản mới!"
+            );
+            break;
+          default:
+            notyf.error(
+              "Đã có lỗi xảy ra khi đăng nhập " + error.messages[0].err_msg
+            );
+            ƒ;
+            break;
         }
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
+      }
+    } else {
+      notyf.error("Đăng nhập thất bại");
+    }
+  };
 
-        notyf.error("Đã có lỗi xảy ra: " + errorMessage);
-      });
+  const signUp = async () => {
+    if (selectedRole == "") {
+      notyf.error("Vui lòng chọn vai trò");
+      return;
+    }
+
+    const res = await signInGooglePopup();
+    // const cred = GoogleAuthProvider.credentialFromResult(res);
+    const usr = res.user;
+    const idToken = await usr.getIdToken();
+
+    if (idToken) {
+      try {
+        await register(idToken, selectedRole);
+        notyf.success("Đăng ký thành công");
+
+        const user = await login(idToken);
+        dispatch(userLogin(user));
+        localStorage.setItem("token", user.jwt);
+        navigate("/");
+      } catch (error) {
+        switch (error.messages[0].err_msg) {
+          case "User not found in DB!":
+            notyf.error(
+              "Tài khoản chưa được đăng ký, vui lòng đăng ký tài khoản mới!"
+            );
+            break;
+          default:
+            notyf.error(
+              "Đã có lỗi xảy ra khi đăng nhập " + error.messages[0].err_msg
+            );
+            break;
+        }
+      }
+    } else {
+      notyf.error("Đăng nhập thất bại");
+    }
   };
 
   useEffect(() => {
@@ -106,7 +160,7 @@ const SignIn = () => {
                 Sign in
               </button> */}
               <button
-                onClick={signInGoogle}
+                onClick={signIn}
                 className="flex items-center justify-center gap-2 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4  rounded-xl text-gray-700 font-semibold text-lg border-2 border-gray-100 "
               >
                 <svg
@@ -137,9 +191,27 @@ const SignIn = () => {
               </button>
             </div>
             <div className="mt-8 flex flex-col justify-center items-center">
-              <p className="font-medium text-base">Chưa có tài khoản FreelanceVN?</p>
+              <p className="font-medium text-base">
+                Chưa có tài khoản FreelanceVN?
+              </p>
+              <div className="text-xs text-slate-500 my-2">
+                Freelancer chỉ được sử dụng tài khoản với email @fpt.edu.vn
+                <br />
+                Nhà tuyển dụng chỉ được sử dụng tài khoản với email @gmail.com
+              </div>
+              <select
+                onChange={(e) => setSelectedRole(e.target.value)}
+                className="select select-bordered w-full max-w-xs my-2"
+                defaultValue="default-select"
+              >
+                <option disabled value="default-select">
+                  Chọn vai trò của bạn
+                </option>
+                <option value="freelancer">Freelancer</option>
+                <option value="recruiter">Nhà tuyển dụng</option>
+              </select>
               <button
-                onClick={signInGoogle}
+                onClick={signUp}
                 className="flex items-center justify-center 
                 gap-2 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] 
                 ease-in-out transform p-4 rounded-xl text-white font-semibold text-lg border-2 border-blue-100 bg-black "

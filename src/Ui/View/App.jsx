@@ -47,11 +47,11 @@ function App() {
   //   // notyf.success(noti);
   // });
 
-  mqttClient.onMessageArrived = onMessageArrived;
+  // mqttClient.onMessageArrived = onMessageArrived;
 
-  function onMessageArrived(message) {
-    notyf.success(message.payloadString);
-  }
+  // function onMessageArrived(message) {
+  //   notyf.success(message.payloadString);
+  // }
 
   useEffect(() => {}, []);
 

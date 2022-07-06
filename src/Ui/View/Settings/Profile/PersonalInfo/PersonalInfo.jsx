@@ -1,4 +1,5 @@
 import { uploadAvatarToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
+import { useGetAccountInfoQuery } from "@/App/Models/Account/Account";
 import { useGetFreelancerByIdQuery } from "@/App/Models/Freelancer/Freelancer";
 import {
   useUpdateProfileMutation,
@@ -29,6 +30,11 @@ const PersonalInfo = () => {
   const [updateProfile, { loading }] = useUpdateProfileMutation();
   const [updateRecruiterProfile, { loading: recruiterLoading }] =
     useUpdateRecruiterProfileMutation();
+
+  const { data: accInfoData, error: accInfoError } = useGetAccountInfoQuery(
+    userState.accountId,
+    { refetchOnMountOrArgChange: true }
+  );
 
   const onSubmit = async (data) => {
     console.log(data);

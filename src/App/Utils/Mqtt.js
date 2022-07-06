@@ -50,6 +50,10 @@ function onConnectionLost(responseObject) {
   }
 }
 
+// const subscribeForMessage = (accountId) => {
+//   client.subscribe("msg/" + accountId);
+// };
+
 // called when a message arrives
 
 export { client as mqttClient };

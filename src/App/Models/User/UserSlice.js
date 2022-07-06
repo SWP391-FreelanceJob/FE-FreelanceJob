@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { accountApi } from "../Account/Account";
 import { profileApi } from "../Profile/Profile";
 
 export const userSlice = createSlice({
@@ -63,6 +64,16 @@ export const userSlice = createSlice({
         state.fullName = payload.freelancer.fullname;
         state.shortDescription = payload.freelancer.shortDescription;
         state.description = payload.freelancer.description;
+      }
+    );
+    builder.addMatcher(
+      accountApi.endpoints.getAccountInfo.matchFulfilled,
+      (state, { payload }) => {
+        state.avatar = payload.avatar;
+        state.phone = payload.phone;
+        state.fullName = payload.fullName;
+        state.shortDescription = payload.shortDesc;
+        state.description = payload.desc;
       }
     );
   },

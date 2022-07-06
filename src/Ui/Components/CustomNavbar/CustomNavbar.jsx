@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "@/App/Models/User/UserSlice";
 import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
+import { useGetAccountInfoQuery } from "@/App/Models/Account/Account";
 
 const ChatIcon = () => {
   return (
@@ -64,9 +65,14 @@ const CustomNavbar = () => {
 
   const isLogged = localStorage.getItem("token");
 
-  const { data, error } = useGetBalanceByIdQuery(userState.accountId,{
-    skip: !isLogged
+  const { data, error } = useGetBalanceByIdQuery(userState.accountId, {
+    skip: !isLogged,
   });
+
+  const { data: accInfoData, error: accInfoError } = useGetAccountInfoQuery(
+    userState.accountId,
+    { skip: !isLogged, refetchOnMountOrArgChange: true }
+  );
 
   const modalRef = useRef();
   const dropdownRef = useRef();
@@ -215,13 +221,13 @@ const CustomNavbar = () => {
                           <div className="w-1/4 flex items-center justify-center  mr-2">
                             <div className="avatar">
                               <div className="w-12 rounded-full">
-                                <img src={userState.avatar ?? defaultAva} />
+                                <img src={accInfoData?.avatar ?? defaultAva} />
                               </div>
                             </div>
                           </div>
                           <div className="w-3/4 flex flex-col justify-center">
                             <div className="text-base">
-                              {userState.fullName}
+                              {accInfoData?.fullName}
                             </div>
                             <div className="font-normal text-xs">
                               Balance:{" "}
