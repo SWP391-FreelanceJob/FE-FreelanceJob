@@ -4,6 +4,14 @@ import { Navigation } from "swiper";
 import welcomeSvg from "@/App/Assets/svg/freelance.svg";
 import stonkSvg from "@/App/Assets/svg/stonk.svg";
 import handshakeSvg from "@/App/Assets/svg/handshake.svg";
+import fastSvg from "@/App/Assets/svg/fast.svg";
+import feedbackSvg from "@/App/Assets/svg/feedback.svg"
+import convenientSvg from "@/App/Assets/svg/convenient.svg"
+import loginSvg from "@/App/Assets/svg/login.svg"
+import loginsucSvg from "@/App/Assets/svg/loginsuc.svg"
+import recruiterSvg from "@/App/Assets/svg/recruiter.svg"
+import freelancerSvg from "@/App/Assets/svg/freelancer.svg"
+import middlemanSvg from "@/App/Assets/svg/middleman.svg"
 
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
@@ -64,11 +72,10 @@ const LandingPage = () => {
         <div className="m-12 px-5s w-full flex">
           <div className="w-1/3 mt-10">
             <h1 className="pb-6 fvn-welcome-title text-blue-500">
-              Make bright ideas happen
+              Kết nối công việc
             </h1>
             <p className="pb-12 fvn-welcome-subtitle">
-              Access global talent on the freelancer website trusted by over 1
-              million businesses worldwide.
+              Nơi tìm kiếm những công việc, những ứng cử viên tài năng giúp bạn xử lý mọi vấn đề.
             </p>
             <button className="btn btn-outline btn-info">
               <a href="#browse-skill">Getting started</a>
@@ -136,10 +143,13 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+      <div className="flex w-full justify-center mt-3">
+        <div className="text-4xl mt-2 mb-6 fvn-nunito text-black"><b>Giới thiệu về chúng tôi</b></div>
+      </div>
       <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
         <div className="container flex mx-auto p-5">
           <div className="w-1/2 flex justify-center">
-            <img className="w-72" src={stonkSvg} alt="stonk" />
+            <img className="w-80" src={fastSvg} alt="stonk" />
           </div>
           <div className=" w-1/2">
             <div className="mt-16">
@@ -148,7 +158,7 @@ const LandingPage = () => {
                 <b>Rút ngắn thời gian</b> tìm nhân sự
               </h1>
             </div>
-            <p className="w-[30rem] fvn-open-sans">
+            <p className="w-[30rem] text-xl fvn-open-sans">
               FreelanceVN kết nối bạn với Freelancer/Cộng tác viên trên lãnh thổ
               Việt Nam và quốc tế. Công việc của bạn sẽ nhanh chóng được giải
               quyết với chất lượng cao.
@@ -156,6 +166,47 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+
+      <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
+        <div className="container flex mx-auto p-5">
+          <div className=" w-1/2 ml-10">
+            <div className="mt-16">
+              <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                Tìm việc <b>dễ dàng, nhanh chóng</b>
+              </h1>
+            </div>
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Đến với FreelanceVN bạn sẽ tìm được vô vàn những công việc thú vị. Chúng tôi đem đến
+              cho bạn những công việc dựa trên kỹ năng, sở thích phù hợp với từng cá nhân, đối tượng.
+            </p>
+          </div>
+          <div className="w-1/2 flex justify-center">
+            <img className="w-72 scale-150" src={convenientSvg} alt="stonk" />
+          </div>
+        </div>
+      </div>
+      <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
+        <div className="container flex mx-auto p-5">
+          <div className="w-1/2 flex justify-center">
+            <img className="w-72 scale-150" src={feedbackSvg} alt="stonk" />
+          </div>
+          <div className=" w-1/2 ml-10">
+            <div className="mt-16">
+              <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                Bảo mật <b>thông tin cá nhân</b>, <br/>
+                của từng khách hàng
+              </h1>
+            </div>
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Khách hàng có thể đánh giá Freelancer sau khi hoàn thành công việc.
+              Điều này có ảnh hưởng đến sự uy tín của Freelancer. Thông tin
+              cá nhân và công việc của bạn luôn được bảo mật theo chính sách
+              bảo mật của FreelanceVN
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="md:mx-7 pt-12 pb-16 my-10">
         <div className="pb-6 flex justify-between items-center">
           <h1 className="text-4xl text-black fvn-nunito font-bold ">
@@ -206,46 +257,107 @@ const LandingPage = () => {
           </Swiper>
         </div>
       </div>
+
+      <div className="flex w-full justify-center mt-3">
+        <div className="text-4xl mt-2 mb-6 fvn-nunito text-black"><b>Quy trình hoạt động</b></div>
+      </div>
+      <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
+        <div className="container flex mx-auto p-5">
+          <div className="w-1/2 flex justify-center">
+            <img className="w-96" src={loginsucSvg} alt="handskae" />
+          </div>
+          <div className=" w-1/2">
+            <div className="mt-16">
+              <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                <b>Chào mừng</b><br />bạn đến với <b>FreelanceVN</b>
+              </h1>
+            </div>
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Đội ngũ FreelanceVN rất hân hạnh vì bạn đã truy cập, tìm kiếm đến chúng tôi. Hãy đăng nhập
+              để sử dụng thêm những tính năng nâng cao, mở rộng nhé.
+            </p>
+          </div>
+        </div>
+      </div>
       <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
         <div className="container flex mx-auto p-5">
           <div className=" w-1/2">
             <div className="mt-16">
               <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
-                Why businesses <br /> turn to <b>FreelanceVN</b>
+                <b>Đăng nhập</b> vào tài khoản
               </h1>
             </div>
-            <p className="w-[30rem] fvn-open-sans">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque,
-              aut quo repellat animi illo perferendis adipisci temporibus
-              accusamus, iure minima, explicabo mollitia. Quas amet voluptatem
-              aspernatur quam repudiandae aperiam eius!
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Sau khi truy cập thành công vào FreelanceVN. Để sử dụng thêm những tính năng hữu ích, nâng cao
+              bạn cần phải truy cập vào hệ thống của chúng tôi thông qua tài khoản nội bộ của Đại Học FPT.
             </p>
           </div>
           <div className="w-1/2 flex justify-center">
-            <img className="w-96" src={handshakeSvg} alt="handskae" />
+            <img className="w-80 scale-125" src={loginSvg} alt="handskae" />
           </div>
         </div>
       </div>
+
       <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
         <div className="container flex mx-auto p-5">
           <div className="w-1/2 flex justify-center">
-            <img className="w-96" src={handshakeSvg} alt="handskae" />
+            <img className="w-80 scale-150" src={recruiterSvg} alt="handskae" />
           </div>
           <div className=" w-1/2">
             <div className="mt-16">
               <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
-                Why businesses <br /> turn to <b>FreelanceVN</b>
+                <b>Đăng tuyển</b> công việc
+                <br/>Tìm kiếm <b>Freelancer</b>
               </h1>
             </div>
-            <p className="w-[30rem] fvn-open-sans">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque,
-              aut quo repellat animi illo perferendis adipisci temporibus
-              accusamus, iure minima, explicabo mollitia. Quas amet voluptatem
-              aspernatur quam repudiandae aperiam eius!
+            <p className="w-[30rem] text-l fvn-open-sans">
+              Đối với những người đang tìm kiếm nhân lực để xử lý công việc hoặc một tác vụ nào đó. Bạn có thể tìm kiếm những Freelancer nằm trong hệ thống FreelanceVN. Hoặc đăng tuyển công việc của mình kèm theo những yêu cầu về kỹ năng, mô tả công việc để có thể
             </p>
           </div>
         </div>
       </div>
+
+      <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
+        <div className="container flex mx-auto p-5">
+
+          <div className=" w-1/2">
+            <div className="mt-16">
+              <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                <b>Tìm kiếm</b> công việc
+              </h1>
+            </div>
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Nếu là một Freelancer đang tìm kiếm một công việc phù hợp với kỹ năng, sở thích cá nhân. Bạn có
+              thể tìm kiếm những bài đăng tuyển việc làm từ nhiều nhà tuyển dụng.
+            </p>
+          </div>
+          <div className="w-1/2 flex justify-center">
+            <img className="w-80 scale-150" src={freelancerSvg} alt="handskae" />
+          </div>
+        </div>
+      </div>
+
+      <div className="md:mx-7 bg-slate-100 py-16 rounded-md mb-4">
+        <div className="container flex mx-auto p-5">
+          <div className="w-1/2 flex justify-center">
+            <img className="w-80 scale-150" src={middlemanSvg} alt="handskae" />
+          </div>
+          <div className=" w-1/2">
+            <div className="mt-16">
+              <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                <b>Cầu nối</b> Freelancer
+                <br/>và nhà tuyển dụng
+              </h1>
+            </div>
+            <p className="w-[30rem] text-xl fvn-open-sans">
+              Chúng tôi sẽ là người trung gian đứng ra để kết nối Freelancer và nhà tuyển dụng. Đảm bảo
+              thông tin cá nhân của từng khách hàng sẽ được bảo mật tuyệt đối. Cam kết đem đến những dịch
+              vụ tốt nhất cho khách hàng.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <input type="checkbox" id="sign-up-modal" className="modal-toggle" />
       <label htmlFor="sign-up-modal" className="modal cursor-pointer">
         <label className="modal-box relative flex flex-col items-center">
