@@ -26,7 +26,7 @@ export const projectApi = createApi({
         method: "GET",
         params: { isAscending, pageSize, pageNo, name },
       }),
-      providesTags: ["projects"]
+      providesTags: ["projects"],
     }),
     createProject: builder.mutation({
       query: (project) => ({
@@ -35,10 +35,21 @@ export const projectApi = createApi({
         // params: {freelancerId},
         data: project,
       }),
+      invalidatesTags: ["projects"],
+    }),
+    deleteProject: builder.mutation({
+      query: (projectId) => ({
+        url: `${Endpoints.PROJECT}/${projectId}`,
+        method: "DELETE",
+      }),
       invalidatesTags: ["projects"]
     }),
   }),
 });
 
-export const { useGetProjectsQuery, useGetProjectsByFreelancerIdQuery, useCreateProjectMutation } =
-  projectApi;
+export const {
+  useGetProjectsQuery,
+  useGetProjectsByFreelancerIdQuery,
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+} = projectApi;

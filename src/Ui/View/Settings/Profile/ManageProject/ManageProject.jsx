@@ -1,8 +1,12 @@
+import { uploadAvatarToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
 import {
   useCreateProjectMutation,
+  useDeleteProjectMutation,
   useGetProjectsByFreelancerIdQuery,
   useGetProjectsQuery,
 } from "@/App/Models/Project/Project";
+import { notyf } from "@/App/Utils/NotyfSetting";
+import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import MultipleSelect from "@/Ui/Components/MultipleSelect/MultipleSelect";
 import _ from "lodash";
@@ -10,38 +14,63 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useStorage } from "reactfire";
 import "./ManageProject.css";
 
 const ManageProject = () => {
   const introTooltip = `Bản giới thiệu đầy đủ này sẽ giúp người xem hiểu rõ hơn về bạn, chuyên môn và cả những kinh nghiệm mà bạn có được.`;
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user);
+
+  const [selectedAvatar, setSelectedAvatar] = useState();
+  const [previewAvatarLink, setPreviewAvatarLink] = useState();
+
+
   // const [selectedSkills, setSelectedSkills] = useState([]);
   const projectQuery = useGetProjectsByFreelancerIdQuery({
     freelancerId: userInfo.userId,
   });
 
+  const storage = useStorage();
+
   const [createProject, {isLoading, isSuccess}] = useCreateProjectMutation();
+  const [deleteProject, {isLoadingDeletProject, isSuccessDeleteProject}] = useDeleteProjectMutation();
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm();
   const onSubmitNewProject = async (data) => {
+    if (selectedAvatar) {
+      const avatarUrl = await uploadAvatarToFirebaseGetDownloadUrl(
+        storage,
+        _.uniqueId("project-"), // for unique
+        selectedAvatar[0]
+      );
+      data.imageUrl = avatarUrl;
+    }
     const projectData = {
       // prjId: data.projectId,
       freelancerId: userInfo.userId,
       description: data.description,
       name: data.name,
-      // imageUrl: "",
+      imageUrl: data.imageUrl,
       skillIds: data.skillIds.map((skill) => skill.skillId),
     };
     console.log(projectData);
     const result = await createProject( projectData);
     if (result.data) {
       // navigate(`/job/${result.data.id}`);
+      notyf.success("Thêm hồ sơ năng lực mới thành công.");
+      reset();
     }
+  }
+
+  const onDeleteProject = async (projectId) => {
+    await deleteProject(projectId);
+    notyf.success("Xoá hồ sơ năng lực thành công.");
   }
 
   return projectQuery.isLoading ? (
@@ -75,34 +104,12 @@ const ManageProject = () => {
                         className="bi bi-pencil text-lg text-emerald-500 cursor-pointer"
                       ></i>
                       <i 
-                      onClick={() => {}}
+                      onClick={() => {onDeleteProject(e.prjId)}}
                       className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
                     </span>
                   </td>
                 </tr>
               ))}
-              {/* <tr className="hover">
-                <td>Hart Hagerty</td>
-                <td>Desktop Support Technician</td>
-                <td>Purple</td>
-                <td>
-                  <span className="flex gap-5">
-                    <i className="bi bi-pencil text-lg text-emerald-500 cursor-pointer"></i>
-                    <i className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td>Brice Swyre</td>
-                <td>Tax Accountant</td>
-                <td>Red</td>
-                <td>
-                  <span className="flex gap-5">
-                    <i className="bi bi-pencil text-lg text-emerald-500 cursor-pointer"></i>
-                    <i className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
-                  </span>
-                </td>
-              </tr> */}
             </tbody>
           </table>
           {_.isEmpty(projectQuery.data.data) ? (
@@ -126,14 +133,39 @@ const ManageProject = () => {
               <div>
                 <div className="avatar">
                   <div className="w-24 rounded-xl">
-                    <img src="https://i.pravatar.cc/300" />
+                  {selectedAvatar && previewAvatarLink ? (
+                      <img src={`${previewAvatarLink}`} />
+                    ) : (
+                      <img
+                        src={`${
+                          "https://i.pravatar.cc/300"
+                        } `}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="text-xs text-slate-400">
-                  1. Kích thước không quá 1MB
+                  1. Kích thước không quá 2MB
                   <br />
                   2. Định dạng hỗ trợ: jpg, jpeg, png, gif{" "}
                 </div>
+                <CustomDropzone
+                    maxSize={2097152} //2MB
+                    multiple={false}
+                    filter={{
+                      "image/jpeg": [],
+                      "image/png": [],
+                      "image/gif": [],
+                      "image/jpg": [],
+                    }}
+                    // acceptedFile={() => {}}
+                    acceptedFile={(file) => {
+                      setSelectedAvatar(file);
+                      // console.log("File: ", file);
+                      if (file.length > 0)
+                        setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                    }}
+                  />
               </div>
             </div>
             <div className="form-input">
