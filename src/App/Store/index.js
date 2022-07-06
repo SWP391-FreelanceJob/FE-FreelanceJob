@@ -59,6 +59,7 @@ const rootReducer = combineReducers({
   [profileApi.reducerPath]: profileApi.reducer,
   [recruiterApi.reducerPath]: recruiterApi.reducer,
   [accountApi.reducerPath]: accountApi.reducer,
+  [projectApi.reducerPath]: projectApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -80,6 +81,7 @@ export const store = configureStore({
       profileApi.middleware,
       recruiterApi.middleware,
       accountApi.middleware,
+      projectApi.middleware,
     ]),
 });
 

@@ -1,11 +1,13 @@
-import { useGetJobsQuery } from "@/App/Models/Job/Job";
+import { useGetJobByRecruiterIdQuery, useGetJobsQuery } from "@/App/Models/Job/Job";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
+import { useSelector } from "react-redux";
 import { Navigate, NavLink, Outlet, Route, Routes } from "react-router-dom";
 import AcceptedJob from "./AcceptedJob";
 import DoneJob from "./DoneJob";
 import PublishedJob from "./PublishedJob";
 
 const ManageJobLayout = ({ publishedJobs, acceptedJobs, doneJobs }) => {
+  
   const navLinkActive = ({ isActive }) => {
     const active = isActive ? " tab-active" : "";
     return "tab tab-lg tab-lifted" + active;
@@ -33,7 +35,8 @@ const ManageJobLayout = ({ publishedJobs, acceptedJobs, doneJobs }) => {
 };
 
 const ManageJobRoute = () => {
-  const jobQuery = useGetJobsQuery({});
+  const userInfo = useSelector(state => state.user);
+  const jobQuery = useGetJobByRecruiterIdQuery(userInfo.userId);
   return jobQuery.isLoading ? (
     <LoadingOverlay />
   ) : (
@@ -42,9 +45,9 @@ const ManageJobRoute = () => {
         path="/"
         element={
           <ManageJobLayout
-            publishedJobs={jobQuery.data.data.filter((e) => e.jobStatus === 0)}
-            acceptedJobs={jobQuery.data.data.filter((e) => e.jobStatus === 1)}
-            doneJobs={jobQuery.data.data.filter((e) => e.jobStatus === 2)}
+            publishedJobs={jobQuery.data.filter((e) => e.jobStatus === 0)}
+            acceptedJobs={jobQuery.data.filter((e) => e.jobStatus === 1)}
+            doneJobs={jobQuery.data.filter((e) => e.jobStatus === 2)}
           />
         }
       >
