@@ -62,9 +62,11 @@ const CustomNavbar = () => {
   const userState = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const { data, error } = useGetBalanceByIdQuery(userState.accountId);
+  const isLogged = localStorage.getItem("token");
 
-  const [rooms, setRooms] = useState([]);
+  const { data, error } = useGetBalanceByIdQuery(userState.accountId,{
+    skip: !isLogged
+  });
 
   const modalRef = useRef();
   const dropdownRef = useRef();

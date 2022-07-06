@@ -130,7 +130,7 @@ const LandingPage = () => {
             Hồ sơ năng lực nổi bật
           </h1>
           <a className="text-blue-500 pl-1 fvn-open-sans tracking-wide" href="">
-            Xem thêm >
+            Xem thêm &gt;
           </a>
         </div>
         <div className="carousel w-full">

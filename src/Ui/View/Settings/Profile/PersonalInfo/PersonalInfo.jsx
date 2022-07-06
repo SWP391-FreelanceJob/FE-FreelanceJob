@@ -140,7 +140,6 @@ const PersonalInfo = () => {
                         } `}
                       />
                     )}
-                    />
                   </div>
                 </div>
                 <div className="text-xs text-slate-400">
