@@ -22,7 +22,8 @@ import { useSelector } from "react-redux";
 import { useGetOfferByJobIdAndFreelancerIdQuery } from "@/App/Models/Offer/Offer";
 import { useForm } from "react-hook-form";
 import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
-import { mqttClient } from "@/App/Utils/Mqtt";
+import useMqttState from "@/App/Utils/Mqtt/useMqttState";
+import useSubscription from "@/App/Utils/Mqtt/useSubscription";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -40,7 +41,8 @@ const JobProgress = () => {
 
   const userState = useSelector((state) => state.user);
 
-  mqttClient.subscribe("/msg/" + userState.accountId);
+  // mqttClient.subscribe("/msg/" + userState.accountId);
+  const { message } = useSubscription("/msg/" + userState.accountId);
 
   const isRecruiter = userState.role === "recruiter";
 
@@ -98,12 +100,16 @@ const JobProgress = () => {
     formState: { errors },
   } = useForm();
 
-  mqttClient.onMessageArrived = (message) => {
-    console.log(message.payloadString);
-    if (selectedAccId) {
-      refetch();
-    }
-  };
+  // mqttClient.onMessageArrived = (message) => {
+  //   console.log(message.payloadString);
+  //   if (selectedAccId) {
+  //     refetch();
+  //   }
+  // };
+
+  useEffect(() => {
+    console.log("Mqtt msg: ", message);
+  }, [message]);
 
   useEffect(() => {
     if (isNaN(id)) {
