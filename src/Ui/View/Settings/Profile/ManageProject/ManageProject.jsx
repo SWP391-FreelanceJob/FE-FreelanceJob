@@ -24,7 +24,7 @@ const ManageProject = () => {
 
   const [selectedAvatar, setSelectedAvatar] = useState();
   const [previewAvatarLink, setPreviewAvatarLink] = useState();
-
+  const [selectedProject, setSelectedProject] = useState({});
 
   // const [selectedSkills, setSelectedSkills] = useState([]);
   const projectQuery = useGetProjectsByFreelancerIdQuery({
@@ -33,8 +33,9 @@ const ManageProject = () => {
 
   const storage = useStorage();
 
-  const [createProject, {isLoading, isSuccess}] = useCreateProjectMutation();
-  const [deleteProject, {isLoadingDeletProject, isSuccessDeleteProject}] = useDeleteProjectMutation();
+  const [createProject, { isLoading, isSuccess }] = useCreateProjectMutation();
+  const [deleteProject, { isLoadingDeletProject, isSuccessDeleteProject }] =
+    useDeleteProjectMutation();
   const {
     register,
     handleSubmit,
@@ -60,18 +61,18 @@ const ManageProject = () => {
       skillIds: data.skillIds.map((skill) => skill.skillId),
     };
     console.log(projectData);
-    const result = await createProject( projectData);
+    const result = await createProject(projectData);
     if (result.data) {
       // navigate(`/job/${result.data.id}`);
       notyf.success("Thêm hồ sơ năng lực mới thành công.");
       reset();
     }
-  }
+  };
 
   const onDeleteProject = async (projectId) => {
     await deleteProject(projectId);
     notyf.success("Xoá hồ sơ năng lực thành công.");
-  }
+  };
 
   return projectQuery.isLoading ? (
     <LoadingOverlay />
@@ -93,7 +94,9 @@ const ManageProject = () => {
               {projectQuery.data.data.map((e) => (
                 <tr key={e.prjId}>
                   <td>{e.name}</td>
-                  <td className="max-w-[20rem]  overflow-hidden text-ellipsis">{e.description}</td>
+                  <td className="max-w-[20rem] overflow-hidden text-ellipsis">
+                    {e.description}
+                  </td>
                   <td className="max-w-[20rem] min-w-[5rem]">
                     <img src={e.imageUrl} alt="" />
                   </td>
@@ -103,9 +106,15 @@ const ManageProject = () => {
                         onClick={() => navigate(`/edit-project/${e.prjId}`)}
                         className="bi bi-pencil text-lg text-emerald-500 cursor-pointer"
                       ></i>
-                      <i 
-                      onClick={() => {onDeleteProject(e.prjId)}}
-                      className="bi bi-trash text-lg text-red-500 cursor-pointer"></i>
+
+                      <label htmlFor={`delete-project-confirmation-${e.prjId}`}>
+                        <i
+                          onClick={() => {
+                            setSelectedProject(e);
+                          }}
+                          className="bi bi-trash text-lg text-red-500 cursor-pointer"
+                        ></i>
+                      </label>
                     </span>
                   </td>
                 </tr>
@@ -121,7 +130,35 @@ const ManageProject = () => {
           )}
         </div>
       </div>
-      <hr/>
+      {/* modal to ask freelancer for confirmation before deleting project */}
+      <input
+        type="checkbox"
+        id={`delete-project-confirmation-${selectedProject.prjId}`}
+        className="modal-toggle"
+      />
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">
+            Bạn có chắc chắn muốn xoá project {selectedProject.name}?
+          </h3>
+          <p className="py-4">Bạn <b>không thể</b> khôi phục project nếu bạn chọn xoá. Bạn có chắc chắn không?</p>
+          <div className="modal-action">
+            <label htmlFor={`delete-project-confirmation-${selectedProject.prjId}`} className="btn">
+              Không xoá
+            </label>
+            <label
+              onClick={() => {
+                onDeleteProject(selectedProject.prjId);
+              }}
+              htmlFor={`delete-project-confirmation-${selectedProject.prjId}`}
+              className="btn btn-error"
+            >
+              Xoá
+            </label>
+          </div>
+        </div>
+      </div>
+      <hr />
       <h1 className="text-3xl font-bold mb-4">Thêm hồ sơ</h1>
       <form onSubmit={handleSubmit(onSubmitNewProject)}>
         <div className="flex flex-col w-[1000px] mx-auto">
@@ -133,14 +170,10 @@ const ManageProject = () => {
               <div>
                 <div className="avatar">
                   <div className="w-24 rounded-xl">
-                  {selectedAvatar && previewAvatarLink ? (
+                    {selectedAvatar && previewAvatarLink ? (
                       <img src={`${previewAvatarLink}`} />
                     ) : (
-                      <img
-                        src={`${
-                          "https://i.pravatar.cc/300"
-                        } `}
-                      />
+                      <img src={`${"https://i.pravatar.cc/300"} `} />
                     )}
                   </div>
                 </div>
@@ -150,22 +183,22 @@ const ManageProject = () => {
                   2. Định dạng hỗ trợ: jpg, jpeg, png, gif{" "}
                 </div>
                 <CustomDropzone
-                    maxSize={2097152} //2MB
-                    multiple={false}
-                    filter={{
-                      "image/jpeg": [],
-                      "image/png": [],
-                      "image/gif": [],
-                      "image/jpg": [],
-                    }}
-                    // acceptedFile={() => {}}
-                    acceptedFile={(file) => {
-                      setSelectedAvatar(file);
-                      // console.log("File: ", file);
-                      if (file.length > 0)
-                        setPreviewAvatarLink(URL.createObjectURL(file[0]));
-                    }}
-                  />
+                  maxSize={2097152} //2MB
+                  multiple={false}
+                  filter={{
+                    "image/jpeg": [],
+                    "image/png": [],
+                    "image/gif": [],
+                    "image/jpg": [],
+                  }}
+                  // acceptedFile={() => {}}
+                  acceptedFile={(file) => {
+                    setSelectedAvatar(file);
+                    // console.log("File: ", file);
+                    if (file.length > 0)
+                      setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                  }}
+                />
               </div>
             </div>
             <div className="form-input">
