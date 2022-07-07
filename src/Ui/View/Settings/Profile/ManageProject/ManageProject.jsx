@@ -173,7 +173,7 @@ const ManageProject = () => {
                     {selectedAvatar && previewAvatarLink ? (
                       <img src={`${previewAvatarLink}`} />
                     ) : (
-                      <img src={`${"https://i.pravatar.cc/300"} `} />
+                      <img src={`${"https://i.pravatar.cc/300"}`} />
                     )}
                   </div>
                 </div>
@@ -208,7 +208,7 @@ const ManageProject = () => {
               <div className="w-full flex-grow">
                 <input
                   type="text"
-                  placeholder="Lập trình C#,..."
+                  placeholder="Dự án web bán hàng,..."
                   {...register("name", { required: true })}
                   className="input input-bordered input-sm w-full"
                 />
