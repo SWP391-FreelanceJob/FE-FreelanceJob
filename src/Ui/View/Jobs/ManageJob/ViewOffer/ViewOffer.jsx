@@ -18,9 +18,12 @@ import { useForm } from "react-hook-form";
 import { useRef, useState } from "react";
 import { useSentMessageMutation } from "@/App/Models/Message/Message";
 import { notyf } from "@/App/Utils/NotyfSetting";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
 
 const ViewOffer = () => {
   dayjs.locale("vi");
+  const introTooltip =
+    "Để chấp nhận chào giá, bạn phải có hơn 500.000₫ trong tài khoản.";
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -34,18 +37,21 @@ const ViewOffer = () => {
 
   const [updateOfferStatus] = useUpdateOfferStatusByIdMutation();
   const [sendMsg] = useSentMessageMutation();
+  const getBalanceQuery = useGetBalanceByIdQuery(userState.accountId);
 
   const onAcceptOffer = async (offerId) => {
-    dispatch(setLoading(true));
-    const result = await updateOfferStatus({
-      offerId: offerId,
-      offerStatusReq: { status: "ACCEPTED", jobId: jid },
-    });
-    if (result.data) {
-      notyf.success("Nhận chào giá thành công");
+    if (getBalanceQuery.data.balance >= 500000) {
+      dispatch(setLoading(true));
+      const result = await updateOfferStatus({
+        offerId: offerId,
+        offerStatusReq: { status: "ACCEPTED", jobId: jid },
+      });
+      if (result.data) {
+        notyf.success("Nhận chào giá thành công");
+      }
+      dispatch(setLoading(false));
+      window.location.reload();
     }
-    dispatch(setLoading(false));
-    window.location.reload();
   };
 
   const onSend = async (data) => {
@@ -326,17 +332,32 @@ const ViewOffer = () => {
                       <div className="flex justify-start w-full gap-2">
                         <label
                           htmlFor="send-msg-modal"
-                          onClick={()=> setSelectedFLId(offer.freelancer.freelancerId)}
+                          onClick={() =>
+                            setSelectedFLId(offer.freelancer.freelancerId)
+                          }
                           className="btn btn-accent text-white"
                         >
                           Liên hệ
                         </label>
-                        <div
-                          onClick={() => onAcceptOffer(offer.offerId)}
-                          className="btn btn-secondary text-white"
-                        >
-                          Giao việc
-                        </div>
+                        {getBalanceQuery.isLoading ? (
+                          <></>
+                        ) : (
+                          <div className="tooltip" data-tip={introTooltip}>
+                            <div
+                              onClick={() => {
+                                onAcceptOffer(offer.offerId);
+                              }}
+                              className={`btn btn-secondary text-white ${
+                                getBalanceQuery.data.balance < 500000
+                                  ? "btn-disabled"
+                                  : ""
+                              }`}
+                              disabled={getBalanceQuery.data.balance < 500000}
+                            >
+                              Giao việc
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

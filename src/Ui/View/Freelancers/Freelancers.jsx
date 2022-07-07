@@ -139,9 +139,9 @@ const Freelancers = () => {
                           <p className="text-sm">{job.shortDescription}</p>
                         </div>
                       </div>
-                      <div className="btn btn-sm btn-outline bg-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600 text-white">
+                      {/* <div className="btn btn-sm btn-outline bg-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600 text-white">
                         <i className="bi bi-telephone-fill mr-2" /> Liên hệ
-                      </div>
+                      </div> */}
                     </div>
                     <div className="mt-5 mb-3 flex justify-between bg-slate-100">
                       <div className="flex">
