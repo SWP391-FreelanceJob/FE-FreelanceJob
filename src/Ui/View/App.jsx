@@ -13,7 +13,6 @@ import {
 
 import "./App.css";
 import { notyf } from "@/App/Utils/NotyfSetting";
-import { mqttClient } from "@/App/Utils/Mqtt";
 import MasterPage from "../Components/MasterPage";
 import { Routes, Route } from "react-router-dom";
 import RequireAuth from "@/App/Router/GuardRouter";
@@ -36,6 +35,7 @@ import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
 import ManageOfferRoute from "./ManageOffer/ManageOfferRoute";
 import { getStorage } from "firebase/storage";
 import RecruiterProfile from "./Profile/RecruiterProfile";
+import MqttConnector from "@/App/Utils/Mqtt/Mqtt";
 
 function App() {
   const fireStoreInstance = getFirestore(useFirebaseApp());
@@ -47,49 +47,54 @@ function App() {
   //   // notyf.success(noti);
   // });
 
-  mqttClient.onMessageArrived = onMessageArrived;
+  // mqttClient.onMessageArrived = onMessageArrived;
 
-  function onMessageArrived(message) {
-    notyf.success(message.payloadString);
-  }
+  // function onMessageArrived(message) {
+  //   notyf.success(message.payloadString);
+  // }
 
   useEffect(() => {}, []);
 
   return (
     <FirestoreProvider sdk={fireStoreInstance}>
       <StorageProvider sdk={firebaseStorage}>
-        <ScrollToTop>
-          <Routes>
-            {/* <Route
+        <MqttConnector>
+          <ScrollToTop>
+            <Routes>
+              {/* <Route
           path="/"
           element={
             <RequireAuth children={<MasterPage />} requiredRoles={[""]} />
           }
         ></Route> */}
-            <Route path="/" element={<MasterPage />}>
-              <Route path="" element={<LandingPage />} />
-              {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
-              <Route path="/manage-project" element={<ManageProject />} />
-              <Route path="/edit-project/:id" element={<EditProject />} />
-              <Route path="/recruiter-profile/:id" element={<RecruiterProfile />} />
-              <Route path="/profile/:id" element={<Profile />} />
-              <Route path="/setting/*" element={<Settings />} />
-              <Route path="/project/:id" element={<Project />} />
-              <Route path="/all-jobs" element={<Jobs />} />
-              <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
-              <Route path="/manage-job/*" element={<ManageJobRoute />} />
-              <Route path="/create-job" element={<CreateJob />} />
-              <Route path="/edit-job" element={<CreateJob />} />
-              <Route path="/job/:id" element={<JobDetail />} />
-              <Route path="/job-progress/:id" element={<JobProgress />} />
-              <Route path="/offer/:jid" element={<ViewOffer />} />
-              <Route path="/all-freelancers" element={<Freelancers />} />
-            </Route>
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            {/* <Route path="*" element={<NotFound/>}/> */}
-          </Routes>
-        </ScrollToTop>
+              <Route path="/" element={<MasterPage />}>
+                <Route path="" element={<LandingPage />} />
+                {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
+                <Route path="/manage-project" element={<ManageProject />} />
+                <Route path="/edit-project/:id" element={<EditProject />} />
+                <Route
+                  path="/recruiter-profile/:id"
+                  element={<RecruiterProfile />}
+                />
+                <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/setting/*" element={<Settings />} />
+                <Route path="/project/:id" element={<Project />} />
+                <Route path="/all-jobs" element={<Jobs />} />
+                <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
+                <Route path="/manage-job/*" element={<ManageJobRoute />} />
+                <Route path="/create-job" element={<CreateJob />} />
+                <Route path="/edit-job" element={<CreateJob />} />
+                <Route path="/job/:id" element={<JobDetail />} />
+                <Route path="/job-progress/:id" element={<JobProgress />} />
+                <Route path="/offer/:jid" element={<ViewOffer />} />
+                <Route path="/all-freelancers" element={<Freelancers />} />
+              </Route>
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              {/* <Route path="*" element={<NotFound/>}/> */}
+            </Routes>
+          </ScrollToTop>
+        </MqttConnector>
       </StorageProvider>
     </FirestoreProvider>
   );

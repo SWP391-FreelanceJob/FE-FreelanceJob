@@ -79,6 +79,10 @@ const PublishedJob = () => {
                       htmlFor="confirm-modal"
                       className="bi bi-trash text-lg text-red-500 cursor-pointer"
                     />
+                    <i
+                      onClick={() => navigate(`/edit-job`, { state: val  })}
+                      className="bi bi-pencil text-lg text-black cursor-pointer"
+                    ></i>
                   </span>
                 </td>
               </tr>

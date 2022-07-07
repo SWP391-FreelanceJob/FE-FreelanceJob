@@ -27,6 +27,7 @@ import { offerApi } from "../Models/Offer/Offer";
 import { profileApi } from "../Models/Profile/Profile";
 import { recruiterApi } from "../Models/Recruiter/Recruiter";
 import { projectApi } from "../Models/Project/Project";
+import { accountApi } from "../Models/Account/Account";
 // import thunkMiddleware from 'redux-thunk';
 
 const persistConfig = {
@@ -41,6 +42,7 @@ const persistConfig = {
     offerApi.reducerPath,
     profileApi.reducerPath,
     projectApi.reducerPath,
+    accountApi.reducerPath,
   ],
 };
 
@@ -56,6 +58,7 @@ const rootReducer = combineReducers({
   [offerApi.reducerPath]: offerApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [recruiterApi.reducerPath]: recruiterApi.reducer,
+  [accountApi.reducerPath]: accountApi.reducer,
   [projectApi.reducerPath]: projectApi.reducer,
 });
 
@@ -77,6 +80,7 @@ export const store = configureStore({
       offerApi.middleware,
       profileApi.middleware,
       recruiterApi.middleware,
+      accountApi.middleware,
       projectApi.middleware,
     ]),
 });

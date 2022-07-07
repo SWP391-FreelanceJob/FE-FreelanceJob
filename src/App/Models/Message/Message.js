@@ -31,6 +31,24 @@ export const messageApi = createApi({
         params: {},
       }),
     }),
+    getMessageByTarget: builder.query({
+      keepUnusedDataFor: 5,
+      query: ({ targetAccountId, sourceAccountId, jobId }) => ({
+        url: `${Endpoints.MESSAGEBYTARGET}/${jobId}/account/${sourceAccountId}/with/${targetAccountId}`,
+        method: "GET",
+        params: {},
+      }),
+      providesTags: ["messageByTarget"],
+    }),
+    sentMessage: builder.mutation({
+      // keepUnusedDataFor: ,
+      query: (newMsg) => ({
+        url: `${Endpoints.MESSAGE}`,
+        method: "POST",
+        data: newMsg,
+      }),
+      invalidatesTags: ["messageByTarget"],
+    }),
   }),
 });
 
@@ -38,4 +56,6 @@ export const {
   useGetMessageByIdQuery,
   useGetMessageByJobIdQuery,
   useGetMessageByAccountIdJobIdQuery,
+  useGetMessageByTargetQuery,
+  useSentMessageMutation,
 } = messageApi;

@@ -21,6 +21,7 @@ import {
 import MultipleSelect from "@/Ui/Components/MultipleSelect/MultipleSelect";
 import { useEffect } from "react";
 import dayjs from "dayjs";
+import { notyf } from "@/App/Utils/NotyfSetting";
 
 const CreateJob = () => {
   registerLocale("vi", local);
@@ -73,17 +74,23 @@ const CreateJob = () => {
       skills: data.jobSkills.map((skill) => skill.skillId),
       recruiterId: userState.userId,
     };
-    console.log(jobData);
+    // console.log(jobData);
     if (isEditingJob) {
-      // const result = await updateJob({ jobId: state.id, job: jobData });
-      // if (result.data) {
-      //   navigate(`/job/${result.data.id}`);
-      // }
+      jobData.jobId = state.id;
+      const result = await updateJob({ jobId: state.id, job: jobData });
+      if (result.data) {
+        notyf.success("Cập nhật thành công");
+        navigate(-1);
+      } else {
+        notyf.error("Cập nhật thất bại. Vui lòng thử lại sau!");
+      }
     } else {
-      // const result = await createJob(jobData);
-      // if (result.data) {
-      //   navigate(`/job/${result.data.id}`);
-      // }
+      const result = await createJob(jobData);
+      if (result.data) {
+        navigate(`/job/${result.data.id}`);
+      }else{
+        notyf.error("Tạo việc thất bại. Vui lòng thử lại sau!"); 
+      }
     }
   };
 

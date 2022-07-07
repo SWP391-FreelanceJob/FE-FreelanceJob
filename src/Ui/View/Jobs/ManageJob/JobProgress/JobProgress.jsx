@@ -11,6 +11,8 @@ import {
   useGetMessageByAccountIdJobIdQuery,
   useGetMessageByIdQuery,
   useGetMessageByJobIdQuery,
+  useGetMessageByTargetQuery,
+  useSentMessageMutation,
 } from "@/App/Models/Message/Message";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import defaultAva from "@/App/Assets/png/default.webp";
@@ -18,6 +20,10 @@ import { useGetJobByIdQuery } from "@/App/Models/Job/Job";
 import { JobStatusFromInt } from "@/App/Constant";
 import { useSelector } from "react-redux";
 import { useGetOfferByJobIdAndFreelancerIdQuery } from "@/App/Models/Offer/Offer";
+import { useForm } from "react-hook-form";
+import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
+import useMqttState from "@/App/Utils/Mqtt/useMqttState";
+import useSubscription from "@/App/Utils/Mqtt/useSubscription";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -26,6 +32,7 @@ const JobProgress = () => {
   const [selectedAccId, setSelectedAccId] = useState();
   const [selectedOfferInfo, setSelectedOfferInfo] = useState();
   const [selectedMessages, setSelectedMessages] = useState([]);
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
 
   const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
@@ -33,6 +40,10 @@ const JobProgress = () => {
   let { id } = useParams();
 
   const userState = useSelector((state) => state.user);
+
+  // mqttClient.subscribe("/msg/" + userState.accountId);
+  const { message } = useSubscription("/msg/" + userState.accountId);
+
   const isRecruiter = userState.role === "recruiter";
 
   const {
@@ -54,13 +65,51 @@ const JobProgress = () => {
   );
 
   const {
-    data: msgData,
-    error: msgError,
-    isLoading: msgLoading,
+    data: msgInfData,
+    error: msgInfError,
+    isLoading: msgInfLoading,
   } = useGetMessageByAccountIdJobIdQuery({
     accountId: userState.accountId,
     jobId: id,
   });
+
+  const {
+    data: msgData,
+    error: msgError,
+    isLoading: msgLoading,
+    isFetching: msgFetching,
+    refetch,
+  } = useGetMessageByTargetQuery(
+    {
+      targetAccountId: selectedAccId,
+      sourceAccountId: userState.accountId,
+      jobId: id,
+    },
+    {
+      skip: !selectedAccId,
+    }
+  );
+
+  const [sendMsg] = useSentMessageMutation();
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  // mqttClient.onMessageArrived = (message) => {
+  //   console.log(message.payloadString);
+  //   if (selectedAccId) {
+  //     refetch();
+  //   }
+  // };
+
+  useEffect(() => {
+    console.log("Mqtt msg: ", message);
+  }, [message]);
 
   useEffect(() => {
     if (isNaN(id)) {
@@ -80,8 +129,19 @@ const JobProgress = () => {
       ) {
         setIsCantChat(true);
       }
+    } else {
+      if (jobData && jobData.recruiterId != userState.userId) {
+        navigate("/forbidden");
+      }
     }
   }, [jobData, offerData]);
+
+  useEffect(() => {
+    setIsCantChat(false);
+    if (selectedOfferInfo && selectedOfferInfo.status != "ACCEPTED") {
+      setIsCantChat(true);
+    }
+  }, [selectedAccId]);
 
   /**
    * @type {[IJob,Function]}
@@ -97,6 +157,21 @@ const JobProgress = () => {
     setSelectedAccId(msgInfo.targetUser.accId);
     setSelectedOfferInfo(msgInfo.currentOffer);
     setSelectedMessages(msgInfo.messages);
+  };
+
+  const onSend = async (data) => {
+    const msgData = {
+      fromAccountId: userState.accountId,
+      toAccountId: selectedAccId,
+      jobId: id,
+      content: data.content,
+      attachFileUrl: selectedAttachment,
+      sentTime: new Date(),
+    };
+    console.log(msgData);
+
+    const resp = await sendMsg(msgData);
+    console.log(resp);
   };
 
   return (
@@ -157,8 +232,8 @@ const JobProgress = () => {
             {isRecruiter && (
               <>
                 <div className="w-1/5 flex flex-col gap-2">
-                  {msgData &&
-                    msgData.map((msgInfo, idx) => (
+                  {msgInfData &&
+                    msgInfData.map((msgInfo, idx) => (
                       <div
                         key={idx}
                         onClick={() => getFLinfo(msgInfo)}
@@ -178,76 +253,105 @@ const JobProgress = () => {
               </>
             )}
 
-            <div
-              className={`${
-                userState.role === "recruiter" ? "w-4/5" : "w-full"
-              } flex-col flex gap-2`}
-            >
-              {(!isCantChat && selectedMessages.length > 0) && (
-                <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
-                  <p className="text-lg font-semibold mb-2">Lời nhắn</p>
-                  <ReactTextareaAutosize
-                    name="messaging"
-                    id=""
-                    maxRows={13}
-                    className="bg-white rounded-sm min-h-[100px] mb-3"
-                  />
-                  <div className="flex justify-between">
-                    <p className="link link-secondary">Đính kèm tệm tin</p>
-                    <button className="btn btn-sm btn-primary text-white">
-                      Gửi
-                    </button>
-                  </div>
-                </div>
-              )}
-              <table className="chat-table w-full">
-                <thead>
-                  <tr>
-                    <th>Người gửi</th>
-                    <th>Lời nhắn</th>
-                    <th>Thời gian</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedMessages &&
-                    selectedMessages.length > 0 &&
-                    selectedMessages.map((msg, idx) => (
-                      <tr key={idx}>
-                        <td>
-                          <div>
-                            {msg.fromAccount.recruiter
-                              ? msg.fromAccount.recruiter.fullname
-                              : msg.fromAccount.freelancer.fullname}
-                            <img
-                              src={msg.fromAccount.avatar ?? defaultAva}
-                              className="w-20"
-                              alt="usr-avatar"
+            {msgLoading || msgFetching ? (
+              <div>Đang tải tin nhắn</div>
+            ) : (
+              <div
+                className={`${
+                  userState.role === "recruiter" ? "w-4/5" : "w-full"
+                } flex-col flex gap-2`}
+              >
+                {!isCantChat && msgData && msgData.length > 0 && (
+                  <form onSubmit={handleSubmit(onSend)}>
+                    <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
+                      <p className="text-lg font-semibold mb-2">Lời nhắn</p>
+                      <ReactTextareaAutosize
+                        id=""
+                        maxRows={13}
+                        className={`${
+                          errors.content ? "border-red-500 " : ""
+                        }bg-white rounded-sm min-h-[100px] mb-3`}
+                        {...register("content", { required: true })}
+                      />
+                      {errors.content && (
+                        <p className="text-red-400 text-xs">
+                          Lời nhắn không được để trống
+                        </p>
+                      )}
+                      <div className="flex justify-between">
+                        <CustomDropzone
+                          maxSize={2097152} //2MB
+                          multiple={false}
+                          filter={{
+                            "image/jpeg": [],
+                            "image/png": [],
+                            "image/gif": [],
+                            "image/jpg": [],
+                          }}
+                          acceptedFile={(file) => {
+                            // setSelectedAvatar(file);
+                            // if (file.length > 0)
+                            //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                          }}
+                          customClass="flex"
+                          noDrag={true}
+                        />
+                        <button className="btn btn-sm btn-primary text-white">
+                          Gửi
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+                <table className="chat-table w-full">
+                  <thead>
+                    <tr>
+                      <th>Người gửi</th>
+                      <th>Lời nhắn</th>
+                      <th>Thời gian</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {msgData &&
+                      msgData.length > 0 &&
+                      msgData.map((msg, idx) => (
+                        <tr key={idx}>
+                          <td>
+                            <div>
+                              {msg.fromAccount.recruiter
+                                ? msg.fromAccount.recruiter.fullname
+                                : msg.fromAccount.freelancer.fullname}
+                              <img
+                                src={msg.fromAccount.avatar ?? defaultAva}
+                                className="w-20"
+                                alt="usr-avatar"
+                              />
+                            </div>
+                          </td>
+                          <td className="h-full">
+                            <ReactTextareaAutosize
+                              name="message-content"
+                              className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                              id=""
+                              disabled
+                              rows={5}
+                              value={msg.content}
                             />
-                          </div>
-                        </td>
-                        <td className="h-full">
-                          <ReactTextareaAutosize
-                            name="message-content"
-                            className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
-                            id=""
-                            disabled
-                            rows={5}
-                            value={msg.content}
-                          />
-                        </td>
-                        <td>
-                          <div>
-                            {dayjs(msg.sentTime)
-                              .format("DD/MM/YYYY HH:mm")
-                              .toString()}
-                          </div>
-                          {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td>
+                            <div>
+                              {dayjs(msg.sentTime)
+                                .format("DD/MM/YYYY HH:mm")
+                                .toString()}
+                            </div>
+                            {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
           {/* </div> */}
         </div>
@@ -291,8 +395,8 @@ const JobProgress = () => {
       )}
       <input type="checkbox" id="offer-detail-modal" className="modal-toggle" />
       {(offerData || selectedOfferInfo) && (
-        <div className="modal">
-          <div className="modal-box">
+        <label htmlFor="offer-detail-modal" className="modal cursor-pointer">
+          <div className="modal-box flex flex-col gap-1">
             <div>
               <div className="font-bold">Kinh nghiệm:</div>
               <ReactTextareaAutosize
@@ -310,7 +414,7 @@ const JobProgress = () => {
               />
             </div>
             <div>
-              <div className="font-bold">Thời gian làm kiến:</div>
+              <div className="font-bold">Thời gian làm dự kiến:</div>
               <ReactTextareaAutosize
                 className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
                 disabled
@@ -329,6 +433,14 @@ const JobProgress = () => {
                 value={offerData?.offerPrice ?? selectedOfferInfo?.offerPrice}
               />
             </div>
+            <div>
+              <div className="font-bold">Trạng thái:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                value={offerData?.status ?? selectedOfferInfo?.status}
+              />
+            </div>
             <div className="modal-action">
               <label
                 htmlFor="offer-detail-modal"
@@ -338,7 +450,7 @@ const JobProgress = () => {
               </label>
             </div>
           </div>
-        </div>
+        </label>
       )}
     </div>
   );
