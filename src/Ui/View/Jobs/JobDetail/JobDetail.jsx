@@ -41,7 +41,7 @@ const JobDetail = () => {
   const isRecruiter = userState.role === "recruiter";
   const dispatch = useDispatch();
 
-  const jobQuery = useGetJobByIdQuery(id);
+  const jobQuery = useGetJobByIdQuery(id, { refetchOnMountOrArgChange: true });
   const offerQuery = useGetOffersByJobIdQuery(id);
   const balanceQuery = useGetBalanceByIdQuery(userState.accountId);
   const {

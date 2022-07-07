@@ -26,7 +26,7 @@ export const jobApi = createApi({
         url: `/job-from-recruiter/${recruiterId}`,
         method: "GET",
       }),
-      providesTags: ["jobsById"]
+      providesTags: ["jobsById"],
     }),
     getJobById: builder.query({
       query: (id) => ({
@@ -34,6 +34,7 @@ export const jobApi = createApi({
         method: "GET",
         // params: { isAscending, pageSize, limit, pageNo },
       }),
+      keepUnusedDataFor: 4,
     }),
     createNewJob: builder.mutation({
       query: (job) => ({
@@ -43,7 +44,7 @@ export const jobApi = createApi({
       }),
     }),
     updateJob: builder.mutation({
-      query: ({jobId,job}) => ({
+      query: ({ jobId, job }) => ({
         url: `${Endpoints.JOB}/${jobId}`,
         method: "PUT",
         data: job,
