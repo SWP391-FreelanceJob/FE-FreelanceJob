@@ -1,4 +1,7 @@
-import { useGetOffersByJobIdQuery, useUpdateOfferStatusByIdMutation } from "@/App/Models/Offer/Offer";
+import {
+  useGetOffersByJobIdQuery,
+  useUpdateOfferStatusByIdMutation,
+} from "@/App/Models/Offer/Offer";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import defaultAvatar from "@/App/Assets/png/default.webp";
@@ -8,44 +11,89 @@ import _ from "lodash";
 import CurrencyInput from "react-currency-input-field";
 import { useNavigate, useParams } from "react-router-dom";
 import "./ViewOffer.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "@/App/Models/GlobalLoading/LoadingSlice";
+import ReactTextareaAutosize from "react-textarea-autosize";
+import { useForm } from "react-hook-form";
+import { useRef, useState } from "react";
+import { useSentMessageMutation } from "@/App/Models/Message/Message";
+import { notyf } from "@/App/Utils/NotyfSetting";
 
 const ViewOffer = () => {
   dayjs.locale("vi");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [selectedFLId, setSelectedFLId] = useState();
+
   let { jid } = useParams();
 
+  const modalBtnRef = useRef();
+
+  const userState = useSelector((state) => state.user);
+
   const [updateOfferStatus] = useUpdateOfferStatusByIdMutation();
+  const [sendMsg] = useSentMessageMutation();
 
   const onAcceptOffer = async (offerId) => {
     dispatch(setLoading(true));
     const result = await updateOfferStatus({
       offerId: offerId,
-      offerStatusReq: {status: "ACCEPTED",
-      jobId: jid}
+      offerStatusReq: { status: "ACCEPTED", jobId: jid },
     });
     if (result.data) {
       notyf.success("Nhận chào giá thành công");
     }
     dispatch(setLoading(false));
     window.location.reload();
-  }
+  };
+
+  const onSend = async (data) => {
+    const msgData = {
+      fromAccountId: userState.accountId,
+      toFreelanceId: selectedFLId,
+      jobId: jid,
+      content: data.content,
+      attachFileUrl: null,
+      sentTime: new Date(),
+    };
+    console.log(msgData);
+    const result = await sendMsg(msgData);
+    if (result.data) {
+      notyf.success("Gửi tin nhắn thành công");
+      navigate(`/job-progress/${jid}`);
+    }
+    modalBtnRef.current.click();
+    reset();
+  };
 
   const offerQuery = useGetOffersByJobIdQuery(jid);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   return offerQuery.isLoading ? (
     <LoadingOverlay />
   ) : (
     <div className="flex flex-col w-[1200px] mx-auto gap-5">
-      <h1 className="text-3xl font-bold mb-4">
-        Quản lý chào giá
-      </h1>
-      <h2 className="text-xl font-bold mb-4">Tên công việc: {offerQuery.data.title}</h2>
-      {_.isEmpty(offerQuery.data.offers) ? <div>Chưa có freelancer nào nhận làm việc này.</div> : <></>}
+      <h1 className="text-3xl font-bold mb-4">Quản lý chào giá</h1>
+      <h2 className="text-xl font-bold mb-4">
+        Tên công việc: {offerQuery.data.title}
+      </h2>
+      {_.isEmpty(offerQuery.data.offers) ? (
+        <div>Chưa có freelancer nào nhận làm việc này.</div>
+      ) : (
+        <></>
+      )}
       {offerQuery.data.offers
-        .filter((offer) => offer.status === "ACCEPTED" && !_.isNil(offer.freelancer))
+        .filter(
+          (offer) => offer.status === "ACCEPTED" && !_.isNil(offer.freelancer)
+        )
         .map((offer) => (
           <div className="indicator" key={offer.offerId}>
             <span className="indicator-item badge bg-green-600 border-green-600">
@@ -59,17 +107,13 @@ const ViewOffer = () => {
                       <h1 className="text-base font-semibold">
                         Giới thiệu kinh nghiệm và kỹ năng
                       </h1>
-                      <h1 className="text-sm">
-                        {offer.experience}
-                      </h1>
+                      <h1 className="text-sm">{offer.experience}</h1>
                     </div>
                     <div className="flex flex-col gap-2 pt-2 pl-2">
                       <h1 className="text-base font-semibold">
                         Kế hoạch thực hiện công việc
                       </h1>
-                      <h1 className="text-sm">
-                        {offer.planning}
-                      </h1>
+                      <h1 className="text-sm">{offer.planning}</h1>
                     </div>
                     <div className="flex flex-col gap-2 pt-2 pl-2">
                       <h1 className="text-base font-semibold">
@@ -89,7 +133,11 @@ const ViewOffer = () => {
                         <div className="rounded-full">
                           <img
                             className="usr-avatar !w-24"
-                            src={_.isNil(offer.freelancer.avatar) ? defaultAvatar : offer.freelancer.avatar}
+                            src={
+                              _.isNil(offer.freelancer.avatar)
+                                ? defaultAvatar
+                                : offer.freelancer.avatar
+                            }
                             alt=""
                           />
                         </div>
@@ -129,9 +177,14 @@ const ViewOffer = () => {
           </div>
         ))}
       {offerQuery.data.offers
-        .filter((offer) => offer.status === "REJECTED" && !_.isNil(offer.freelancer))
+        .filter(
+          (offer) => offer.status === "REJECTED" && !_.isNil(offer.freelancer)
+        )
         .map((offer) => (
-          <div key={offer.offerId} className="card card-compact all-shadow border-[1px] rounded-md border-red-600">
+          <div
+            key={offer.offerId}
+            className="card card-compact all-shadow border-[1px] rounded-md border-red-600"
+          >
             <div className="flex pb-2">
               <div className="w-2/3">
                 <div className="flex flex-col gap-y-4">
@@ -139,17 +192,13 @@ const ViewOffer = () => {
                     <h1 className="text-base font-semibold">
                       Giới thiệu kinh nghiệm và kỹ năng
                     </h1>
-                    <h1 className="text-sm">
-                      {offer.experience}
-                    </h1>
+                    <h1 className="text-sm">{offer.experience}</h1>
                   </div>
                   <div className="flex flex-col gap-2 pt-2 pl-2">
                     <h1 className="text-base font-semibold">
                       Kế hoạch thực hiện công việc
                     </h1>
-                    <h1 className="text-sm">
-                      {offer.planning}
-                    </h1>
+                    <h1 className="text-sm">{offer.planning}</h1>
                   </div>
                   <div className="flex flex-col gap-2 pt-2 pl-2">
                     <h1 className="text-base font-semibold">
@@ -169,7 +218,11 @@ const ViewOffer = () => {
                       <div className="rounded-full">
                         <img
                           className="usr-avatar !w-24"
-                          src={_.isNil(offer.freelancer.avatar) ? defaultAvatar : offer.freelancer.avatar}
+                          src={
+                            _.isNil(offer.freelancer.avatar)
+                              ? defaultAvatar
+                              : offer.freelancer.avatar
+                          }
                           alt=""
                         />
                       </div>
@@ -209,8 +262,10 @@ const ViewOffer = () => {
             </div>
           </div>
         ))}
-        {offerQuery.data.offers
-        .filter((offer) => offer.status === "OFFERING" && !_.isNil(offer.freelancer))
+      {offerQuery.data.offers
+        .filter(
+          (offer) => offer.status === "OFFERING" && !_.isNil(offer.freelancer)
+        )
         .map((offer) => (
           <div className="indicator" key={offer.offerId}>
             {/* <span className="indicator-item badge bg-yellow-600 border-yellow-600">
@@ -224,17 +279,13 @@ const ViewOffer = () => {
                       <h1 className="text-base font-semibold">
                         Giới thiệu kinh nghiệm và kỹ năng
                       </h1>
-                      <h1 className="text-sm">
-                        {offer.experience}
-                      </h1>
+                      <h1 className="text-sm">{offer.experience}</h1>
                     </div>
                     <div className="flex flex-col gap-2 pt-2 pl-2">
                       <h1 className="text-base font-semibold">
                         Kế hoạch thực hiện công việc
                       </h1>
-                      <h1 className="text-sm">
-                        {offer.planning}
-                      </h1>
+                      <h1 className="text-sm">{offer.planning}</h1>
                     </div>
                     <div className="flex flex-col gap-2 pt-2 pl-2">
                       <h1 className="text-base font-semibold">
@@ -254,7 +305,11 @@ const ViewOffer = () => {
                         <div className="rounded-full">
                           <img
                             className="usr-avatar !w-24"
-                            src={_.isNil(offer.freelancer.avatar) ? defaultAvatar : offer.freelancer.avatar}
+                            src={
+                              _.isNil(offer.freelancer.avatar)
+                                ? defaultAvatar
+                                : offer.freelancer.avatar
+                            }
                             alt=""
                           />
                         </div>
@@ -269,8 +324,17 @@ const ViewOffer = () => {
                         {offer.freelancer.shortDescription}
                       </h1>
                       <div className="flex justify-start w-full gap-2">
-                        {/* <div className="btn btn-accent text-white">Liên hệ</div> */}
-                        <div onClick={() => onAcceptOffer(offer.offerId)} className="btn btn-secondary text-white">
+                        <label
+                          htmlFor="send-msg-modal"
+                          onClick={()=> setSelectedFLId(offer.freelancer.freelancerId)}
+                          className="btn btn-accent text-white"
+                        >
+                          Liên hệ
+                        </label>
+                        <div
+                          onClick={() => onAcceptOffer(offer.offerId)}
+                          className="btn btn-secondary text-white"
+                        >
                           Giao việc
                         </div>
                       </div>
@@ -300,6 +364,40 @@ const ViewOffer = () => {
         className="btn red-btn w-52 text-white"
       >
         Quay về
+      </div>
+      <input
+        ref={modalBtnRef}
+        type="checkbox"
+        id="send-msg-modal"
+        className="modal-toggle"
+      />
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Gửi tin nhắn tới freelancer</h3>
+          <form onSubmit={handleSubmit(onSend)}>
+            <p className="py-4">
+              <ReactTextareaAutosize
+                name="message-content"
+                className="w-full min-h-fit pl-2 bg-white whitespace-pre-line resize-none textarea textarea-bordered"
+                id=""
+                rows={5}
+                {...register("content", { required: true })}
+                // defaultValue={msg.content}
+              />
+            </p>
+            <div className="modal-action">
+              <label
+                htmlFor="send-msg-modal"
+                className="btn btn-sm offer-btn text-white"
+              >
+                Hủy
+              </label>
+              <button className="btn btn-sm btn-secondary text-white">
+                Gửi
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

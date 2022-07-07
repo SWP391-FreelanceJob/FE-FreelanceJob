@@ -8,7 +8,7 @@ export const messageApi = createApi({
   // keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getMessageById: builder.query({
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 15,
       query: (userId) => ({
         url: `${Endpoints.MESSAGE}/${userId}`,
         method: "GET",
@@ -16,7 +16,7 @@ export const messageApi = createApi({
       }),
     }),
     getMessageByJobId: builder.query({
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 15,
       query: (jobId) => ({
         url: `${Endpoints.MESSAGEJOBID}/${jobId}`,
         method: "GET",
@@ -24,15 +24,16 @@ export const messageApi = createApi({
       }),
     }),
     getMessageByAccountIdJobId: builder.query({
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 15,
       query: ({ accountId, jobId }) => ({
         url: `${Endpoints.MESSAGE}/${accountId}/${jobId}`,
         method: "GET",
         params: {},
       }),
+      providesTags: ["messageByAccountIdJobId"],
     }),
     getMessageByTarget: builder.query({
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 15,
       query: ({ targetAccountId, sourceAccountId, jobId }) => ({
         url: `${Endpoints.MESSAGEBYTARGET}/${jobId}/account/${sourceAccountId}/with/${targetAccountId}`,
         method: "GET",
@@ -47,7 +48,7 @@ export const messageApi = createApi({
         method: "POST",
         data: newMsg,
       }),
-      invalidatesTags: ["messageByTarget"],
+      invalidatesTags: ["messageByAccountIdJobId"],
     }),
   }),
 });

@@ -80,7 +80,7 @@ const CreateJob = () => {
       const result = await updateJob({ jobId: state.id, job: jobData });
       if (result.data) {
         notyf.success("Cập nhật thành công");
-        navigate(-1);
+        navigate(`/job/${state.id}`);
       } else {
         notyf.error("Cập nhật thất bại. Vui lòng thử lại sau!");
       }

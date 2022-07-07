@@ -17,32 +17,40 @@ import {
 import ReactTextareaAutosize from "react-textarea-autosize";
 import defaultAva from "@/App/Assets/png/default.webp";
 import { useGetJobByIdQuery } from "@/App/Models/Job/Job";
-import { JobStatusFromInt } from "@/App/Constant";
+import { JobStatusFromInt, OfferStatus } from "@/App/Constant";
 import { useSelector } from "react-redux";
 import { useGetOfferByJobIdAndFreelancerIdQuery } from "@/App/Models/Offer/Offer";
 import { useForm } from "react-hook-form";
 import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
 import useMqttState from "@/App/Utils/Mqtt/useMqttState";
 import useSubscription from "@/App/Utils/Mqtt/useSubscription";
+import _ from "lodash";
 
 const JobProgress = () => {
   dayjs.locale("vi");
 
   const [isCantChat, setIsCantChat] = useState(false);
+  const [isRejectedFL, setisRejectedFL] = useState(false);
   const [selectedAccId, setSelectedAccId] = useState();
   const [selectedOfferInfo, setSelectedOfferInfo] = useState();
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [selectedAttachment, setSelectedAttachment] = useState(null);
+
+  const [prevMqttMsg, setPrevMqttMsg] = useState(null);
 
   const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
   const navigate = useNavigate();
   let { id } = useParams();
 
+  if (isNaN(id)) {
+    navigate("/not-found");
+  }
+
   const userState = useSelector((state) => state.user);
 
   // mqttClient.subscribe("/msg/" + userState.accountId);
-  const { message } = useSubscription("/msg/" + userState.accountId);
+  const { message } = useSubscription("/msg/" + userState.accountId + "/" + id);
 
   const isRecruiter = userState.role === "recruiter";
 
@@ -68,27 +76,28 @@ const JobProgress = () => {
     data: msgInfData,
     error: msgInfError,
     isLoading: msgInfLoading,
+    refetch,
   } = useGetMessageByAccountIdJobIdQuery({
     accountId: userState.accountId,
     jobId: id,
   });
 
-  const {
-    data: msgData,
-    error: msgError,
-    isLoading: msgLoading,
-    isFetching: msgFetching,
-    refetch,
-  } = useGetMessageByTargetQuery(
-    {
-      targetAccountId: selectedAccId,
-      sourceAccountId: userState.accountId,
-      jobId: id,
-    },
-    {
-      skip: !selectedAccId,
-    }
-  );
+  // const {
+  //   data: msgData,
+  //   error: msgError,
+  //   isLoading: msgLoading,
+  //   isFetching: msgFetching,
+  //   refetch,
+  // } = useGetMessageByTargetQuery(
+  //   {
+  //     targetAccountId: selectedAccId,
+  //     sourceAccountId: userState.accountId,
+  //     jobId: id,
+  //   },
+  //   {
+  //     skip: !selectedAccId || isRejectedFL,
+  //   }
+  // );
 
   const [sendMsg] = useSentMessageMutation();
 
@@ -100,16 +109,36 @@ const JobProgress = () => {
     formState: { errors },
   } = useForm();
 
-  // mqttClient.onMessageArrived = (message) => {
-  //   console.log(message.payloadString);
-  //   if (selectedAccId) {
-  //     refetch();
-  //   }
-  // };
+  useEffect(() => {
+    // console.log("Mqtt msg: ", message);
+    if (message) {
+      const msgObj = JSON.parse(message.message);
+      if (!isRecruiter) {
+        // Prevent Duplicate if any
+        setSelectedMessages(_.unionBy(selectedMessages, [msgObj], "messageId"));
+      } else {
+        // console.log(msgObj);
+        if (selectedAccId) {
+          if (msgObj.fromAccount.accId == selectedAccId) {
+            // Prevent Duplicate if any
+            setSelectedMessages(_.unionBy(selectedMessages, [msgObj], "messageId"));
+          } else {
+            refetch();
+          }
+        } else {
+          refetch();
+        }
+      }
+      // refetch();
+    }
+  }, [message]);
 
   useEffect(() => {
-    console.log("Mqtt msg: ", message);
-  }, [message]);
+    if (!isRecruiter && msgInfData) {
+      setSelectedMessages(msgInfData[0].messages);
+      setSelectedAccId(msgInfData[0].targetUser.accId);
+    }
+  }, [msgInfData]);
 
   useEffect(() => {
     if (isNaN(id)) {
@@ -125,7 +154,7 @@ const JobProgress = () => {
         jobData &&
         offerData &&
         jobData.status != 0 &&
-        offerData.status != "ACCEPTED"
+        offerData.status == "REJECTED"
       ) {
         setIsCantChat(true);
       }
@@ -138,23 +167,16 @@ const JobProgress = () => {
 
   useEffect(() => {
     setIsCantChat(false);
-    if (selectedOfferInfo && selectedOfferInfo.status != "ACCEPTED") {
+    setisRejectedFL(false);
+    if (selectedOfferInfo && selectedOfferInfo.status == "REJECTED") {
       setIsCantChat(true);
+      setisRejectedFL(true);
     }
   }, [selectedAccId]);
 
-  /**
-   * @type {[IJob,Function]}
-   */
-
-  // const {
-  //   data: msgData,
-  //   error: msgError,
-  //   isLoading: msgLoading,
-  // } = useGetMessageByJobIdQuery(id);
-
   const getFLinfo = (msgInfo) => {
-    setSelectedAccId(msgInfo.targetUser.accId);
+    if (selectedAccId != msgInfo.targetUser.accId)
+      setSelectedAccId(msgInfo.targetUser.accId);
     setSelectedOfferInfo(msgInfo.currentOffer);
     setSelectedMessages(msgInfo.messages);
   };
@@ -172,6 +194,10 @@ const JobProgress = () => {
 
     const resp = await sendMsg(msgData);
     console.log(resp);
+    if (resp.data) {
+      setSelectedMessages([...selectedMessages, resp.data]);
+    }
+    reset();
   };
 
   return (
@@ -187,11 +213,17 @@ const JobProgress = () => {
             {!isCantChat && (
               <div className="flex gap-2 items-center">
                 {userState.role === "recruiter" ? (
-                  <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
+                  <button
+                    disabled={jobData.jobStatus != 4}
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
                     Hoàn tất
                   </button>
                 ) : (
-                  <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
+                  <button
+                    disabled={jobData.jobStatus == 4}
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
                     Yêu cầu hoàn tất
                   </button>
                 )}
@@ -203,6 +235,10 @@ const JobProgress = () => {
                         ? "text-blue-500"
                         : jobData.jobStatus == 2
                         ? "text-emerald-500"
+                        : jobData.jobStatus == 3
+                        ? "text-red-500"
+                        : jobData.jobStatus == 4
+                        ? "text-yellow-600"
                         : "text-slate-500"
                     }`}
                   >
@@ -241,6 +277,10 @@ const JobProgress = () => {
                           selectedAccId == msgInfo.targetUser.accId
                             ? "bg-slate-100 "
                             : ""
+                        } ${
+                          msgInfo.currentOffer.status == "REJECTED"
+                            ? "text-slate-300 "
+                            : ""
                         } hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300 rounded-sm`}
                       >
                         <p className="">
@@ -252,69 +292,92 @@ const JobProgress = () => {
                 <div className="divider divider-horizontal" />
               </>
             )}
-
-            {msgLoading || msgFetching ? (
-              <div>Đang tải tin nhắn</div>
-            ) : (
-              <div
-                className={`${
-                  userState.role === "recruiter" ? "w-4/5" : "w-full"
-                } flex-col flex gap-2`}
-              >
-                {!isCantChat && msgData && msgData.length > 0 && (
-                  <form onSubmit={handleSubmit(onSend)}>
-                    <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
-                      <p className="text-lg font-semibold mb-2">Lời nhắn</p>
-                      <ReactTextareaAutosize
-                        id=""
-                        maxRows={13}
-                        className={`${
-                          errors.content ? "border-red-500 " : ""
-                        }bg-white rounded-sm min-h-[100px] mb-3`}
-                        {...register("content", { required: true })}
+            <div
+              className={`${
+                userState.role === "recruiter" ? "w-4/5" : "w-full"
+              } flex-col flex gap-2`}
+            >
+              {!isCantChat && selectedMessages.length > 0 && (
+                <form onSubmit={handleSubmit(onSend)}>
+                  <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
+                    <p className="text-lg font-semibold mb-2">Lời nhắn</p>
+                    <ReactTextareaAutosize
+                      id=""
+                      maxRows={13}
+                      className={`${
+                        errors.content ? "border-red-500 " : ""
+                      }bg-white rounded-sm min-h-[100px] mb-3 p-2`}
+                      {...register("content", { required: true })}
+                    />
+                    {errors.content && (
+                      <p className="text-red-400 text-xs">
+                        Lời nhắn không được để trống
+                      </p>
+                    )}
+                    <div className="flex justify-between">
+                      <CustomDropzone
+                        maxSize={2097152} //2MB
+                        multiple={false}
+                        filter={{
+                          "image/jpeg": [],
+                          "image/png": [],
+                          "image/gif": [],
+                          "image/jpg": [],
+                        }}
+                        acceptedFile={(file) => {
+                          // setSelectedAvatar(file);
+                          // if (file.length > 0)
+                          //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                        }}
+                        customClass="flex"
+                        noDrag={true}
                       />
-                      {errors.content && (
-                        <p className="text-red-400 text-xs">
-                          Lời nhắn không được để trống
-                        </p>
-                      )}
-                      <div className="flex justify-between">
-                        <CustomDropzone
-                          maxSize={2097152} //2MB
-                          multiple={false}
-                          filter={{
-                            "image/jpeg": [],
-                            "image/png": [],
-                            "image/gif": [],
-                            "image/jpg": [],
-                          }}
-                          acceptedFile={(file) => {
-                            // setSelectedAvatar(file);
-                            // if (file.length > 0)
-                            //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
-                          }}
-                          customClass="flex"
-                          noDrag={true}
-                        />
-                        <button className="btn btn-sm btn-primary text-white">
-                          Gửi
-                        </button>
-                      </div>
+                      <button className="btn btn-sm btn-primary text-white">
+                        Gửi
+                      </button>
                     </div>
-                  </form>
-                )}
-                <table className="chat-table w-full">
-                  <thead>
-                    <tr>
-                      <th>Người gửi</th>
-                      <th>Lời nhắn</th>
-                      <th>Thời gian</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {msgData &&
-                      msgData.length > 0 &&
-                      msgData.map((msg, idx) => (
+                  </div>
+                </form>
+              )}
+              {/* {msgLoading || msgFetching ? (
+                <div>Đang tải tin nhắn</div>
+              ) : (
+                
+              )} */}
+              <table className="chat-table w-full">
+                <thead>
+                  <tr>
+                    <th>Người gửi</th>
+                    <th>Lời nhắn</th>
+                    <th>Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedMessages.length > 0 &&
+                    selectedMessages.map((msg, idx) =>
+                      msg.messageType == "NOTIFICATION" ? (
+                        <tr className="bg-[#ffcac7]" key={idx}>
+                          <td className="!pb-1" colSpan={2}>
+                            <ReactTextareaAutosize
+                              name="message-content"
+                              className="w-full min-h-fit pl-2
+                              bg-[#ffcac7] text-black whitespace-pre-line resize-none"
+                              id=""
+                              disabled
+                              rows={1}
+                              defaultValue={msg.content}
+                            />
+                          </td>
+                          <td>
+                            <div>
+                              {dayjs(msg.sentTime)
+                                .format("DD/MM/YYYY HH:mm")
+                                .toString()}
+                            </div>
+                            {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
+                          </td>
+                        </tr>
+                      ) : (
                         <tr key={idx}>
                           <td>
                             <div>
@@ -347,11 +410,11 @@ const JobProgress = () => {
                             {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
                           </td>
                         </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                      )
+                    )}
+                </tbody>
+              </table>
+            </div>
           </div>
           {/* </div> */}
         </div>
@@ -438,7 +501,9 @@ const JobProgress = () => {
               <ReactTextareaAutosize
                 className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
                 disabled
-                value={offerData?.status ?? selectedOfferInfo?.status}
+                value={
+                  OfferStatus[offerData?.status ?? selectedOfferInfo?.status]
+                }
               />
             </div>
             <div className="modal-action">

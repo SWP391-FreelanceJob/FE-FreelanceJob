@@ -26,6 +26,8 @@ export const JobStatusFromInt = {
   0: "Chưa xác nhận",
   1: "Đang thực hiện",
   2: "Đã hoàn thành",
+  3: "Việc bị khoá",
+  4: "Yêu cầu hoàn tất"
 }
 
 export const AppoinmentStatus = {

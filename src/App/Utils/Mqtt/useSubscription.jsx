@@ -32,6 +32,7 @@ export default function useSubscription(topic, options) {
 
       //   client.on("message", callback);
       client.onMessageArrived = (message) => {
+        // console.log("Hey message arrived ", message);
         callback(message.destinationName, message.payloadString);
       };
     }
