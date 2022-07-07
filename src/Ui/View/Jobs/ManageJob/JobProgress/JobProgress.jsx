@@ -1,6 +1,6 @@
 import "./JobProgress.css";
 import CurrencyInput from "react-currency-input-field";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getJobById } from "@/Api/Service/Job";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import dayjs from "dayjs";
@@ -16,15 +16,25 @@ import {
 } from "@/App/Models/Message/Message";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import defaultAva from "@/App/Assets/png/default.webp";
-import { useGetJobByIdQuery } from "@/App/Models/Job/Job";
+import {
+  useCompleteJobMutation,
+  useGetJobByIdQuery,
+  useRequestToCompleteJobMutation,
+} from "@/App/Models/Job/Job";
 import { JobStatusFromInt, OfferStatus } from "@/App/Constant";
-import { useSelector } from "react-redux";
-import { useGetOfferByJobIdAndFreelancerIdQuery } from "@/App/Models/Offer/Offer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useGetOfferByJobIdAndFreelancerIdQuery,
+  useUpdateOfferStatusByIdMutation,
+} from "@/App/Models/Offer/Offer";
 import { useForm } from "react-hook-form";
 import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
 import useMqttState from "@/App/Utils/Mqtt/useMqttState";
 import useSubscription from "@/App/Utils/Mqtt/useSubscription";
 import _ from "lodash";
+import { setLoading } from "@/App/Models/GlobalLoading/LoadingSlice";
+import { notyf } from "@/App/Utils/NotyfSetting";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -35,12 +45,14 @@ const JobProgress = () => {
   const [selectedOfferInfo, setSelectedOfferInfo] = useState();
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [selectedAttachment, setSelectedAttachment] = useState(null);
-
   const [prevMqttMsg, setPrevMqttMsg] = useState(null);
+
+  const modalBtnRef = useRef(null);
 
   const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   let { id } = useParams();
 
   if (isNaN(id)) {
@@ -55,15 +67,24 @@ const JobProgress = () => {
   const isRecruiter = userState.role === "recruiter";
 
   const {
+    data: balanceData,
+    error: balanceError,
+    isLoading: balanceLoading,
+    refetch: balanceRefetch,
+  } = useGetBalanceByIdQuery(userState.accountId);
+
+  const {
     data: jobData,
     error: jobError,
     isLoading: jobLoading,
+    refetch: jobRefetch,
   } = useGetJobByIdQuery(id);
 
   const {
     data: offerData,
     error: offerError,
     isLoading: isGetOfferLoading,
+    refetch: offerRefetch,
   } = useGetOfferByJobIdAndFreelancerIdQuery(
     {
       jobId: id,
@@ -100,6 +121,9 @@ const JobProgress = () => {
   // );
 
   const [sendMsg] = useSentMessageMutation();
+  const [updateOfferStatus] = useUpdateOfferStatusByIdMutation();
+  const [requestComplete] = useRequestToCompleteJobMutation();
+  const [confirmComplete] = useCompleteJobMutation();
 
   const {
     register,
@@ -116,17 +140,27 @@ const JobProgress = () => {
       if (!isRecruiter) {
         // Prevent Duplicate if any
         setSelectedMessages(_.unionBy(selectedMessages, [msgObj], "messageId"));
+        if (msgObj.messageType == "NOTIFICATION") {
+          jobRefetch();
+          balanceRefetch();
+        }
       } else {
         // console.log(msgObj);
         if (selectedAccId) {
           if (msgObj.fromAccount.accId == selectedAccId) {
             // Prevent Duplicate if any
-            setSelectedMessages(_.unionBy(selectedMessages, [msgObj], "messageId"));
+            setSelectedMessages(
+              _.unionBy(selectedMessages, [msgObj], "messageId")
+            );
           } else {
             refetch();
           }
         } else {
           refetch();
+        }
+        if (msgObj.messageType == "NOTIFICATION") {
+          jobRefetch();
+          balanceRefetch();
         }
       }
       // refetch();
@@ -153,7 +187,7 @@ const JobProgress = () => {
       if (
         jobData &&
         offerData &&
-        jobData.status != 0 &&
+        jobData.jobStatus != 0 &&
         offerData.status == "REJECTED"
       ) {
         setIsCantChat(true);
@@ -200,6 +234,55 @@ const JobProgress = () => {
     reset();
   };
 
+  const onAcceptOffer = async (offerId) => {
+    // dispatch(setLoading(true));
+    if (selectedOfferInfo) {
+      const result = await updateOfferStatus({
+        offerId: selectedOfferInfo.offerId,
+        offerStatusReq: { status: "ACCEPTED", jobId: id },
+      });
+      if (result.data) {
+        notyf.success("Nhận chào giá thành công");
+      }
+      // dispatch(setLoading(false));
+      // window.location.reload();
+      jobRefetch();
+      offerRefetch();
+      modalBtnRef.current.click();
+    }
+  };
+
+  const onRequestToComplete = async () => {
+    // Only FL can request to complete
+    const data = {
+      requesterAccountId: userState.accountId,
+      theOtherChatterRecruiterId: jobData.recruiterId,
+    };
+    const result = await requestComplete({ jobId: id, data });
+    if (!result.error) {
+      notyf.success("Yêu cầu hoàn thành thành công");
+      refetch();
+    }
+  };
+
+  const onCompleteJob = async () => {
+    // Only FL can request to complete
+    const currOffer = _.find(jobData.offers, { status: "ACCEPTED" });
+    const data = {
+      requesterAccountId: userState.accountId,
+      offerId: currOffer.offerId,
+    };
+    console.log(data);
+    const result = await confirmComplete({ jobId: id, data });
+    if (!result.error) {
+      notyf.success("Xác nhận thành công");
+      refetch();
+      balanceRefetch();
+    } else {
+      notyf.error(result.error.messages[0].err_msg);
+    }
+  };
+
   return (
     <div>
       {jobLoading ? (
@@ -214,6 +297,7 @@ const JobProgress = () => {
               <div className="flex gap-2 items-center">
                 {userState.role === "recruiter" ? (
                   <button
+                    onClick={onCompleteJob}
                     disabled={jobData.jobStatus != 4}
                     className="btn btn-sm btn-outline btn-primary hover:!text-white"
                   >
@@ -221,7 +305,12 @@ const JobProgress = () => {
                   </button>
                 ) : (
                   <button
-                    disabled={jobData.jobStatus == 4}
+                    onClick={onRequestToComplete}
+                    disabled={
+                      jobData.jobStatus == 4 ||
+                      jobData.jobStatus == 0 ||
+                      jobData.jobStatus == 2
+                    }
                     className="btn btn-sm btn-outline btn-primary hover:!text-white"
                   >
                     Yêu cầu hoàn tất
@@ -456,9 +545,14 @@ const JobProgress = () => {
           </div>
         </div>
       )}
-      <input type="checkbox" id="offer-detail-modal" className="modal-toggle" />
+      <input
+        ref={modalBtnRef}
+        type="checkbox"
+        id="offer-detail-modal"
+        className="modal-toggle"
+      />
       {(offerData || selectedOfferInfo) && (
-        <label htmlFor="offer-detail-modal" className="modal cursor-pointer">
+        <div className="modal">
           <div className="modal-box flex flex-col gap-1">
             <div>
               <div className="font-bold">Kinh nghiệm:</div>
@@ -507,6 +601,13 @@ const JobProgress = () => {
               />
             </div>
             <div className="modal-action">
+              <button
+                onClick={onAcceptOffer}
+                disabled={jobData && jobData.jobStatus != 0}
+                className="btn btn-sm btn-outline btn-primary hover:!text-white"
+              >
+                Giao việc
+              </button>
               <label
                 htmlFor="offer-detail-modal"
                 className="btn btn-sm btn-outline"
@@ -515,7 +616,7 @@ const JobProgress = () => {
               </label>
             </div>
           </div>
-        </label>
+        </div>
       )}
     </div>
   );

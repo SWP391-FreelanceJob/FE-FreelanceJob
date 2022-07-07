@@ -62,7 +62,7 @@ export const offerApi = createApi({
           method: "PUT",
           data: offerStatusReq,
         }),
-        invalidatesTags: ["offer"],
+        invalidatesTags: ["offer","job"],
       }),
   }),
 });

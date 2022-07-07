@@ -53,7 +53,7 @@ const Topup = () => {
                 prefix="VND "
                 allowNegativeValue={false}
                 disabled
-                defaultValue={data.balance}
+                value={data.balance}
               />
             )}
           </span>

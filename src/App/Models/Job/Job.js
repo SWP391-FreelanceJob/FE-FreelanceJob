@@ -35,6 +35,7 @@ export const jobApi = createApi({
         // params: { isAscending, pageSize, limit, pageNo },
       }),
       keepUnusedDataFor: 4,
+      providesTags: ["job"],
     }),
     createNewJob: builder.mutation({
       query: (job) => ({
@@ -50,6 +51,22 @@ export const jobApi = createApi({
         data: job,
       }),
     }),
+    requestToCompleteJob: builder.mutation({
+      query: ({ jobId, data }) => ({
+        url: `${Endpoints.JOB}/${jobId}/status/request-to-complete`,
+        method: "PUT",
+        data: data,
+      }),
+      invalidatesTags: ["job"],
+    }),
+    completeJob: builder.mutation({
+      query: ({ jobId, data }) => ({
+        url: `${Endpoints.JOB}/${jobId}/status/complete`,
+        method: "PUT",
+        data: data,
+      }),
+      invalidatesTags: ["job"],
+    }),
     deleteJob: builder.mutation({
       query: (jobId) => ({
         url: `${Endpoints.JOB}/${jobId}`,
@@ -64,6 +81,8 @@ export const {
   useGetJobsQuery,
   useGetJobByIdQuery,
   useGetJobByRecruiterIdQuery,
+  useRequestToCompleteJobMutation,
+  useCompleteJobMutation,
   useCreateNewJobMutation,
   useUpdateJobMutation,
   useDeleteJobMutation,
