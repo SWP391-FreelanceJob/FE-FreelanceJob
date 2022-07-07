@@ -88,7 +88,8 @@ const Profile = () => {
                     return (
                       <div
                         key={e.id}
-                        className="card card-compact bg-base-100 shadow-md mb-4 w-1/3 min-w-[30%]"
+                        onClick={() => navigate(`/project/${e.id}`)}
+                        className="card card-compact bg-base-100 shadow-md mb-4 w-1/3 min-w-[30%] hover:cursor-pointer"
                       >
                         <figure>
                           <img
