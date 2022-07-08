@@ -34,6 +34,23 @@ export const uploadAvatarToFirebase = async (storage, userId, image) => {
 /**
  *
  * @param {string} userId
+ * @param {Blob | File | Uint8Array | ArrayBuffer} file
+ * @returns
+ */
+export const uploadAttachmentToFirebase = async (storage, userId, file) => {
+  // const doctorAvatarRef = ref(storage, `UserImages/AvatarDoctor/${doctorId}`);
+  // const uploadTask = await uploadBytes(doctorAvatarRef, image);
+  // return uploadTask.ref;
+  return await uploadImageToFirebase(
+    storage,
+    `UserFiles/Attachment/${userId}/${file.name}`,
+    file
+  );
+};
+
+/**
+ *
+ * @param {string} userId
  * @param {Blob | File | Uint8Array | ArrayBuffer} image
  * @returns
  */
@@ -43,7 +60,23 @@ export const uploadAvatarToFirebaseGetDownloadUrl = async (
   image
 ) => {
   if (!image) return "";
-  const ref = await uploadAvatarToFirebase(storage,userId, image);
+  const ref = await uploadAvatarToFirebase(storage, userId, image);
+  return await getDownloadURL(ref);
+};
+
+/**
+ *
+ * @param {string} userId
+ * @param {Blob | File | Uint8Array | ArrayBuffer} file
+ * @returns
+ */
+export const uploadAttachmentToFirebaseGetDownloadUrl = async (
+  storage,
+  userId,
+  file
+) => {
+  if (!file) return "";
+  const ref = await uploadAttachmentToFirebase(storage, userId, file);
   return await getDownloadURL(ref);
 };
 

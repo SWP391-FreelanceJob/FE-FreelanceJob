@@ -31,7 +31,6 @@ const OfferingOffer = () => {
     refetchOnMountOrArgChange: true,
   });
 
-
   const navigate = useNavigate();
 
   const deleteOffer = async () => {
@@ -77,11 +76,14 @@ const OfferingOffer = () => {
                       onClick={() => navigate(`/job/${val.jobId}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     />
-
                     <label
                       onClick={() => setOfferToDelete(val.offerId)}
                       htmlFor="confirm-modal"
                       className="bi bi-trash text-lg text-red-500 cursor-pointer"
+                    />
+                    <i
+                      onClick={() => navigate(`/job-progress/${val.jobId}`)}
+                      className="bi bi-chat-dots-fill text-lg text-blue-600 cursor-pointer"
                     />
                   </span>
                 </td>
