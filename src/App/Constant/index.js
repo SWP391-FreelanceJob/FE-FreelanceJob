@@ -30,6 +30,14 @@ export const JobStatusFromInt = {
   4: "Yêu cầu hoàn tất"
 }
 
+export const JobStatus = {
+  PUBLISHED: "Chưa xác nhận",
+  ACCEPTED: "Đang thực hiện",
+  DONE: "Đã hoàn thành",
+  BANNED: "Việc bị khoá",
+  REQUEST_FOR_COMPLETE: "Yêu cầu hoàn tất"
+}
+
 export const AppoinmentStatus = {
   "CONFIRM":"0",
   "COMPLETE":"1",

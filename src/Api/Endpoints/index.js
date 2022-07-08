@@ -25,4 +25,5 @@ export const Endpoints = {
     "MESSAGEBYTARGET":"/message/job",
     "MESSAGEJOBID":"/message/by-job-id",
     "NEWMESSAGE":"/message/new",
+    "RATING": "/rating"
 }
