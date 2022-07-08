@@ -2,8 +2,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
 
 import welcomeSvg from "@/App/Assets/svg/freelance.svg";
-import stonkSvg from "@/App/Assets/svg/stonk.svg";
-import handshakeSvg from "@/App/Assets/svg/handshake.svg";
 import fastSvg from "@/App/Assets/svg/fast.svg";
 import feedbackSvg from "@/App/Assets/svg/feedback.svg"
 import convenientSvg from "@/App/Assets/svg/convenient.svg"

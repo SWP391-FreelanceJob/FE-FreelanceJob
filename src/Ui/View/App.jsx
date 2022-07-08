@@ -33,7 +33,11 @@ import ManageProject from "./Settings/Profile/ManageProject/ManageProject";
 import EditProject from "./Settings/Profile/ManageProject/EditProject/EditProject";
 import ViewOffer from "./Jobs/ManageJob/ViewOffer/ViewOffer";
 import JobProgress from "./Jobs/ManageJob/JobProgress/JobProgress";
-
+import TopupGuide from "@/Ui/View/Guideline/TopupGuide/TopupGuide";
+import BidGuide from "@/Ui/View/Guideline/FLGuide/BidGuide";
+import ContactGuide from "@/Ui/View/Guideline/RCGuide/ContactGuide";
+import SelectFCGuide from "@/Ui/View/Guideline/RCGuide/SelectFCGuide";
+import PostGuide from "@/Ui/View/Guideline/RCGuide/PostGuide";
 
 function App() {
   const fireStoreInstance = getFirestore(useFirebaseApp())
@@ -80,6 +84,11 @@ function App() {
           </Route>
           <Route path="/sign-in" element={<SignIn/>}/>
           <Route path="/sign-up" element={<SignUp/>}/>
+          <Route path="/topup-guide" element={<TopupGuide/>}/>
+          <Route path="/bid-guide" element={<BidGuide/>}/>
+          <Route path="/contact-guide" element={<ContactGuide/>}/>
+          <Route path="/selectfc-guide" element={<SelectFCGuide/>}/>
+          <Route path="/post-guide" element={<PostGuide/>}/>
           {/* <Route path="*" element={<NotFound/>}/> */}
         </Routes>
       </ScrollToTop>
