@@ -1,6 +1,4 @@
-import CustomNavbar from "@/Ui/Components/CustomNavbar/CustomNavbar";
-import CustomFooter from "@/Ui/Components/CustomFooter/CustomFooter";
-import { Outlet } from "react-router-dom";
+
 
 import postSvg from "@/App/Assets/svg/post.svg"
 import postPostSvg from "@/App/Assets/svg/postPost.svg"
@@ -8,15 +6,15 @@ import postFillSvg from "@/App/Assets/svg/postFill.svg"
 import postUploadSvg from "@/App/Assets/svg/postUpload.svg"
 
 import "./ContactGuide.css";
+import bidLoginSvg from "@/App/Assets/svg/bidLogin.svg";
 
 const SelectFCGuide = () => {
     return (
         <div className="overflow-hidden min-h-screen">
-            <CustomNavbar />
             <div className="max-w-[1400px] mx-auto mb-10 mt-12 relative">
-                <div className="mx-7 2xl:mx-0">
-                    <Outlet />
-                </div>
+                {/*<div className="mx-7 2xl:mx-0">*/}
+                {/*    <Outlet />*/}
+                {/*</div>*/}
                 <div className="h-full mb-16">
                     <div className="m-12 px-5s w-full flex">
                         <div className="w-1/3 mt-40">
@@ -36,27 +34,55 @@ const SelectFCGuide = () => {
                 <div className="flex w-full justify-center mt-3">
                     <div className="text-4xl mt-2 mb-6 fvn-nunito text-black"><b>Hướng dẫn khách hàng đăng việc</b></div>
                 </div>
+
                 <div className="md:mx-7 pt-3 pb-3 my-10">
                     <div className="pb-6 flex justify-between items-center">
                         <h1 className="text-4xl text-blue-600 fvn-nunito font-bold  ">
-                            <span className="text-white w-50 h-50 rounded-lg bg-blue-600">Bước 1</span> Vào mục đăng việc
+                            <span className="px-2 text-white w-50 h-50 rounded-lg bg-blue-600">Bước 1</span> Đăng nhập
                         </h1>
                     </div>
                     <div className="text-xl rounded-md mb-4">
                         <div className="container flex mx-auto p-5">
                             <div className="w-1/2 flex justify-center">
-                                <img className="w-96" src={postPostSvg} alt="handskae" />
+                                <img className="w-96" src={bidLoginSvg} alt="handskae" />
                             </div>
+                            <div className="w-1/2">
+                                <div className="mt-16">
+                                    <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
+                                        <b>Đăng nhập</b> thành công
+                                    </h1>
+                                </div>
+                                <div className="mt-5 text-2xl">
+                                    <p>Để sử dụng những dịch vụ bổ sung như:<b> Nạp tiền, Chào giá, v.v...</b></p>
+                                    <br/>
+                                    <p>Khách hàng cần phải đăng nhập vào hệ thống để thực hiện giao dịch.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="md:mx-7 pt-3 pb-3 my-10">
+                    <div className="pb-6 flex justify-between items-center">
+                        <h1 className="text-4xl text-blue-600 fvn-nunito font-bold  ">
+                            <span className="px-5 text-white w-50 h-50 rounded-lg bg-blue-600">Bước 2</span> Vào mục đăng việc
+                        </h1>
+                    </div>
+                    <div className="text-xl rounded-md mb-4">
+                        <div className="container flex mx-auto p-5">
                             <div className="w-1/2">
                                 <div className="mt-16">
                                     <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
                                     </h1>
                                 </div>
                                 <div className="mt-5 text-2xl">
-                                    <p>Bấm vào nút <b>Đăng việc</b> hiện thị trên thanh Menu</p>
+                                    <p>Bấm vào nút <b>Đăng việc</b> hiển thị trên thanh Menu</p>
                                     <br/>
-                                    <p>Mẫu đăng việc của FreelanceVN đã sẵn sàng để bạn sử dụng</p>
+                                    <p>Mẫu đăng việc của FreelanceVN đã sẵn sàng để bạn sử dụng.</p>
                                 </div>
+                            </div>
+                            <div className="w-1/2 flex justify-center">
+                                <img className="w-96" src={postPostSvg} alt="handskae" />
                             </div>
                         </div>
                     </div>
@@ -66,16 +92,19 @@ const SelectFCGuide = () => {
                 <div className="md:mx-7 pt-3 pb-3 my-10">
                     <div className="pb-6 flex justify-between items-center">
                         <h1 className="text-4xl text-blue-600 fvn-nunito font-bold  ">
-                            <span className="text-white w-50 h-50 rounded-lg bg-blue-600">Bước 2</span> Điền thông tin
+                            <span className="px-5 text-white w-50 h-50 rounded-lg bg-blue-600">Bước 3</span> Điền thông tin
                         </h1>
                     </div>
                     <div className="text-xl rounded-md mb-4">
                         <div className="container flex mx-auto p-5">
+                            <div className="w-1/2 flex justify-center">
+                                <img className="w-96" src={postFillSvg} alt="handskae" />
+                            </div>
                             <div className=" w-1/2">
                                 <div className="mt-16">
                                     <h1 className="text-2xl mt-2 mb-6 fvn-nunito text-black">
                                         <p>Sau khi vào mục <b>Đăng việc</b>, bạn sẽ thấy mẫu để điền thông tin.</p>
-                                        <p>Hãy điền đầy đủ thông tin yêu cầu, mô cả công việc của bạn vào mẫu chúng tôi cung cấp</p>
+                                        <p>Hãy điền đầy đủ thông tin yêu cầu, mô tả công việc của bạn vào mẫu chúng tôi cung cấp.</p>
                                         <p>Chọn ngân sách cho công việc và thêm yêu cầu kỹ năng.</p>
                                     </h1>
                                 </div>
@@ -84,11 +113,8 @@ const SelectFCGuide = () => {
                                     <p>- Viết tên việc ngắn gọn</p>
                                     <p>- Mô tả rõ ràng</p>
                                     <p>- Thêm kỹ năng</p>
-                                    <p>- Chọn ngân sách hấp dẫn</p>
+                                    <p>- Đưa ra ngân sách hấp dẫn</p>
                                 </div>
-                            </div>
-                            <div className="w-1/2 flex justify-center">
-                                <img className="w-96" src={postFillSvg} alt="handskae" />
                             </div>
                         </div>
                     </div>
@@ -97,14 +123,11 @@ const SelectFCGuide = () => {
                 <div className="md:mx-7 pt-3 pb-3 my-10">
                     <div className="pb-6 flex justify-between items-center">
                         <h1 className="text-4xl text-blue-600 fvn-nunito font-bold  ">
-                            <span className="text-white w-50 h-50 rounded-lg bg-blue-600">Bước 3</span> Đăng việc lên FreelanceVN
+                            <span className="px-5 text-white w-50 h-50 rounded-lg bg-blue-600">Bước 4</span> Đăng việc lên FreelanceVN
                         </h1>
                     </div>
                     <div className="text-xl rounded-md mb-4">
                         <div className="container flex mx-auto p-5">
-                            <div className="w-1/2 flex justify-center">
-                                <img className="w-96" src={postUploadSvg} alt="handskae" />
-                            </div>
                             <div className="w-1/2">
                                 <div className="mt-16">
                                     <h1 className="text-4xl mt-2 mb-6 fvn-nunito text-black">
@@ -116,12 +139,14 @@ const SelectFCGuide = () => {
                                     <p>Nếu có nhu cầu chỉnh sửa sau khi đăng việc, bạn có thể bấm vào nút <b>Chỉnh sửa</b>.</p>
                                 </div>
                             </div>
+                            <div className="w-1/2 flex justify-center">
+                                <img className="w-96" src={postUploadSvg} alt="handskae" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
-            <CustomFooter />
         </div>
 
 
