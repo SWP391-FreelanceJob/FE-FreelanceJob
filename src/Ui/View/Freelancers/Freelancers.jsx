@@ -28,7 +28,7 @@ const Freelancers = () => {
   // const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
 
   const navigate = useNavigate();
-  const [ pageNo, setPageNo ] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
   const { data, error, isLoading } = useGetFreelancersQuery(pageNo);
   // const {data: skillData, error: skillError, isLoading: isLoadingSkill} = useGetSkillsQuery();
   // const skillQuery = useGetSkillsQuery("",{selectFromResult: (data) => console.log(data)});
@@ -38,18 +38,6 @@ const Freelancers = () => {
     // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
     setPageNo(newPageNo);
   };
-
-  // useEffect(() => {
-  //   loadInitialFreelancers();
-  // }, []);
-
-  // const loadInitialFreelancers = async () => {
-  //   setIsLoadingFreelancers(true);
-  //   const result = await getAllFreelancers();
-  //   setLoadedFreelancers(result);
-  //   setIsLoadingFreelancers(false);
-  // };
-
 
   /**
    *
@@ -70,19 +58,26 @@ const Freelancers = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
-                {skillQuery.isLoading ? <div>Loading skill...</div> : 
-                <div className="form-control">
-                  {skillQuery.data.map((skill) => (
-                    <label key={skill.skillId} className="label cursor-pointer">
-                      <span className="label-text">{skill.skillName}</span>
-                      <input
-                        type="checkbox"
-                        readOnly
-                        className="checkbox checkbox-accent"
-                      />
-                    </label>
-                  ))}
-                </div>}
+                {skillQuery.isLoading ? (
+                  <div>Loading skill...</div>
+                ) : (
+                  <div className="form-control">
+                    {skillQuery.data &&
+                      skillQuery.data.map((skill) => (
+                        <label
+                          key={skill.skillId}
+                          className="label cursor-pointer"
+                        >
+                          <span className="label-text">{skill.skillName}</span>
+                          <input
+                            type="checkbox"
+                            readOnly
+                            className="checkbox checkbox-accent"
+                          />
+                        </label>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -116,72 +111,75 @@ const Freelancers = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {data.data.map((job, idx) => (
-                <div
-                  key={idx}
-                  className="job-card cursor-pointer"
-                  onClick={() => {
-                    navigate(`/profile/${job.id}`);
-                  }}
-                >
-                  <div className="px-5">
-                    <div className="flex justify-between items-center">
-                      <div className="flex">
-                        <div className="flex avatar">
-                          <div className="w-14 rounded-full mr-3">
-                            <img src={job.avatar ?? defaultAva} alt="" />
+              {data &&
+                data.data.map((job, idx) => (
+                  <div
+                    key={idx}
+                    className="job-card cursor-pointer"
+                    onClick={() => {
+                      navigate(`/profile/${job.id}`);
+                    }}
+                  >
+                    <div className="px-5">
+                      <div className="flex justify-between items-center">
+                        <div className="flex">
+                          <div className="flex avatar">
+                            <div className="w-14 rounded-full mr-3">
+                              <img src={job.avatar ?? defaultAva} alt="" />
+                            </div>
+                          </div>
+                          <div className="overflow-hidden">
+                            <h1 className="mb-1 text-xl font-semibold">
+                              {job.name}
+                            </h1>
+                            <p className="text-sm">{job.shortDescription}</p>
                           </div>
                         </div>
-                        <div className="overflow-hidden">
-                          <h1 className="mb-1 text-xl font-semibold">
-                            {job.name}
-                          </h1>
-                          <p className="text-sm">{job.shortDescription}</p>
-                        </div>
-                      </div>
-                      {/* <div className="btn btn-sm btn-outline bg-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600 text-white">
+                        {/* <div className="btn btn-sm btn-outline bg-yellow-500 border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600 text-white">
                         <i className="bi bi-telephone-fill mr-2" /> Liên hệ
                       </div> */}
-                    </div>
-                    <div className="mt-5 mb-3 flex justify-between bg-slate-100">
-                      <div className="flex">
-                        {/* <div className="pl-2 py-2">{job.roleAtWork}</div> */}
-                        {/* <div className="divider divider-horizontal mx-2 my-2" /> */}
-                        <div className="pl-2 py-2">{job.roleAtWork}</div>
                       </div>
-                      <div className="flex items-center mr-3">
-                        <CustomRating name={idx} rating={job.rating} />
-                        {/* <Rating
+                      <div className="mt-5 mb-3 flex justify-between bg-slate-100">
+                        <div className="flex">
+                          {/* <div className="pl-2 py-2">{job.roleAtWork}</div> */}
+                          {/* <div className="divider divider-horizontal mx-2 my-2" /> */}
+                          <div className="pl-2 py-2">{job.roleAtWork}</div>
+                        </div>
+                        <div className="flex items-center mr-3">
+                          <CustomRating name={idx} rating={job.rating} />
+                          {/* <Rating
                         emptySymbol="bi bi-star text-orange-300"
                         fullSymbol="bi bi-star-fill text-orange-400"
                         fractions={3}
                       /> */}
-                        {/* <div className="divider divider-horizontal mx-2 my-2" />
+                          {/* <div className="divider divider-horizontal mx-2 my-2" />
                       <p className="">Đã làm: {job.projects.length} dự án</p> */}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-1">
-                        {job.skills.map((skill, idx) => (
-                          <div
-                            key={idx}
-                            className="badge badge-success text-white"
-                          >
-                            {skill.skillName}
-                          </div>
-                        ))}
+                      <div className="flex justify-between items-center">
+                        <div className="flex gap-1">
+                          {job.skills.map((skill, idx) => (
+                            <div
+                              key={idx}
+                              className="badge badge-success text-white"
+                            >
+                              {skill.skillName}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
-            <CustomPagination
-              prevPage={() => goToNewPage(data.pageNo - 1)}
-              nextPage={() => goToNewPage(data.pageNo + 1)}
-              pageNo={data.pageNo}
-              totalPage={data.totalPage}
-            />
+            {data && (
+              <CustomPagination
+                prevPage={() => goToNewPage(data.pageNo - 1)}
+                nextPage={() => goToNewPage(data.pageNo + 1)}
+                pageNo={data.pageNo}
+                totalPage={data.totalPage}
+              />
+            )}
           </div>
         </div>
       )}

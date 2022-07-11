@@ -52,7 +52,7 @@ const LandingPage = () => {
         {jobQuery.isLoading ? (
           <div>Loading...</div>
         ) : (
-          <div className="border-2 w-full rounded-lg">
+          jobQuery.data && <div className="border-2 w-full rounded-lg">
             {jobQuery.data.data.map((job, idx) => (
               <div
                 key={idx}
@@ -146,7 +146,7 @@ const LandingPage = () => {
             {freelancerQuery.isLoading ? (
               <div>Loading...</div>
             ) : (
-              freelancerQuery.data.data.map((freelancer) => {
+              freelancerQuery.data && freelancerQuery.data.data.map((freelancer) => {
                 return (
                   <SwiperSlide key={freelancer.id}>
                     <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">

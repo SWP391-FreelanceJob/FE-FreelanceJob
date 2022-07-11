@@ -74,15 +74,19 @@ const PublishedJob = () => {
                       onClick={() => navigate(`/offer/${val.id}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
+                    <i
+                      onClick={() => navigate(`/edit-job`, { state: val })}
+                      className="bi bi-pencil text-lg text-yellow-600 cursor-pointer"
+                    ></i>
+                    <i
+                      onClick={() => navigate(`/job-progress/${val.id}`)}
+                      className="bi bi-chat-dots-fill text-lg text-blue-600 cursor-pointer"
+                    />
                     <label
                       onClick={() => setJobToDelete(val.id)}
                       htmlFor="confirm-modal"
                       className="bi bi-trash text-lg text-red-500 cursor-pointer"
                     />
-                    <i
-                      onClick={() => navigate(`/edit-job`, { state: val  })}
-                      className="bi bi-pencil text-lg text-black cursor-pointer"
-                    ></i>
                   </span>
                 </td>
               </tr>

@@ -116,18 +116,26 @@ const Jobs = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
-                {skillQuery.isLoading ? <div></div> : <div className="form-control">
-                  {skillQuery.data.map((skill) => (
-                    <label key={skill.skillId} className="label cursor-pointer">
-                      <span className="label-text">{skill.skillName}</span>
-                      <input
-                        type="checkbox"
-                        readOnly
-                        className="checkbox checkbox-accent"
-                      />
-                    </label>
-                  ))}
-                </div>}
+                {skillQuery.isLoading ? (
+                  <div></div>
+                ) : (
+                  <div className="form-control">
+                    {skillQuery.data &&
+                      skillQuery.data.map((skill) => (
+                        <label
+                          key={skill.skillId}
+                          className="label cursor-pointer"
+                        >
+                          <span className="label-text">{skill.skillName}</span>
+                          <input
+                            type="checkbox"
+                            readOnly
+                            className="checkbox checkbox-accent"
+                          />
+                        </label>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
             {/* <div className="card filter-shadow">
@@ -182,59 +190,64 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {jobQuery.data.data.filter(job => job.jobStatus === 0).map((job, idx) => (
-                <div
-                  key={idx}
-                  className="job-card cursor-pointer"
-                  onClick={() => navigate(`/job/${job.id}`)}
-                >
-                  <div className="px-5">
-                    <div className="overflow-hidden">
-                      <h1 className="mb-1 text-2xl text-blue-600">
-                        {job.title}
-                      </h1>
-                      <p className="text-sm">{job.recruiter_name}</p>
-                    </div>
-                    <div className="mt-5 mb-3 flex justify-between bg-slate-100">
-                      <div className="p-2">
-                        {/* {job.price_from} đ - {job.price_to} đ */}
-                        <span className="w-min">
-                          <CurrencyInput
-                            className="w-min bg-slate-100"
-                            prefix="VND "
-                            allowNegativeValue={false}
-                            disabled
-                            defaultValue={job.price}
-                          />
-                        </span>
+              {jobQuery.data &&
+                jobQuery.data.data
+                  .filter((job) => job.jobStatus === 0)
+                  .map((job, idx) => (
+                    <div
+                      key={idx}
+                      className="job-card cursor-pointer"
+                      onClick={() => navigate(`/job/${job.id}`)}
+                    >
+                      <div className="px-5">
+                        <div className="overflow-hidden">
+                          <h1 className="mb-1 text-2xl text-blue-600">
+                            {job.title}
+                          </h1>
+                          <p className="text-sm">{job.recruiter_name}</p>
+                        </div>
+                        <div className="mt-5 mb-3 flex justify-between bg-slate-100">
+                          <div className="p-2">
+                            {/* {job.price_from} đ - {job.price_to} đ */}
+                            <span className="w-min">
+                              <CurrencyInput
+                                className="w-min bg-slate-100"
+                                prefix="VND "
+                                allowNegativeValue={false}
+                                disabled
+                                defaultValue={job.price}
+                              />
+                            </span>
+                          </div>
+                          <div className="p-2">
+                            Hạn nhận hồ sơ:{" "}
+                            {dayjs(job.duration)
+                              .format("DD/MM/YYYY")
+                              .toString()}
+                          </div>
+                        </div>
+                        <div className="mb-3 text-desc">{job.description}</div>
+                        <div className="flex justify-between items-center">
+                          <div className="flex gap-1">
+                            {_.isNil(job.skills) ? (
+                              <span></span>
+                            ) : (
+                              job.skills.map((skill, idx) => (
+                                <div
+                                  key={idx}
+                                  className="badge badge-success text-white"
+                                >
+                                  {skill.skillName}
+                                </div>
+                                // <div>{skill.skillName}</div>
+                              ))
+                            )}
+                          </div>
+                          <div>{job.noOfOffer ?? "0"} chào giá</div>
+                        </div>
                       </div>
-                      <div className="p-2">
-                        Hạn nhận hồ sơ:{" "}
-                        {dayjs(job.duration).format("DD/MM/YYYY").toString()}
-                      </div>
                     </div>
-                    <div className="mb-3 text-desc">{job.description}</div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-1">
-                        {_.isNil(job.skills) ? (
-                          <span></span>
-                        ) : (
-                          job.skills.map((skill, idx) => (
-                            <div
-                              key={idx}
-                              className="badge badge-success text-white"
-                            >
-                              {skill.skillName}
-                            </div>
-                            // <div>{skill.skillName}</div>
-                          ))
-                        )}
-                      </div>
-                      <div>{job.noOfOffer ?? "0"} chào giá</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
             </div>
 
             {/* <div className="btn-group justify-center">
@@ -260,12 +273,14 @@ const Jobs = () => {
                 »
               </button>
             </div> */}
-            <CustomPagination
-              prevPage={() => goToNewPage(jobQuery.data.pageNo - 1)}
-              nextPage={() => goToNewPage(jobQuery.data.pageNo + 1)}
-              pageNo={jobQuery.data.pageNo}
-              totalPage={jobQuery.data.totalPage}
-            />
+            {jobQuery.data && (
+              <CustomPagination
+                prevPage={() => goToNewPage(jobQuery.data.pageNo - 1)}
+                nextPage={() => goToNewPage(jobQuery.data.pageNo + 1)}
+                pageNo={jobQuery.data.pageNo}
+                totalPage={jobQuery.data.totalPage}
+              />
+            )}
           </div>
         </div>
       )}

@@ -265,7 +265,7 @@ const JobProgress = () => {
     if (resp.data) {
       setSelectedMessages([...selectedMessages, resp.data]);
     }
-    if (resp.error){
+    if (resp.error) {
       notyf.error(resp.error.messages[0].err_msg);
     }
     reset();
@@ -306,6 +306,12 @@ const JobProgress = () => {
     if (!result.error) {
       notyf.success("Yêu cầu hoàn thành thành công");
       refetch();
+    }
+  };
+
+  const onRemoveAttachment = () => {
+    if (selectedAttachment.length > 0) {
+      setSelectedAttachment([]);
     }
   };
 
@@ -498,7 +504,13 @@ const JobProgress = () => {
                         {selectedAttachment &&
                           selectedAttachment.length > 0 &&
                           selectedAttachment.map((file, idx) => (
-                            <div key={idx}>{file.name}</div>
+                            <div key={idx} className="flex items-center">
+                              <i
+                                onClick={onRemoveAttachment}
+                                className="bi bi-x text-red-600 cursor-pointer"
+                              />
+                              {file.name}
+                            </div>
                           ))}
                       </div>
                       <button
