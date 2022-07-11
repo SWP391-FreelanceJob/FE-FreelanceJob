@@ -12,6 +12,7 @@ import {
 } from "@/Api/Service/TodoService";
 
 import "./App.css";
+
 import { notyf } from "@/App/Utils/NotyfSetting";
 import MasterPage from "../Components/MasterPage";
 import { Routes, Route } from "react-router-dom";
@@ -36,6 +37,8 @@ import ManageOfferRoute from "./ManageOffer/ManageOfferRoute";
 import { getStorage } from "firebase/storage";
 import RecruiterProfile from "./Profile/RecruiterProfile";
 import MqttConnector from "@/App/Utils/Mqtt/Mqtt";
+import Forbidden from "./Forbidden";
+import NotFound from "./NotFound";
 
 function App() {
   const fireStoreInstance = getFirestore(useFirebaseApp());
@@ -91,7 +94,8 @@ function App() {
               </Route>
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/sign-up" element={<SignUp />} />
-              {/* <Route path="*" element={<NotFound/>}/> */}
+              <Route path="/forbidden" element={<Forbidden/>}/>
+              <Route path="*" element={<NotFound/>}/>
             </Routes>
           </ScrollToTop>
         </MqttConnector>

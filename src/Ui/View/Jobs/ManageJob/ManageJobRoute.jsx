@@ -37,6 +37,7 @@ const ManageJobLayout = ({ publishedJobs, acceptedJobs, doneJobs }) => {
 const ManageJobRoute = () => {
   const userInfo = useSelector(state => state.user);
   const jobQuery = useGetJobByRecruiterIdQuery(userInfo.userId);
+
   return jobQuery.isLoading ? (
     <LoadingOverlay />
   ) : (
@@ -45,9 +46,9 @@ const ManageJobRoute = () => {
         path="/"
         element={
           <ManageJobLayout
-            publishedJobs={jobQuery.data.filter((e) => e.jobStatus === 0)}
-            acceptedJobs={jobQuery.data.filter((e) => e.jobStatus === 1)}
-            doneJobs={jobQuery.data.filter((e) => e.jobStatus === 2)}
+            publishedJobs={jobQuery.data ? jobQuery.data.filter((e) => e.jobStatus === 0) : []}
+            acceptedJobs={jobQuery.data ? jobQuery.data.filter((e) => e.jobStatus === 1) : []}
+            doneJobs={jobQuery.data ? jobQuery.data.filter((e) => e.jobStatus === 2) : []}
           />
         }
       >

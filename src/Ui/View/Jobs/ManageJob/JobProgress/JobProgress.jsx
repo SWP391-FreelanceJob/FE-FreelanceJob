@@ -35,17 +35,29 @@ import _ from "lodash";
 import { setLoading } from "@/App/Models/GlobalLoading/LoadingSlice";
 import { notyf } from "@/App/Utils/NotyfSetting";
 import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
+import {
+  uploadAttachmentToFirebaseGetDownloadUrl,
+  uploadAvatarToFirebaseGetDownloadUrl,
+} from "@/Api/Service/Firebase/FBStorage";
+import { useStorage } from "reactfire";
+import { ref } from "firebase/storage";
 
 const JobProgress = () => {
   dayjs.locale("vi");
 
   const [isCantChat, setIsCantChat] = useState(false);
   const [isRejectedFL, setisRejectedFL] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const [isSendingMsg, setIsSendingMsg] = useState(false);
   const [selectedAccId, setSelectedAccId] = useState();
+
   const [selectedOfferInfo, setSelectedOfferInfo] = useState();
   const [selectedMessages, setSelectedMessages] = useState([]);
-  const [selectedAttachment, setSelectedAttachment] = useState(null);
+  const [selectedAttachment, setSelectedAttachment] = useState([]);
+
   const [prevMqttMsg, setPrevMqttMsg] = useState(null);
+
+  const storage = useStorage();
 
   const modalBtnRef = useRef(null);
 
@@ -179,6 +191,11 @@ const JobProgress = () => {
       navigate("/not-found");
     }
 
+    if (jobData && jobData.jobStatus == 2) {
+      setIsCantChat(true);
+      setIsDone(true);
+    }
+
     if (!isRecruiter) {
       if (offerError && offerError.code == 404) {
         navigate("/forbidden");
@@ -202,6 +219,10 @@ const JobProgress = () => {
   useEffect(() => {
     setIsCantChat(false);
     setisRejectedFL(false);
+    if (jobData && jobData.jobStatus == 2) {
+      setIsCantChat(true);
+      setIsDone(true);
+    }
     if (selectedOfferInfo && selectedOfferInfo.status == "REJECTED") {
       setIsCantChat(true);
       setisRejectedFL(true);
@@ -216,12 +237,25 @@ const JobProgress = () => {
   };
 
   const onSend = async (data) => {
+    let attachmentUrl = null;
+    setIsSendingMsg(true);
+
+    if (selectedAttachment.length > 0) {
+      const file = selectedAttachment[0];
+
+      attachmentUrl = await uploadAttachmentToFirebaseGetDownloadUrl(
+        storage,
+        userState.accountId,
+        file
+      );
+    }
+
     const msgData = {
       fromAccountId: userState.accountId,
       toAccountId: selectedAccId,
       jobId: id,
       content: data.content,
-      attachFileUrl: selectedAttachment,
+      attachFileUrl: attachmentUrl,
       sentTime: new Date(),
     };
     console.log(msgData);
@@ -231,7 +265,17 @@ const JobProgress = () => {
     if (resp.data) {
       setSelectedMessages([...selectedMessages, resp.data]);
     }
+    if (resp.error) {
+      notyf.error(resp.error.messages[0].err_msg);
+    }
     reset();
+    setSelectedAttachment([]);
+    setIsSendingMsg(false);
+  };
+
+  const getNameFromUrl = (url) => {
+    const refName = ref(storage, url);
+    return refName.name;
   };
 
   const onAcceptOffer = async (offerId) => {
@@ -264,6 +308,14 @@ const JobProgress = () => {
       refetch();
     }
   };
+
+  const onRemoveAttachment = () => {
+    if (selectedAttachment.length > 0) {
+      setSelectedAttachment([]);
+    }
+  };
+
+  const onReview = async () => {};
 
   const onCompleteJob = async () => {
     // Only FL can request to complete
@@ -316,6 +368,35 @@ const JobProgress = () => {
                     Yêu cầu hoàn tất
                   </button>
                 )}
+                <span>
+                  Trạng thái:{" "}
+                  <span
+                    className={`${
+                      jobData.jobStatus == 1
+                        ? "text-blue-500"
+                        : jobData.jobStatus == 2
+                        ? "text-emerald-500"
+                        : jobData.jobStatus == 3
+                        ? "text-red-500"
+                        : jobData.jobStatus == 4
+                        ? "text-yellow-600"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {JobStatusFromInt[jobData.jobStatus]}
+                  </span>
+                </span>
+              </div>
+            )}
+            {isCantChat && isDone && (
+              <div className="flex gap-2 items-center">
+                <button
+                  onClick={onReview}
+                  // disabled={jobData.jobStatus != 4}
+                  className="btn btn-sm btn-outline yellow-btn !text-slate-600"
+                >
+                  Đánh giá
+                </button>
                 <span>
                   Trạng thái:{" "}
                   <span
@@ -404,25 +485,66 @@ const JobProgress = () => {
                       </p>
                     )}
                     <div className="flex justify-between">
-                      <CustomDropzone
-                        maxSize={2097152} //2MB
-                        multiple={false}
-                        filter={{
-                          "image/jpeg": [],
-                          "image/png": [],
-                          "image/gif": [],
-                          "image/jpg": [],
-                        }}
-                        acceptedFile={(file) => {
-                          // setSelectedAvatar(file);
-                          // if (file.length > 0)
-                          //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
-                        }}
-                        customClass="flex"
-                        noDrag={true}
-                      />
-                      <button className="btn btn-sm btn-primary text-white">
-                        Gửi
+                      <div>
+                        <CustomDropzone
+                          maxSize={4194304} //4MB
+                          multiple={false}
+                          filter={{}}
+                          acceptedFile={(file) => {
+                            console.log(file);
+                            setSelectedAttachment(
+                              _.union(selectedAttachment, file)
+                            );
+                            // if (file.length > 0)
+                            //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                          }}
+                          customClass="flex"
+                          noDrag={true}
+                        />
+                        {selectedAttachment &&
+                          selectedAttachment.length > 0 &&
+                          selectedAttachment.map((file, idx) => (
+                            <div key={idx} className="flex items-center">
+                              <i
+                                onClick={onRemoveAttachment}
+                                className="bi bi-x text-red-600 cursor-pointer"
+                              />
+                              {file.name}
+                            </div>
+                          ))}
+                      </div>
+                      <button
+                        disabled={isSendingMsg}
+                        className="btn btn-sm btn-primary text-white"
+                      >
+                        {isSendingMsg ? (
+                          <>
+                            {" "}
+                            <svg
+                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Đang gửi
+                          </>
+                        ) : (
+                          "Gửi"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -480,15 +602,29 @@ const JobProgress = () => {
                               />
                             </div>
                           </td>
-                          <td className="h-full">
-                            <ReactTextareaAutosize
-                              name="message-content"
-                              className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
-                              id=""
-                              disabled
-                              rows={5}
-                              value={msg.content}
-                            />
+                          <td className="h-0">
+                            <div className="h-full flex flex-col justify-between">
+                              <ReactTextareaAutosize
+                                name="message-content"
+                                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                                id=""
+                                disabled
+                                rows={5}
+                                value={msg.content}
+                              />
+                              {msg.attachFileUrl && (
+                                <a
+                                  href={msg.attachFileUrl}
+                                  download
+                                  className="bg-slate-50 link link-secondary tooltip !text-left"
+                                  data-tip="File đính kèm"
+                                >
+                                  <p className="p-2">
+                                    {getNameFromUrl(msg.attachFileUrl)}
+                                  </p>
+                                </a>
+                              )}
+                            </div>
                           </td>
                           <td>
                             <div>
@@ -601,13 +737,23 @@ const JobProgress = () => {
               />
             </div>
             <div className="modal-action">
-              <button
-                onClick={onAcceptOffer}
-                disabled={jobData && jobData.jobStatus != 0}
-                className="btn btn-sm btn-outline btn-primary hover:!text-white"
-              >
-                Giao việc
-              </button>
+              {isRecruiter && (
+                <div
+                  className="tooltip"
+                  data-tip="Tài khoản phải có ít nhất 500.000đ"
+                >
+                  <button
+                    onClick={onAcceptOffer}
+                    disabled={
+                      (jobData && jobData.jobStatus != 0) ||
+                      balanceData.balance < 500000
+                    }
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
+                    Giao việc
+                  </button>
+                </div>
+              )}
               <label
                 htmlFor="offer-detail-modal"
                 className="btn btn-sm btn-outline"
