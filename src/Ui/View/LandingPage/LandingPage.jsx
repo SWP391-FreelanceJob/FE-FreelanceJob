@@ -1,6 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
 
+import defaultAvatar from "@/App/Assets/png/default.webp";
 import welcomeSvg from "@/App/Assets/svg/freelance.svg";
 import stonkSvg from "@/App/Assets/svg/stonk.svg";
 import handshakeSvg from "@/App/Assets/svg/handshake.svg";
@@ -16,7 +17,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const jobQuery = useGetJobsQuery({ pageNo: 1, pageSize: 3 });
-  const freelancerQuery = useGetFreelancersQuery();
+  const freelancerQuery = useGetFreelancersQuery({});
 
   const toAllJob = () => {
     navigate("all-jobs");
@@ -149,20 +150,21 @@ const LandingPage = () => {
               freelancerQuery.data.data.map((freelancer) => {
                 return (
                   <SwiperSlide key={freelancer.id}>
-                    <div className="card card-compact bg-base-100 shadow-md mb-4 w-full">
+                    <div className="card card-compact bg-base-100 shadow-md mb-4 w-full"
+                    onClick={() => navigate(`/profile/${freelancer.id}`)}>
                       <figure>
                         <img
                           className="h-[220px] w-full object-cover"
-                          src="https://placekitten.com/1200/1000"
+                          src={freelancer.avatar ?? defaultAvatar}
                           alt=""
                         />
                       </figure>
                       <div className="inline-flex pl-4">
-                        <div className="flex items-center avatar">
+                        {/* <div className="flex items-center avatar">
                           <div className="w-14 rounded-full mr-3">
-                            <img src={freelancer.avatar} alt="" />
+                            <img src="https://placekitten.com/1200/1000" alt="" />
                           </div>
-                        </div>
+                        </div> */}
                         <div className="card-body">
                           <h2 className="card-title !text-lg truncate">
                             {freelancer.shortDescription}

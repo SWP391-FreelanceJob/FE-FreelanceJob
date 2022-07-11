@@ -15,35 +15,32 @@ const Jobs = () => {
   const [isChecked, setIsChecked] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("0");
 
-  // /**
-  //  * @type {[IJob[],Function]}
-  //  */
-  // const [loadedJobs, setLoadedJobs] = useState([{}]);
-  // const [isLoadingJobs, setIsLoadingJobs] = useState(true);
-
-  // useEffect(() => {
-  //   loadInitialJobs();
-  // }, []);
-
-  // const loadInitialJobs = async () => {
-  //   setIsLoadingJobs(true);
-  //   const result = await getAllJobs();
-  //   console.log(result);
-  //   setLoadedJobs(result.data);
-  //   setIsLoadingJobs(false);
-  // };
-
   const [pageNo, setPageNo] = useState(1);
-  // const {  } =
-  const jobQuery = useGetJobsQuery(pageNo);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [flNameState, setFlNameState] = useState("");
+  const jobQuery = useGetJobsQuery({pageNo, skills: selectedSkills.map(e => e.skillId), name: flNameState});
   const goToNewPage = (newPageNo) => {
-    // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
+    
     setPageNo(newPageNo);
   };
+
+  
 
   const skillQuery = useGetSkillsQuery();
 
   const navigate = useNavigate();
+
+  const onFLNameChange = (bruh) => {
+    setFlNameState(bruh.target.value);
+  }
+
+  const onSkillListChange = (skill) => {
+    // const existingSkill = [...selectedSkills];
+    // existingSkill.push(skill);
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(e => e !== skill));
+    } else setSelectedSkills([...selectedSkills, skill]);
+  };
 
   const listOfJobs = [
     {
@@ -121,6 +118,7 @@ const Jobs = () => {
                     <label key={skill.skillId} className="label cursor-pointer">
                       <span className="label-text">{skill.skillName}</span>
                       <input
+                        onChange={() => onSkillListChange(skill)}
                         type="checkbox"
                         readOnly
                         className="checkbox checkbox-accent"
@@ -161,6 +159,7 @@ const Jobs = () => {
             <div className="input-group">
               <input
                 type="text"
+                onChange={onFLNameChange}
                 placeholder="Tìm các công việc...."
                 className="input input-bordered tracking-wider w-full"
               />
@@ -265,6 +264,8 @@ const Jobs = () => {
               nextPage={() => goToNewPage(jobQuery.data.pageNo + 1)}
               pageNo={jobQuery.data.pageNo}
               totalPage={jobQuery.data.totalPage}
+              hasNextPage={jobQuery.data.hasNextPage}
+              hasPrevPage={jobQuery.data.hasPreviousPage}
             />
           </div>
         </div>

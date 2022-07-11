@@ -17,7 +17,7 @@ export const jobApi = createApi({
       }) => ({
         url: Endpoints.JOBS,
         method: "GET",
-        params: { isAscending, pageSize, pageNo },
+        params: { isAscending, pageSize, pageNo, skill: skills, name },
       }),
       providesTags: ["jobs"],
     }),

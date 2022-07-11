@@ -1,11 +1,11 @@
 import "./CustomPagination.css";
 
-const CustomPagination = ({ prevPage, nextPage, pageNo, totalPage }) => {
+const CustomPagination = ({ prevPage, nextPage, pageNo, totalPage, hasNextPage, hasPrevPage }) => {
   return (
     <div className="btn-group justify-center">
       <button
         onClick={prevPage}
-        className={`btn btn-secondary ${pageNo === 1 ? "btn-disabled" : ""}`}
+        className={`btn btn-secondary ${!hasPrevPage ? "btn-disabled" : ""}`}
       >
         «
       </button>
@@ -15,7 +15,7 @@ const CustomPagination = ({ prevPage, nextPage, pageNo, totalPage }) => {
       <button
         onClick={nextPage}
         className={`btn btn-secondary ${
-          pageNo === totalPage ? "btn-disabled" : ""
+          !hasNextPage ? "btn-disabled" : ""
         }`}
       >
         »

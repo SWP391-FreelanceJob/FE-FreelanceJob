@@ -19,6 +19,8 @@ const Freelancers = () => {
     { status: "Chưa xác thực", value: "2" },
   ];
 
+  const [selectedSkills, setSelectedSkills] = useState([]);
+
   const [selectedStatus, setSelectedStatus] = useState("0");
   // /**
   //  * @type {[IFreelancer[],Function]} loadedFreelancer
@@ -26,13 +28,25 @@ const Freelancers = () => {
   // const [loadedFreelancers, setLoadedFreelancers] = useState([{}]);
 
   // const [isLoadingFreelancers, setIsLoadingFreelancers] = useState(true);
-
+  const [flNameState, setFlNameState] = useState("");
   const navigate = useNavigate();
-  const [ pageNo, setPageNo ] = useState(1);
-  const { data, error, isLoading } = useGetFreelancersQuery(pageNo);
+  const [pageNo, setPageNo] = useState(1);
+  const { data, error, isLoading } = useGetFreelancersQuery({pageNo, skills: selectedSkills.map(e => e.skillId), name: flNameState});
   // const {data: skillData, error: skillError, isLoading: isLoadingSkill} = useGetSkillsQuery();
   // const skillQuery = useGetSkillsQuery("",{selectFromResult: (data) => console.log(data)});
   const skillQuery = useGetSkillsQuery();
+
+  const onFLNameChange = (bruh) => {
+    setFlNameState(bruh.target.value);
+  }
+
+  const onSkillListChange = (skill) => {
+    // const existingSkill = [...selectedSkills];
+    // existingSkill.push(skill);
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(e => e !== skill));
+    } else setSelectedSkills([...selectedSkills, skill]);
+  };
 
   const goToNewPage = (newPageNo) => {
     // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
@@ -49,7 +63,6 @@ const Freelancers = () => {
   //   setLoadedFreelancers(result);
   //   setIsLoadingFreelancers(false);
   // };
-
 
   /**
    *
@@ -70,19 +83,26 @@ const Freelancers = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
-                {skillQuery.isLoading ? <div>Loading skill...</div> : 
-                <div className="form-control">
-                  {skillQuery.data.map((skill) => (
-                    <label key={skill.skillId} className="label cursor-pointer">
-                      <span className="label-text">{skill.skillName}</span>
-                      <input
-                        type="checkbox"
-                        readOnly
-                        className="checkbox checkbox-accent"
-                      />
-                    </label>
-                  ))}
-                </div>}
+                {skillQuery.isLoading ? (
+                  <div>Loading skill...</div>
+                ) : (
+                  <div className="form-control">
+                    {skillQuery.data.map((skill) => (
+                      <label
+                        key={skill.skillId}
+                        className="label cursor-pointer"
+                      >
+                        <span className="label-text">{skill.skillName}</span>
+                        <input
+                          onChange={() => onSkillListChange(skill)}
+                          type="checkbox"
+                          readOnly
+                          className="checkbox checkbox-accent"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -94,6 +114,7 @@ const Freelancers = () => {
             </div>
             <div className="input-group">
               <input
+                onChange={onFLNameChange}
                 type="text"
                 placeholder="Tìm freelancer...."
                 className="input input-bordered tracking-wider w-full"
@@ -179,6 +200,8 @@ const Freelancers = () => {
             <CustomPagination
               prevPage={() => goToNewPage(data.pageNo - 1)}
               nextPage={() => goToNewPage(data.pageNo + 1)}
+              hasNextPage={data.hasNextPage}
+              hasPrevPage={data.hasPreviousPage}
               pageNo={data.pageNo}
               totalPage={data.totalPage}
             />
