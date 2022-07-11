@@ -189,7 +189,7 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {jobQuery.data &&
+              {!(jobQuery.data && jobQuery.data.data.length > 0) ? <div className="p-3 text-2xl">Không tìm thấy công việc</div> : 
                 jobQuery.data.data
                   .filter((job) => job.jobStatus === 0)
                   .map((job, idx) => (
