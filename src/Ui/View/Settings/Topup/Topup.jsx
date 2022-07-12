@@ -4,6 +4,7 @@ import { notyf } from "@/App/Utils/NotyfSetting";
 import { useEffect } from "react";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./Topup.css";
 
@@ -12,7 +13,11 @@ const Topup = () => {
   const [isGettingZPLink, setIsGettingZPLink] = useState(false);
   const navigate = useNavigate();
 
-  const { data, error, isLoading } = useGetBalanceByIdQuery("1");
+  const userState = useSelector((state) => state.user);
+  const { data, error, isLoading } = useGetBalanceByIdQuery(
+    userState.accountId,
+    { refetchOnFocus: true, refetchOnMountOrArgChange: true }
+  );
 
   const topupFn = async () => {
     if (amount == "" || parseInt(amount) < 10000) {
@@ -21,13 +26,13 @@ const Topup = () => {
     }
     setIsGettingZPLink(true);
     const result = await topup({
-      username: "Ayame",
-      userId: "1",
+      username: userState.fullName,
+      userId: userState.accountId,
       amount: parseInt(amount),
     });
     if (result) {
-      setIsGettingZPLink(false);
       window.location.href = result.url;
+      setIsGettingZPLink(false);
     }
   };
 
@@ -48,7 +53,7 @@ const Topup = () => {
                 prefix="VND "
                 allowNegativeValue={false}
                 disabled
-                defaultValue={data.balance}
+                value={data.balance}
               />
             )}
           </span>

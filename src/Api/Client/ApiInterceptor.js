@@ -2,15 +2,15 @@ import { AxiosInstance, AxiosResponse } from "axios";
 
 const axiosInterceptor = (instance) => {
   // Usually string but can be any
-  const parseError = (messages) => {
+  const parseError = (messages, code) => {
     if (messages) {
       if (messages instanceof Array) {
-        return Promise.reject({ messages: messages });
+        return Promise.reject({ messages: messages, code });
       } else {
-        return Promise.reject({ messages: [messages] });
+        return Promise.reject({ messages: [messages], code });
       }
     } else {
-      return Promise.reject({ messages: ["An error has occured"] });
+      return Promise.reject({ messages: ["An error has occured"], code });
     }
   };
 
@@ -53,7 +53,7 @@ const axiosInterceptor = (instance) => {
         if (error.response.status === 401) {
           sessionStorage.removeItem("token");
         }
-        return parseError(error.response.data);
+        return parseError(error.response.data, error.response.status);
       } else {
         return Promise.reject(error);
       }

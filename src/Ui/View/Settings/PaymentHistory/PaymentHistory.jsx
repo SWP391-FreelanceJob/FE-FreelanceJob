@@ -1,16 +1,26 @@
-import { useGetPaymentHistoryByIdQuery } from "@/App/Models/Payment/Payment";
+import {
+  useGetBalanceByIdQuery,
+  useGetPaymentHistoryByIdQuery,
+} from "@/App/Models/Payment/Payment";
 import "./PaymentHistory.css";
 
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 import CurrencyInput from "react-currency-input-field";
+import { useSelector } from "react-redux";
 
 const PaymentHistory = () => {
   dayjs.locale("vi");
-  const { data, error, isLoading } = useGetPaymentHistoryByIdQuery("1", {
-    refetchOnFocus: true,
-    pollingInterval: 10000,
-  });
+
+  const userState = useSelector((state) => state.user);
+  const { data, error, isLoading } = useGetPaymentHistoryByIdQuery(
+    userState.accountId,
+    {
+      refetchOnFocus: true,
+      pollingInterval: 10000,
+    }
+  );
+  const { refetch } = useGetBalanceByIdQuery(userState.accountId);
   const getStatus = (status) => {
     switch (status) {
       case "SUCCESS":

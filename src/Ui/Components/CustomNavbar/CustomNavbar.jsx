@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-// import { db } from "@/App/Firebase/firebaseconfig";
 import {
   collection,
   doc,
@@ -14,10 +13,16 @@ import { useFirestore, useFirestoreCollectionData } from "reactfire";
 
 import logo from "@/App/Assets/svg/FreelanceVN.svg";
 import fuLogo from "@/App/Assets/png/logofu.png";
+import defaultAva from "@/App/Assets/png/default.webp";
 
 import { useOnClickOutside } from "@/App/Hooks/useClickOutside";
 import "./CustomNavbar.css";
 import IconDropdown from "../CustomDropdown/IconDropdown";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogout } from "@/App/Models/User/UserSlice";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
+import { useGetAccountInfoQuery } from "@/App/Models/Account/Account";
 
 const ChatIcon = () => {
   return (
@@ -53,17 +58,31 @@ const NotiIcon = () => {
 const CustomNavbar = () => {
   dayjs.extend(relativeTime);
 
-  const [isLogged, setIsLogged] = useState(true);
   const [isOpenedModal, setIsOpenedModal] = useState(false);
 
-  const [rooms, setRooms] = useState([]);
+  const userState = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const isLogged = localStorage.getItem("token");
+
+  const { data, error } = useGetBalanceByIdQuery(userState.accountId, {
+    skip: !isLogged,
+  });
+
+  const { data: accInfoData, error: accInfoError } = useGetAccountInfoQuery(
+    userState.accountId,
+    { skip: !isLogged, refetchOnMountOrArgChange: true }
+  );
 
   const modalRef = useRef();
-  useOnClickOutside(modalRef, () => setIsOpenedModal(false));
+  const dropdownRef = useRef();
+  useOnClickOutside(modalRef, () => setIsOpenedModal(false), dropdownRef);
 
-  const roomCollectionRef = collection(useFirestore(), "room");
-  const { data: roomsData, status: roomsStatus } =
-    useFirestoreCollectionData(roomCollectionRef);
+  // const roomCollectionRef = collection(useFirestore(), "room");
+  // const { data: roomsData, status: roomsStatus } =
+  //   useFirestoreCollectionData(roomCollectionRef);
+
+  const navigate = useNavigate();
 
   // const usfDocRef = doc(collection(db, "sender"), "usr1");
 
@@ -71,36 +90,47 @@ const CustomNavbar = () => {
     setIsOpenedModal(!isOpenedModal);
   };
 
-  const getRoomInfo = async () => {
-    if (roomsStatus === "success") {
-      const roomArr = await Promise.all(
-        roomsData.map(async (docData) => {
-          const lastMsg = await getDoc(docData.lastMsg);
-          const lastMsgData = lastMsg.data().data;
-          const isLastMsgSeen = lastMsg.data().seen;
-          const isLastMsgDeleted = lastMsg.data().deleted;
-          const members = docData.members;
-
-          // Filter to get the one we msging to
-          const receiver = _.find(members, (m) => m.id != "1");
-
-          return {
-            receiver,
-            data: lastMsgData,
-            seen: isLastMsgSeen,
-            deleted: isLastMsgDeleted,
-            timestamp: docData.lastMsgTimeStamp,
-          };
-        })
-      );
-      setRooms(roomArr);
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    dispatch(userLogout());
+    navigate("/");
   };
 
-  useEffect(() => {
-    console.log(roomsData, roomsStatus);
-    getRoomInfo();
-  }, [roomsData, roomsStatus]);
+  const updProfile = () => {
+    navigate("/setting");
+    setIsOpenedModal(false);
+  };
+
+  // const getRoomInfo = async () => {
+  //   if (roomsStatus === "success") {
+  //     const roomArr = await Promise.all(
+  //       roomsData.map(async (docData) => {
+  //         const lastMsg = await getDoc(docData.lastMsg);
+  //         const lastMsgData = lastMsg.data().data;
+  //         const isLastMsgSeen = lastMsg.data().seen;
+  //         const isLastMsgDeleted = lastMsg.data().deleted;
+  //         const members = docData.members;
+
+  //         // Filter to get the one we msging to
+  //         const receiver = _.find(members, (m) => m.id != "1");
+
+  //         return {
+  //           receiver,
+  //           data: lastMsgData,
+  //           seen: isLastMsgSeen,
+  //           deleted: isLastMsgDeleted,
+  //           timestamp: docData.lastMsgTimeStamp,
+  //         };
+  //       })
+  //     );
+  //     setRooms(roomArr);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   console.log(roomsData, roomsStatus);
+  //   getRoomInfo();
+  // }, [roomsData, roomsStatus]);
 
   return (
     <>
@@ -114,12 +144,25 @@ const CustomNavbar = () => {
               <img className="fvn-logo" src={logo} alt="logo" />
             </a>
             <div className="form-control flex-grow">
-              {/* <p className="font-sans font-bold">Xem việc làm</p> */}
+              <div className="flex gap-8">
+                <p
+                  onClick={() => navigate("/all-jobs")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
+                  Tìm việc làm
+                </p>
+                <p
+                  onClick={() => navigate("/all-freelancers")}
+                  className="font-sans font-bold text-secondary text-lg cursor-pointer"
+                >
+                  Tìm freelancer
+                </p>
+              </div>
             </div>
             <div className="flex ml-8 justify-end fvn-navbar-button">
-              {isLogged ? (
+              {userState.isLogin ? (
                 <ul>
-                  <IconDropdown icon={<NotiIcon />}>A</IconDropdown>
+                  {/* <IconDropdown icon={<NotiIcon />}>A</IconDropdown>
                   <IconDropdown icon={<ChatIcon />}>
                     {rooms.length > 0 ? (
                       rooms.map((room, idx) => (
@@ -165,7 +208,7 @@ const CustomNavbar = () => {
                         </div>
                       </li>
                     )}
-                  </IconDropdown>
+                  </IconDropdown> */}
                   <li className="flex">
                     <div className="dropdown dropdown-end">
                       <div
@@ -178,14 +221,17 @@ const CustomNavbar = () => {
                           <div className="w-1/4 flex items-center justify-center  mr-2">
                             <div className="avatar">
                               <div className="w-12 rounded-full">
-                                <img src="https://i.pravatar.cc/300" />
+                                <img src={accInfoData?.avatar ?? defaultAva} />
                               </div>
                             </div>
                           </div>
-                          <div className="w-3/4 flex flex-col">
-                            <div className="text-base">Amelia</div>
+                          <div className="w-3/4 flex flex-col justify-center">
+                            <div className="text-base">
+                              {accInfoData?.fullName}
+                            </div>
                             <div className="font-normal text-xs">
-                              iD: 021301231
+                              Balance:{" "}
+                              {data && data.balance.toLocaleString("vi")}₫
                             </div>
                           </div>
                           <div className="flex items-center">
@@ -198,12 +244,24 @@ const CustomNavbar = () => {
                         </div>
                       </div>
                       <ul
+                        ref={dropdownRef}
                         tabIndex="0"
                         className={`${
                           isOpenedModal ? "" : "hide-modal "
                         }dropdown-content menu p-2 shadow bg-base-100 rounded-box w-80 gap-2`}
                       >
-                        A
+                        <div
+                          onClick={updProfile}
+                          className="flex gap-2 p-3 txt-black hover:bg-slate-200 rounded-md"
+                        >
+                          <i className="bi bi-person" /> Sửa thông tin
+                        </div>
+                        <div
+                          onClick={logout}
+                          className="flex gap-2 p-3 text-red-600 hover:bg-slate-200 rounded-md"
+                        >
+                          <i className="bi bi-box-arrow-right" /> Đăng xuất
+                        </div>
                       </ul>
                     </div>
                   </li>
@@ -212,7 +270,8 @@ const CustomNavbar = () => {
                 <ul>
                   <li>
                     <label
-                      htmlFor="sign-in-modal"
+                      // htmlFor="sign-in-modal"
+                      onClick={() => navigate("/sign-in")}
                       className="modal-button cursor-pointer"
                     >
                       Sign In
@@ -220,7 +279,8 @@ const CustomNavbar = () => {
                   </li>
                   <li>
                     <label
-                      htmlFor="sign-up-modal"
+                      // htmlFor="sign-up-modal"
+                      onClick={() => navigate("/sign-in")}
                       className="fvn-join-btn btn btn-outline btn-info modal-button"
                     >
                       Join
@@ -232,6 +292,37 @@ const CustomNavbar = () => {
           </div>
         </div>
       </header>
+      <div className="border-b-[1px] border-b-[#e4e5e7]">
+        <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
+          <div className="flex gap-8">
+            {userState.role === "freelancer" ? (
+              <p
+                onClick={() => navigate("/manage-offer")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý chào giá
+              </p>
+            ) : (
+              <p
+                onClick={() => navigate("/manage-job")}
+                className="cursor-pointer font-semibold"
+              >
+                Quản lý công việc
+              </p>
+            )}
+          </div>
+          {userState.role === "recruiter" ? (
+            <button
+              onClick={() => navigate("/create-job")}
+              className="btn btn-sm btn-info text-white"
+            >
+              Đăng công việc
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
       {/* <div className="categories py-2">
         <div className="fvn-categories-nav">
           <ul className="fvn-categories">
