@@ -1,4 +1,3 @@
-import { getAllJobs } from "@/Api/Service/Job";
 import { useGetJobsQuery } from "@/App/Models/Job/Job";
 import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
 import CustomPagination from "@/Ui/Components/CustomPagination/CustomPagination";
@@ -189,7 +188,7 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {!(jobQuery.data && jobQuery.data.data.length > 0) ? <div className="p-3 text-2xl">Không tìm thấy công việc</div> : 
+              {!(jobQuery.data && jobQuery.data.data && jobQuery.data.data.length > 0 && jobQuery.data.data.filter((job) => job.jobStatus === 0).length > 0) ? <div className="p-3 text-2xl">Không tìm thấy công việc</div> : 
                 jobQuery.data.data
                   .filter((job) => job.jobStatus === 0)
                   .map((job, idx) => (
