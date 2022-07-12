@@ -8,10 +8,10 @@ export const freelancersApi = createApi({
   // keepUnusedDataFor: 10,
   endpoints: (builder) => ({
     getFreelancers: builder.query({
-      query: (pageNo = 1, pageSize = 10, isAscending = true, skills, name) => ({
+      query: ({pageNo = 1, pageSize = 10, isAscending = true, skills, name}) => ({
         url: Endpoints.FREELANCERS,
         method: "GET",
-        params: { isAscending, pageSize, pageNo },
+        params: { isAscending, pageSize, pageNo, skill: skills, name },
       }),
     }),
     getFreelancersByName: builder.query({

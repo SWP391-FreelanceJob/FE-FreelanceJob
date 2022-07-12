@@ -15,35 +15,32 @@ const Jobs = () => {
   const [isChecked, setIsChecked] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("0");
 
-  // /**
-  //  * @type {[IJob[],Function]}
-  //  */
-  // const [loadedJobs, setLoadedJobs] = useState([{}]);
-  // const [isLoadingJobs, setIsLoadingJobs] = useState(true);
-
-  // useEffect(() => {
-  //   loadInitialJobs();
-  // }, []);
-
-  // const loadInitialJobs = async () => {
-  //   setIsLoadingJobs(true);
-  //   const result = await getAllJobs();
-  //   console.log(result);
-  //   setLoadedJobs(result.data);
-  //   setIsLoadingJobs(false);
-  // };
-
   const [pageNo, setPageNo] = useState(1);
-  // const {  } =
-  const jobQuery = useGetJobsQuery(pageNo);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [flNameState, setFlNameState] = useState("");
+  const jobQuery = useGetJobsQuery({pageNo, skills: selectedSkills.map(e => e.skillId), name: flNameState});
   const goToNewPage = (newPageNo) => {
-    // jobQuery = useGetJobsQuery({ pageNo: newPageNo });
+
     setPageNo(newPageNo);
   };
+
+
 
   const skillQuery = useGetSkillsQuery();
 
   const navigate = useNavigate();
+
+  const onFLNameChange = (bruh) => {
+    setFlNameState(bruh.target.value);
+  }
+
+  const onSkillListChange = (skill) => {
+    // const existingSkill = [...selectedSkills];
+    // existingSkill.push(skill);
+    if (selectedSkills.includes(skill)) {
+      setSelectedSkills(selectedSkills.filter(e => e !== skill));
+    } else setSelectedSkills([...selectedSkills, skill]);
+  };
 
   const listOfJobs = [
     {
@@ -116,21 +113,30 @@ const Jobs = () => {
             <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
-                {skillQuery.isLoading ? <div></div> : <div className="form-control">
-                  {skillQuery.data.map((skill) => (
-                    <label key={skill.skillId} className="label cursor-pointer">
-                      <span className="label-text">{skill.skillName}</span>
-                      <input
-                        type="checkbox"
-                        readOnly
-                        className="checkbox checkbox-accent"
-                      />
-                    </label>
-                  ))}
-                </div>}
+                {skillQuery.isLoading ? (
+                  <div></div>
+                ) : (
+                  <div className="form-control">
+                    {skillQuery.data &&
+                      skillQuery.data.map((skill) => (
+                        <label
+                          key={skill.skillId}
+                          className="label cursor-pointer"
+                        >
+                          <span className="label-text">{skill.skillName}</span>
+                          <input
+                              onChange={() => onSkillListChange(skill)}
+                            type="checkbox"
+                            readOnly
+                            className="checkbox checkbox-accent"
+                          />
+                        </label>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="card filter-shadow">
+            {/* <div className="card filter-shadow">
               <div className="p-4">
                 <h1 className="text-xl font-semibold">Trạng thái</h1>
                 {listOfStatus.map((stt, idx) => (
@@ -150,7 +156,7 @@ const Jobs = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="w-4/5 flex flex-col gap-2">
             <div className="">
@@ -161,6 +167,7 @@ const Jobs = () => {
             <div className="input-group">
               <input
                 type="text"
+                onChange={onFLNameChange}
                 placeholder="Tìm các công việc...."
                 className="input input-bordered tracking-wider w-full"
               />
@@ -182,59 +189,64 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {jobQuery.data.data.map((job, idx) => (
-                <div
-                  key={idx}
-                  className="job-card cursor-pointer"
-                  onClick={() => navigate(`/job/${job.id}`)}
-                >
-                  <div className="px-5">
-                    <div className="overflow-hidden">
-                      <h1 className="mb-1 text-2xl text-blue-600">
-                        {job.title}
-                      </h1>
-                      <p className="text-sm">{job.recruiter_name}</p>
-                    </div>
-                    <div className="mt-5 mb-3 flex justify-between bg-slate-100">
-                      <div className="p-2">
-                        {/* {job.price_from} đ - {job.price_to} đ */}
-                        <span className="w-min">
-                          <CurrencyInput
-                            className="w-min bg-slate-100"
-                            prefix="VND "
-                            allowNegativeValue={false}
-                            disabled
-                            defaultValue={job.price}
-                          />
-                        </span>
+              {!(jobQuery.data && jobQuery.data.data.length > 0) ? <div className="p-3 text-2xl">Không tìm thấy công việc</div> : 
+                jobQuery.data.data
+                  .filter((job) => job.jobStatus === 0)
+                  .map((job, idx) => (
+                    <div
+                      key={idx}
+                      className="job-card cursor-pointer"
+                      onClick={() => navigate(`/job/${job.id}`)}
+                    >
+                      <div className="px-5">
+                        <div className="overflow-hidden">
+                          <h1 className="mb-1 text-2xl text-blue-600">
+                            {job.title}
+                          </h1>
+                          <p className="text-sm">{job.recruiter_name}</p>
+                        </div>
+                        <div className="mt-5 mb-3 flex justify-between bg-slate-100">
+                          <div className="p-2">
+                            {/* {job.price_from} đ - {job.price_to} đ */}
+                            <span className="w-min">
+                              <CurrencyInput
+                                className="w-min bg-slate-100"
+                                prefix="VND "
+                                allowNegativeValue={false}
+                                disabled
+                                defaultValue={job.price}
+                              />
+                            </span>
+                          </div>
+                          <div className="p-2">
+                            Hạn nhận hồ sơ:{" "}
+                            {dayjs(job.duration)
+                              .format("DD/MM/YYYY")
+                              .toString()}
+                          </div>
+                        </div>
+                        <div className="mb-3 text-desc">{job.description}</div>
+                        <div className="flex justify-between items-center">
+                          <div className="flex gap-1">
+                            {_.isNil(job.skills) ? (
+                              <span></span>
+                            ) : (
+                              job.skills.map((skill, idx) => (
+                                <div
+                                  key={idx}
+                                  className="badge badge-success text-white"
+                                >
+                                  {skill.skillName}
+                                </div>
+                                // <div>{skill.skillName}</div>
+                              ))
+                            )}
+                          </div>
+                          <div>{job.noOfOffer ?? "0"} chào giá</div>
+                        </div>
                       </div>
-                      <div className="p-2">
-                        Hạn nhận hồ sơ:{" "}
-                        {dayjs(job.duration).format("DD/MM/YYYY").toString()}
-                      </div>
                     </div>
-                    <div className="mb-3 text-desc">{job.description}</div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-1">
-                        {_.isNil(job.skills) ? (
-                          <span></span>
-                        ) : (
-                          job.skills.map((skill, idx) => (
-                            <div
-                              key={idx}
-                              className="badge badge-success text-white"
-                            >
-                              {skill.skillName}
-                            </div>
-                            // <div>{skill.skillName}</div>
-                          ))
-                        )}
-                      </div>
-                      <div>{job.offers} chào giá</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
             </div>
 
             {/* <div className="btn-group justify-center">
@@ -265,6 +277,8 @@ const Jobs = () => {
               nextPage={() => goToNewPage(jobQuery.data.pageNo + 1)}
               pageNo={jobQuery.data.pageNo}
               totalPage={jobQuery.data.totalPage}
+              hasNextPage={jobQuery.data.hasNextPage}
+              hasPrevPage={jobQuery.data.hasPreviousPage}
             />
           </div>
         </div>

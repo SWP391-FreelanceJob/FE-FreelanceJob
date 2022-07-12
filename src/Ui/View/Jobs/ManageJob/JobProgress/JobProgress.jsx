@@ -1,169 +1,560 @@
 import "./JobProgress.css";
 import CurrencyInput from "react-currency-input-field";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getJobById } from "@/Api/Service/Job";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
-import { useGetMessageByIdQuery } from "@/App/Models/Message/Message";
+import {
+  useGetMessageByAccountIdJobIdQuery,
+  useGetMessageByIdQuery,
+  useGetMessageByJobIdQuery,
+  useGetMessageByTargetQuery,
+  useSentMessageMutation,
+} from "@/App/Models/Message/Message";
+import ReactTextareaAutosize from "react-textarea-autosize";
+import defaultAva from "@/App/Assets/png/default.webp";
+import {
+  useCompleteJobMutation,
+  useGetJobByIdQuery,
+  useRequestToCompleteJobMutation,
+} from "@/App/Models/Job/Job";
+import { JobStatusFromInt, OfferStatus } from "@/App/Constant";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useGetOfferByJobIdAndFreelancerIdQuery,
+  useUpdateOfferStatusByIdMutation,
+} from "@/App/Models/Offer/Offer";
+import { useForm } from "react-hook-form";
+import CustomDropzone from "@/Ui/Components/CustomDropzone/CustomDropzone";
+import useMqttState from "@/App/Utils/Mqtt/useMqttState";
+import useSubscription from "@/App/Utils/Mqtt/useSubscription";
+import _ from "lodash";
+import { setLoading } from "@/App/Models/GlobalLoading/LoadingSlice";
+import { notyf } from "@/App/Utils/NotyfSetting";
+import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
+import {
+  uploadAttachmentToFirebaseGetDownloadUrl,
+  uploadAvatarToFirebaseGetDownloadUrl,
+} from "@/Api/Service/Firebase/FBStorage";
+import { useStorage } from "reactfire";
+import { ref } from "firebase/storage";
 
 const JobProgress = () => {
   dayjs.locale("vi");
-  const listOfSkills = [
-    "Java",
-    "C# & .NET",
-    "SQL",
-    "Flutter",
-    "iOS",
-    "Android",
-    "Python",
-  ];
+
+  const [isCantChat, setIsCantChat] = useState(false);
+  const [isRejectedFL, setisRejectedFL] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const [isSendingMsg, setIsSendingMsg] = useState(false);
+  const [selectedAccId, setSelectedAccId] = useState();
+
+  const [selectedOfferInfo, setSelectedOfferInfo] = useState();
+  const [selectedMessages, setSelectedMessages] = useState([]);
+  const [selectedAttachment, setSelectedAttachment] = useState([]);
+
+  const [prevMqttMsg, setPrevMqttMsg] = useState(null);
+
+  const storage = useStorage();
+
+  const modalBtnRef = useRef(null);
+
+  const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   let { id } = useParams();
 
-  /**
-   * @type {[IJob,Function]}
-   */
-  const [loadedJob, setLoadedJob] = useState({});
-  const [isLoadingJob, setIsLoadingJob] = useState(true);
+  if (isNaN(id)) {
+    navigate("/not-found");
+  }
+
+  const userState = useSelector((state) => state.user);
+
+  // mqttClient.subscribe("/msg/" + userState.accountId);
+  const { message } = useSubscription("/msg/" + userState.accountId + "/" + id);
+
+  const isRecruiter = userState.role === "recruiter";
 
   const {
-    data: msgData,
-    error: msgError,
-    isLoading: msgLoading,
-  } = useGetMessageByIdQuery("1");
+    data: balanceData,
+    error: balanceError,
+    isLoading: balanceLoading,
+    refetch: balanceRefetch,
+  } = useGetBalanceByIdQuery(userState.accountId);
+
+  const {
+    data: jobData,
+    error: jobError,
+    isLoading: jobLoading,
+    refetch: jobRefetch,
+  } = useGetJobByIdQuery(id);
+
+  const {
+    data: offerData,
+    error: offerError,
+    isLoading: isGetOfferLoading,
+    refetch: offerRefetch,
+  } = useGetOfferByJobIdAndFreelancerIdQuery(
+    {
+      jobId: id,
+      freelancerId: userState.userId,
+    },
+    { skip: isRecruiter }
+  );
+
+  const {
+    data: msgInfData,
+    error: msgInfError,
+    isLoading: msgInfLoading,
+    refetch,
+  } = useGetMessageByAccountIdJobIdQuery({
+    accountId: userState.accountId,
+    jobId: id,
+  });
+
+  // const {
+  //   data: msgData,
+  //   error: msgError,
+  //   isLoading: msgLoading,
+  //   isFetching: msgFetching,
+  //   refetch,
+  // } = useGetMessageByTargetQuery(
+  //   {
+  //     targetAccountId: selectedAccId,
+  //     sourceAccountId: userState.accountId,
+  //     jobId: id,
+  //   },
+  //   {
+  //     skip: !selectedAccId || isRejectedFL,
+  //   }
+  // );
+
+  const [sendMsg] = useSentMessageMutation();
+  const [updateOfferStatus] = useUpdateOfferStatusByIdMutation();
+  const [requestComplete] = useRequestToCompleteJobMutation();
+  const [confirmComplete] = useCompleteJobMutation();
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
-    // loadInitialJob();
-  }, []);
+    // console.log("Mqtt msg: ", message);
+    if (message) {
+      const msgObj = JSON.parse(message.message);
+      if (!isRecruiter) {
+        // Prevent Duplicate if any
+        setSelectedMessages(_.unionBy(selectedMessages, [msgObj], "messageId"));
+        if (msgObj.messageType == "NOTIFICATION") {
+          jobRefetch();
+          balanceRefetch();
+        }
+      } else {
+        // console.log(msgObj);
+        if (selectedAccId) {
+          if (msgObj.fromAccount.accId == selectedAccId) {
+            // Prevent Duplicate if any
+            setSelectedMessages(
+              _.unionBy(selectedMessages, [msgObj], "messageId")
+            );
+          } else {
+            refetch();
+          }
+        } else {
+          refetch();
+        }
+        if (msgObj.messageType == "NOTIFICATION") {
+          jobRefetch();
+          balanceRefetch();
+        }
+      }
+      // refetch();
+    }
+  }, [message]);
 
-  const loadInitialJob = async () => {
-    setIsLoadingJob(true);
-    const result = await getJobById(id);
-    setLoadedJob(result);
-    setIsLoadingJob(false);
+  useEffect(() => {
+    if (!isRecruiter && msgInfData) {
+      setSelectedMessages(msgInfData[0].messages);
+      setSelectedAccId(msgInfData[0].targetUser.accId);
+    }
+  }, [msgInfData]);
+
+  useEffect(() => {
+    if (isNaN(id)) {
+      navigate("/not-found");
+    }
+
+    if (jobData && jobData.jobStatus == 2) {
+      setIsCantChat(true);
+      setIsDone(true);
+    }
+
+    if (!isRecruiter) {
+      if (offerError && offerError.code == 404) {
+        navigate("/forbidden");
+      }
+
+      if (
+        jobData &&
+        offerData &&
+        jobData.jobStatus != 0 &&
+        offerData.status == "REJECTED"
+      ) {
+        setIsCantChat(true);
+      }
+    } else {
+      if (jobData && jobData.recruiterId != userState.userId) {
+        navigate("/forbidden");
+      }
+    }
+  }, [jobData, offerData]);
+
+  useEffect(() => {
+    setIsCantChat(false);
+    setisRejectedFL(false);
+    if (jobData && jobData.jobStatus == 2) {
+      setIsCantChat(true);
+      setIsDone(true);
+    }
+    if (selectedOfferInfo && selectedOfferInfo.status == "REJECTED") {
+      setIsCantChat(true);
+      setisRejectedFL(true);
+    }
+  }, [selectedAccId]);
+
+  const getFLinfo = (msgInfo) => {
+    if (selectedAccId != msgInfo.targetUser.accId)
+      setSelectedAccId(msgInfo.targetUser.accId);
+    setSelectedOfferInfo(msgInfo.currentOffer);
+    setSelectedMessages(msgInfo.messages);
   };
+
+  const onSend = async (data) => {
+    let attachmentUrl = null;
+    setIsSendingMsg(true);
+
+    if (selectedAttachment.length > 0) {
+      const file = selectedAttachment[0];
+
+      attachmentUrl = await uploadAttachmentToFirebaseGetDownloadUrl(
+        storage,
+        userState.accountId,
+        file
+      );
+    }
+
+    const msgData = {
+      fromAccountId: userState.accountId,
+      toAccountId: selectedAccId,
+      jobId: id,
+      content: data.content,
+      attachFileUrl: attachmentUrl,
+      sentTime: new Date(),
+    };
+    console.log(msgData);
+
+    const resp = await sendMsg(msgData);
+    console.log(resp);
+    if (resp.data) {
+      setSelectedMessages([...selectedMessages, resp.data]);
+    }
+    if (resp.error) {
+      notyf.error(resp.error.messages[0].err_msg);
+    }
+    reset();
+    setSelectedAttachment([]);
+    setIsSendingMsg(false);
+  };
+
+  const getNameFromUrl = (url) => {
+    const refName = ref(storage, url);
+    return refName.name;
+  };
+
+  const onAcceptOffer = async (offerId) => {
+    // dispatch(setLoading(true));
+    if (selectedOfferInfo) {
+      const result = await updateOfferStatus({
+        offerId: selectedOfferInfo.offerId,
+        offerStatusReq: { status: "ACCEPTED", jobId: id },
+      });
+      if (result.data) {
+        notyf.success("Nhận chào giá thành công");
+      }
+      // dispatch(setLoading(false));
+      // window.location.reload();
+      jobRefetch();
+      offerRefetch();
+      modalBtnRef.current.click();
+    }
+  };
+
+  const onRequestToComplete = async () => {
+    // Only FL can request to complete
+    const data = {
+      requesterAccountId: userState.accountId,
+      theOtherChatterRecruiterId: jobData.recruiterId,
+    };
+    const result = await requestComplete({ jobId: id, data });
+    if (!result.error) {
+      notyf.success("Yêu cầu hoàn thành thành công");
+      refetch();
+    }
+  };
+
+  const onRemoveAttachment = () => {
+    if (selectedAttachment.length > 0) {
+      setSelectedAttachment([]);
+    }
+  };
+
+  const onReview = async () => {};
+
+  const onCompleteJob = async () => {
+    // Only FL can request to complete
+    const currOffer = _.find(jobData.offers, { status: "ACCEPTED" });
+    const data = {
+      requesterAccountId: userState.accountId,
+      offerId: currOffer.offerId,
+    };
+    console.log(data);
+    const result = await confirmComplete({ jobId: id, data });
+    if (!result.error) {
+      notyf.success("Xác nhận thành công");
+      refetch();
+      balanceRefetch();
+    } else {
+      notyf.error(result.error.messages[0].err_msg);
+    }
+  };
+
   return (
     <div>
-      {!isLoadingJob ? (
+      {jobLoading ? (
         <LoadingOverlay />
       ) : (
         <div className="flex flex-col gap-y-3">
-          <div className="flex justify-between">
-            <h1 className="text-2xl font-bold mb-4">*insert tên việc*</h1>
-            <div className="flex gap-2 items-center">
-              <button className="btn btn-sm btn-outline btn-primary hover:!text-white">
-                Hoàn tất
-              </button>
-              <span>
-                Trạng thái: <span className="text-emerald-500">Đang làm</span>
-              </span>
-            </div>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold mb-2 flex flex-wrap w-2/3">
+              {jobData.title}
+            </h1>
+            {!isCantChat && (
+              <div className="flex gap-2 items-center">
+                {userState.role === "recruiter" ? (
+                  <button
+                    onClick={onCompleteJob}
+                    disabled={jobData.jobStatus != 4}
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
+                    Hoàn tất
+                  </button>
+                ) : (
+                  <button
+                    onClick={onRequestToComplete}
+                    disabled={
+                      jobData.jobStatus == 4 ||
+                      jobData.jobStatus == 0 ||
+                      jobData.jobStatus == 2
+                    }
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
+                    Yêu cầu hoàn tất
+                  </button>
+                )}
+                <span>
+                  Trạng thái:{" "}
+                  <span
+                    className={`${
+                      jobData.jobStatus == 1
+                        ? "text-blue-500"
+                        : jobData.jobStatus == 2
+                        ? "text-emerald-500"
+                        : jobData.jobStatus == 3
+                        ? "text-red-500"
+                        : jobData.jobStatus == 4
+                        ? "text-yellow-600"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {JobStatusFromInt[jobData.jobStatus]}
+                  </span>
+                </span>
+              </div>
+            )}
+            {isCantChat && isDone && (
+              <div className="flex gap-2 items-center">
+                <button
+                  onClick={onReview}
+                  // disabled={jobData.jobStatus != 4}
+                  className="btn btn-sm btn-outline yellow-btn !text-slate-600"
+                >
+                  Đánh giá
+                </button>
+                <span>
+                  Trạng thái:{" "}
+                  <span
+                    className={`${
+                      jobData.jobStatus == 1
+                        ? "text-blue-500"
+                        : jobData.jobStatus == 2
+                        ? "text-emerald-500"
+                        : jobData.jobStatus == 3
+                        ? "text-red-500"
+                        : jobData.jobStatus == 4
+                        ? "text-yellow-600"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {JobStatusFromInt[jobData.jobStatus]}
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex gap-2">
-            <button className="btn btn-sm btn-accent text-white">
+            <label
+              htmlFor="job-detail-modal"
+              className="btn btn-sm btn-accent text-white"
+            >
               Thông tin công việc
-            </button>
-            <button className="btn btn-sm btn-info text-white">
-              Thông tin chào giá
-            </button>
+            </label>
+            <div className="tooltip" data-tip={offerTooltip}>
+              <label
+                htmlFor="offer-detail-modal"
+                className="btn btn-sm btn-info text-white"
+              >
+                Thông tin chào giá
+              </label>
+            </div>
           </div>
-          {/* <div việcsName="flex gap-x-4"> */}
-          {/* <div className="flex flex-col w-1/3 gap-3">
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold">Thông tin công việc:</h1>
-                <div className="flex flex-col card card-compact all-shadow px-8 py-5">
-                  <div className="flex w-full">
-                    <div className="w-3/4">
-                      <div className="">
-                        <div className="flex">
-                          <h1 className="text-2xl font-semibold mb-3 mr-2">
-                            {loadedJob.title}
-                          </h1>
-                        </div>
-                        <p className="text-base mb-3">
-                          Khách hàng:{" "}
-                          <b className="text-blue-500">
-                            {loadedJob.recruiterName}
-                          </b>
+          <div className="w-full min-h-screen flex py-2 pl-2">
+            {isRecruiter && (
+              <>
+                <div className="w-1/5 flex flex-col gap-2">
+                  {msgInfData &&
+                    msgInfData.map((msgInfo, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => getFLinfo(msgInfo)}
+                        className={`${
+                          selectedAccId == msgInfo.targetUser.accId
+                            ? "bg-slate-100 "
+                            : ""
+                        } ${
+                          msgInfo.currentOffer.status == "REJECTED"
+                            ? "text-slate-300 "
+                            : ""
+                        } hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300 rounded-sm`}
+                      >
+                        <p className="">
+                          {msgInfo.targetUser.freelancer.fullname}
                         </p>
-                        <div className="flex">
-                          <p className="mr-3">Kỹ năng:</p>
-                          <div className="flex gap-2 mb-2 pt-1">
-                            {loadedJob.skills.map((e) => (
-                              <div
-                                key={e.skillId}
-                                className="badge badge-info badge-outline text-white"
-                              >
-                                {e.skillName}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
                       </div>
+                    ))}
+                </div>
+                <div className="divider divider-horizontal" />
+              </>
+            )}
+            <div
+              className={`${
+                userState.role === "recruiter" ? "w-4/5" : "w-full"
+              } flex-col flex gap-2`}
+            >
+              {!isCantChat && selectedMessages.length > 0 && (
+                <form onSubmit={handleSubmit(onSend)}>
+                  <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
+                    <p className="text-lg font-semibold mb-2">Lời nhắn</p>
+                    <ReactTextareaAutosize
+                      id=""
+                      maxRows={13}
+                      className={`${
+                        errors.content ? "border-red-500 " : ""
+                      }bg-white rounded-sm min-h-[100px] mb-3 p-2`}
+                      {...register("content", { required: true })}
+                    />
+                    {errors.content && (
+                      <p className="text-red-400 text-xs">
+                        Lời nhắn không được để trống
+                      </p>
+                    )}
+                    <div className="flex justify-between">
+                      <div>
+                        <CustomDropzone
+                          maxSize={4194304} //4MB
+                          multiple={false}
+                          filter={{}}
+                          acceptedFile={(file) => {
+                            console.log(file);
+                            setSelectedAttachment(
+                              _.union(selectedAttachment, file)
+                            );
+                            // if (file.length > 0)
+                            //   setPreviewAvatarLink(URL.createObjectURL(file[0]));
+                          }}
+                          customClass="flex"
+                          noDrag={true}
+                        />
+                        {selectedAttachment &&
+                          selectedAttachment.length > 0 &&
+                          selectedAttachment.map((file, idx) => (
+                            <div key={idx} className="flex items-center">
+                              <i
+                                onClick={onRemoveAttachment}
+                                className="bi bi-x text-red-600 cursor-pointer"
+                              />
+                              {file.name}
+                            </div>
+                          ))}
+                      </div>
+                      <button
+                        disabled={isSendingMsg}
+                        className="btn btn-sm btn-primary text-white"
+                      >
+                        {isSendingMsg ? (
+                          <>
+                            {" "}
+                            <svg
+                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Đang gửi
+                          </>
+                        ) : (
+                          "Gửi"
+                        )}
+                      </button>
                     </div>
                   </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Mô tả công việc
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-semibold">Thông tin chào giá:</h1>
-                <div className="flex flex-col card card-compact all-shadow px-8 py-5">
-                  <div className="py-2">
-                    <h1 className="text-xl font-semibold mb-2">
-                      Kinh nghiệm và kỹ năng:
-                    </h1>
-                    <p className="ml-1">{loadedJob.recruiterName}</p>
-                  </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Kế hoạch:
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                  <div className="py-2">
-                    <h1 className="text-xl text-black mb-2 font-semibold">
-                      Thời gian thực hiện:
-                    </h1>
-                    <div className="ml-1">{loadedJob.description}</div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-          {/* <div className="w-2/3"> */}
-          <div className="w-full min-h-screen flex py-2 pl-2">
-            <div className="w-1/5">
-              <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300 bg-slate-100 rounded-sm">
-                <p className="">Phạm Hoàng Duy</p>
-              </div>
-              <div className="hover:bg-slate-200 p-3 cursor-pointer active:bg-slate-300">
-                <p className="text-slate-300">Quách Chánh Đại Thanh Thiên</p>
-              </div>
-            </div>
-            <div className="divider divider-horizontal" />
-            <div className="w-4/5 flex-col flex gap-2">
-              <div className="flex flex-col all-shadow rounded-md p-2 bg-slate-200">
-                <p className="text-lg font-semibold mb-2">Lời nhắn</p>
-                <textarea
-                  name="messaging"
-                  id=""
-                  className="bg-white rounded-sm min-h-[100px] mb-3"
-                ></textarea>
-                <div className="flex justify-between">
-                  <p className="link link-secondary">Đính kèm tệm tin</p>
-                  <button className="btn btn-sm btn-primary text-white">
-                    Gửi
-                  </button>
-                </div>
-              </div>
+                </form>
+              )}
+              {/* {msgLoading || msgFetching ? (
+                <div>Đang tải tin nhắn</div>
+              ) : (
+                
+              )} */}
               <table className="chat-table w-full">
                 <thead>
                   <tr>
@@ -173,40 +564,79 @@ const JobProgress = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {msgData &&
-                    msgData.map((msg) => (
-                      <tr>
-                        <td>
-                          <div>
-                            {msg.fromAccount.recruiter
-                              ? msg.fromAccount.recruiter.fullname
-                              : msg.fromAccount.freelancer.fullname}
-                            <img
-                              src={
-                                msg.fromAccount.avatar ??
-                                "https://cdn.donmai.us/sample/ea/ab/__nakiri_ayame_hololive_drawn_by_haruhitooo__sample-eaab4cd56f2a051c2dd1b32d606f2aa8.jpg"
-                              }
-                              className="w-20"
-                              alt="usr-avatar"
+                  {selectedMessages.length > 0 &&
+                    selectedMessages.map((msg, idx) =>
+                      msg.messageType == "NOTIFICATION" ? (
+                        <tr className="bg-[#ffcac7]" key={idx}>
+                          <td className="!pb-1" colSpan={2}>
+                            <ReactTextareaAutosize
+                              name="message-content"
+                              className="w-full min-h-fit pl-2
+                              bg-[#ffcac7] text-black whitespace-pre-line resize-none"
+                              id=""
+                              disabled
+                              rows={1}
+                              defaultValue={msg.content}
                             />
-                          </div>
-                        </td>
-                        <td className="h-full">
-                          <textarea
-                            name="message-content"
-                            className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
-                            id=""
-                            disabled
-                            rows={5}
-                            defaultValue={msg.content}
-                          ></textarea>
-                        </td>
-                        <td>
-                          <div>{dayjs(msg.sentTime).format("DD/MM/YYYY HH:mm").toString()}</div>
-                          {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>
+                            <div>
+                              {dayjs(msg.sentTime)
+                                .format("DD/MM/YYYY HH:mm")
+                                .toString()}
+                            </div>
+                            {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr key={idx}>
+                          <td>
+                            <div>
+                              {msg.fromAccount.recruiter
+                                ? msg.fromAccount.recruiter.fullname
+                                : msg.fromAccount.freelancer.fullname}
+                              <img
+                                src={msg.fromAccount.avatar ?? defaultAva}
+                                className="w-20"
+                                alt="usr-avatar"
+                              />
+                            </div>
+                          </td>
+                          <td className="h-0">
+                            <div className="h-full flex flex-col justify-between">
+                              <ReactTextareaAutosize
+                                name="message-content"
+                                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                                id=""
+                                disabled
+                                rows={5}
+                                value={msg.content}
+                              />
+                              {msg.attachFileUrl && (
+                                <a
+                                  href={msg.attachFileUrl}
+                                  download
+                                  className="bg-slate-50 link link-secondary tooltip !text-left"
+                                  data-tip="File đính kèm"
+                                >
+                                  <p className="p-2">
+                                    {getNameFromUrl(msg.attachFileUrl)}
+                                  </p>
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div>
+                              {dayjs(msg.sentTime)
+                                .format("DD/MM/YYYY HH:mm")
+                                .toString()}
+                            </div>
+                            {/* <div>{dayjs().format("HH:mm").toString()}</div> */}
+                          </td>
+                        </tr>
+                      )
+                    )}
                 </tbody>
               </table>
             </div>
@@ -214,6 +644,125 @@ const JobProgress = () => {
           {/* </div> */}
         </div>
         // </div>
+      )}
+      <input type="checkbox" id="job-detail-modal" className="modal-toggle" />
+      {jobData && (
+        <div className="modal">
+          <div className="modal-box">
+            <span>
+              <div className="font-bold">Mô tả công việc:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                defaultValue={jobData.description}
+              />
+            </span>
+            <div className="my-4">
+              <div className="font-bold">Kỹ năng cần có</div>
+              <div className="flex gap-1 flex-wrap">
+                {jobData.skills.map((e) => (
+                  <div
+                    key={e.skillId}
+                    className="badge badge-info badge-outline text-white"
+                  >
+                    {e.skillName}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="modal-action">
+              <label
+                htmlFor="job-detail-modal"
+                className="btn btn-sm btn-outline"
+              >
+                Đã hiểu
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+      <input
+        ref={modalBtnRef}
+        type="checkbox"
+        id="offer-detail-modal"
+        className="modal-toggle"
+      />
+      {(offerData || selectedOfferInfo) && (
+        <div className="modal">
+          <div className="modal-box flex flex-col gap-1">
+            <div>
+              <div className="font-bold">Kinh nghiệm:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                value={offerData?.experience ?? selectedOfferInfo?.experience}
+              />
+            </div>
+            <div>
+              <div className="font-bold">Dự định:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                value={offerData?.planning ?? selectedOfferInfo?.planning}
+              />
+            </div>
+            <div>
+              <div className="font-bold">Thời gian làm dự kiến:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                value={
+                  offerData?.timeToComplete ?? selectedOfferInfo?.timeToComplete
+                }
+              />
+            </div>
+            <div>
+              <div className="font-bold">Giá chào:</div>
+              <CurrencyInput
+                className="w-min bg-white"
+                prefix="VND "
+                allowNegativeValue={false}
+                disabled
+                value={offerData?.offerPrice ?? selectedOfferInfo?.offerPrice}
+              />
+            </div>
+            <div>
+              <div className="font-bold">Trạng thái:</div>
+              <ReactTextareaAutosize
+                className="w-full min-h-fit bg-white whitespace-pre-line resize-none"
+                disabled
+                value={
+                  OfferStatus[offerData?.status ?? selectedOfferInfo?.status]
+                }
+              />
+            </div>
+            <div className="modal-action">
+              {isRecruiter && (
+                <div
+                  className="tooltip"
+                  data-tip="Tài khoản phải có ít nhất 500.000đ"
+                >
+                  <button
+                    onClick={onAcceptOffer}
+                    disabled={
+                      (jobData && jobData.jobStatus != 0) ||
+                      balanceData.balance < 500000
+                    }
+                    className="btn btn-sm btn-outline btn-primary hover:!text-white"
+                  >
+                    Giao việc
+                  </button>
+                </div>
+              )}
+              <label
+                htmlFor="offer-detail-modal"
+                className="btn btn-sm btn-outline"
+              >
+                Đã hiểu
+              </label>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

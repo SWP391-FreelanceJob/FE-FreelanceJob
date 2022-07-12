@@ -12,16 +12,7 @@ const Profile = () => {
   // const [loadedFreelancer, setLoadedFreelancer] = useState({});
   // const [isLoadingFreelancer, setIsLoadingFreelancer] = useState(true);
 
-  // useEffect(() => {
-  //   loadInitialFreelancer();
-  // }, []);
-
-  // const loadInitialFreelancer = async () => {
-  //   setIsLoadingFreelancer(true);
-  //   const result = await getFreelancerById(id);
-  //   setLoadedFreelancer(result);
-  //   setIsLoadingFreelancer(false);
-  // };
+ 
   const freelancerQuery = useGetFreelancerByIdQuery(id);
 
   return (
@@ -50,12 +41,12 @@ const Profile = () => {
                       <h1 className="text-xl font-semibold mb-3 mr-2">
                         {freelancerQuery.data.name}
                       </h1>
-                      <button
+                      {/* <button
                         className="btn btn-sm upd-btn text-white"
-                        onClick={() => navigate("/settings/profile")}
+                        onClick={() => navigate("/setting/profile")}
                       >
                         Cập nhật thông tin
-                      </button>
+                      </button> */}
                     </div>
                     <p className="text-sm mb-3">
                       <i className="bi bi-bag"></i>{" "}
@@ -97,7 +88,8 @@ const Profile = () => {
                     return (
                       <div
                         key={e.id}
-                        className="card card-compact bg-base-100 shadow-md mb-4 w-1/3 min-w-[30%]"
+                        onClick={() => navigate(`/project/${e.id}`)}
+                        className="card card-compact bg-base-100 shadow-md mb-4 w-1/3 min-w-[30%] hover:cursor-pointer"
                       >
                         <figure>
                           <img
@@ -108,7 +100,7 @@ const Profile = () => {
                         </figure>
                         <div className="inline-flex pl-1">
                           <div className="card-body">
-                            <h2 className="text-base">{e.name}</h2>
+                            <h2 className="text-base">{""}</h2>
                           </div>
                         </div>
                       </div>
