@@ -7,25 +7,32 @@ const CustomFooter = () => {
       <div className="max-w-[1400px] mx-auto">
         <footer className="footer py-10">
           <div>
-            <span className="footer-title">For Freelancer</span>
-            <a className="link link-hover">Something</a>
-            <a className="link link-hover">Something</a>
+            <span className="footer-title"><b>FREELANCER</b></span>
+            <a onClick={()=> window.open("bid-guide")} className="link link-hover">Hướng dẫn chào giá dự án</a>
           </div>
           <div>
-            <span className="footer-title">For Recruiter</span>
-            <a className="link link-hover">Something</a>
-            <a className="link link-hover">Something</a>
+            <span className="footer-title"><b>KHÁCH HÀNG</b></span>
+            <a onClick={()=> window.open("post-guide")} className="link link-hover">Hướng dẫn đăng việc</a>
+            <a onClick={()=> window.open("selectfc-guide")} className="link link-hover">Hướng dẫn chọn Freelancer</a>
+            <a onClick={()=> window.open("contact-guide")} className="link link-hover">Hướng dẫn liên hệ</a>
           </div>
           <div>
-            <span className="footer-title">Company</span>
-            <a className="link link-hover">Something</a>
-            <a className="link link-hover">Something</a>
+            <span className="footer-title"><b>TOPUP</b></span>
+            <a onClick={()=> window.open("topup-guide")} className="link link-hover">Hướng dẫn nạp tiền</a>
           </div>
           <div>
-            <span className="footer-title">Legal</span>
-            <a className="link link-hover">Terms of use</a>
-            <a className="link link-hover">Privacy policy</a>
-            <a className="link link-hover">Cookie policy</a>
+            <span className="footer-title"><b>GIỚI THIỆU</b></span>
+            <a className="link link-hover">Về chúng tôi</a>
+            <a className="link link-hover">Nhà tài trợ</a>
+            <a className="link link-hover">Kiến thức FreelanceVN</a>
+            <a className="link link-hover">Blog FreelanceVN</a>
+          </div>
+          <div>
+            <span className="footer-title"><b>LIÊN HỆ</b></span>
+            <a className="link link-hover">Trợ giúp</a>
+            <a className="link link-hover">Câu hỏi thường gặp</a>
+            <a className="link link-hover">Thông báo lỗi</a>
+            <a className="link link-hover">Liên hệ</a>
           </div>
         </footer>
         <footer className="footer py-4 border-t text-base-content border-base-300">
