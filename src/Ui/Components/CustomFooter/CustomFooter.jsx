@@ -5,7 +5,7 @@ const CustomFooter = () => {
   return (
     <div className="border-t-[1px] px-8">
       <div className="max-w-[1400px] mx-auto">
-        <footer className="footer py-10">
+        <footer className="footer py-10 justify-around">
           <div>
             <span className="footer-title"><b>FREELANCER</b></span>
             <a onClick={()=> window.open("bid-guide")} className="link link-hover">Hướng dẫn chào giá dự án</a>
@@ -20,7 +20,7 @@ const CustomFooter = () => {
             <span className="footer-title"><b>TOPUP</b></span>
             <a onClick={()=> window.open("topup-guide")} className="link link-hover">Hướng dẫn nạp tiền</a>
           </div>
-          <div>
+          {/* <div>
             <span className="footer-title"><b>GIỚI THIỆU</b></span>
             <a className="link link-hover">Về chúng tôi</a>
             <a className="link link-hover">Nhà tài trợ</a>
@@ -33,7 +33,7 @@ const CustomFooter = () => {
             <a className="link link-hover">Câu hỏi thường gặp</a>
             <a className="link link-hover">Thông báo lỗi</a>
             <a className="link link-hover">Liên hệ</a>
-          </div>
+          </div> */}
         </footer>
         <footer className="footer py-4 border-t text-base-content border-base-300">
           <div className="items-center grid-flow-col">
