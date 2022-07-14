@@ -1,3 +1,4 @@
+import { useGetGenresQuery } from "@/App/Models/Genre/Genre";
 import { useGetJobsQuery } from "@/App/Models/Job/Job";
 import { useGetSkillsQuery } from "@/App/Models/Skill/Skill";
 import CustomPagination from "@/Ui/Components/CustomPagination/CustomPagination";
@@ -13,17 +14,27 @@ import "./Jobs.css";
 const Jobs = () => {
   const [isChecked, setIsChecked] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("0");
+  const [selectedGenre, setSelectedGenre] = useState();
 
   const [pageNo, setPageNo] = useState(1);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [flNameState, setFlNameState] = useState("");
-  const jobQuery = useGetJobsQuery({pageNo, skills: selectedSkills.map(e => e.skillId), name: flNameState});
-  const goToNewPage = (newPageNo) => {
 
+  const jobQuery = useGetJobsQuery({
+    pageNo,
+    skills: selectedSkills.map((e) => e.skillId),
+    genreId: selectedGenre,
+    name: flNameState,
+  });
+  const goToNewPage = (newPageNo) => {
     setPageNo(newPageNo);
   };
 
-
+  const {
+    data: genreData,
+    error: genreError,
+    isLoading: isGenreLoading,
+  } = useGetGenresQuery();
 
   const skillQuery = useGetSkillsQuery();
 
@@ -31,67 +42,16 @@ const Jobs = () => {
 
   const onFLNameChange = (bruh) => {
     setFlNameState(bruh.target.value);
-  }
+  };
 
   const onSkillListChange = (skill) => {
     // const existingSkill = [...selectedSkills];
     // existingSkill.push(skill);
     if (selectedSkills.includes(skill)) {
-      setSelectedSkills(selectedSkills.filter(e => e !== skill));
+      setSelectedSkills(selectedSkills.filter((e) => e !== skill));
     } else setSelectedSkills([...selectedSkills, skill]);
+    setPageNo(1);
   };
-
-  const listOfJobs = [
-    {
-      name: "Làm trang web bán hàng",
-      recruiter_name: "Di Di",
-      price_from: "2.000.000",
-      price_to: "3.500.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Yêu cầu: tối ưu hoá SEO, response time < 10ms, UI/UX hợp mắt, dễ sử dụng, có API cho bên thứ 3, Server Side Rendering, ưu tiên sử dụng NextJS ",
-      skills: ["Javascript", "C#", "SQL"],
-      offers: 23,
-    },
-    {
-      name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Phần mềm có chức năng đăng ký tài khoản trên giả lập LDplayer - Có fake IP sử dụng dịch vụ có API tích hợp - Thuê số điện thoại, nhận OTP có API - Đăng ký tài khoản, xuất định dạng account theo yêu cầu.",
-      skills: ["C#", "Python"],
-      offers: 2,
-    },
-    {
-      name: "Phần mềm đăng ký tài khoản đa luồng trên giả lập LDplayer",
-      recruiter_name: "Minh Huấn Lành",
-      price_from: "8.000.000",
-      price_to: "10.000.000",
-      offer_deadline: "3 ngày 23 giờ",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio fugiat aperiam quos quasi accusantium sapiente praesentium iure quidem odit laudantium beatae voluptatibus fugit obcaecati autem voluptas, perferendis excepturi impedit temporibus! Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatum quo neque cum aliquam, iusto provident quae porro repellendus qui quas eligendi consectetur iste labore, dolor aliquid dolorem ducimus obcaecati. Magnam.",
-      skills: ["C#", "Python"],
-      offers: 2,
-    },
-  ];
-
-  const listOfSkills = [
-    "Java",
-    "C# & .NET",
-    "SQL",
-    "Flutter",
-    "iOS",
-    "Android",
-    "Python",
-  ];
-
-  const listOfStatus = [
-    { status: "Nhận chào giá", value: "0" },
-    { status: "Đã hoàn thành", value: "1" },
-    { status: "Chưa xác thực", value: "2" },
-  ];
 
   const checkedBox = () => {
     setIsChecked(!isChecked);
@@ -111,6 +71,45 @@ const Jobs = () => {
           <div className="w-1/5 flex flex-col gap-y-4">
             <div className="card filter-shadow">
               <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <h1 className="text-xl font-semibold">Phân loại</h1>
+                  {selectedGenre && (
+                    <h1
+                      onClick={() => {
+                        setSelectedGenre();
+                        setPageNo(1);
+                      }}
+                      className="text-red-400 cursor-pointer "
+                    >
+                      Huỷ
+                      <i className="bi bi-x" />
+                    </h1>
+                  )}
+                </div>
+                {genreData &&
+                  genreData.map((stt, idx) => (
+                    <div key={idx} className="form-control">
+                      <label className="label cursor-pointer">
+                        <span className="label-text">{stt.genreName}</span>
+                        <input
+                          type="radio"
+                          name="genre"
+                          value={stt.id}
+                          onChange={() => {
+                            setSelectedGenre(stt.id);
+                            setPageNo(1);
+                          }}
+                          checked={stt.id === selectedGenre}
+                          // readOnly
+                          className="radio radio-accent"
+                        />
+                      </label>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <div className="card filter-shadow">
+              <div className="p-4">
                 <h1 className="text-xl font-semibold">Kỹ năng</h1>
                 {skillQuery.isLoading ? (
                   <div></div>
@@ -124,7 +123,7 @@ const Jobs = () => {
                         >
                           <span className="label-text">{skill.skillName}</span>
                           <input
-                              onChange={() => onSkillListChange(skill)}
+                            onChange={() => onSkillListChange(skill)}
                             type="checkbox"
                             readOnly
                             className="checkbox checkbox-accent"
@@ -135,27 +134,6 @@ const Jobs = () => {
                 )}
               </div>
             </div>
-            {/* <div className="card filter-shadow">
-              <div className="p-4">
-                <h1 className="text-xl font-semibold">Trạng thái</h1>
-                {listOfStatus.map((stt, idx) => (
-                  <div key={idx} className="form-control">
-                    <label className="label cursor-pointer">
-                      <span className="label-text">{stt.status}</span>
-                      <input
-                        type="radio"
-                        name="stt"
-                        value={stt.value}
-                        checked={stt.value === selectedStatus}
-                        readOnly
-                        className="radio radio-accent"
-                        onClick={onSelectStatus}
-                      />
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div> */}
           </div>
           <div className="w-4/5 flex flex-col gap-2">
             <div className="">
@@ -188,7 +166,15 @@ const Jobs = () => {
               </button>
             </div>
             <div className="w-full border-2 rounded-lg">
-              {!(jobQuery.data && jobQuery.data.data && jobQuery.data.data.length > 0 && jobQuery.data.data.filter((job) => job.jobStatus === 0).length > 0) ? <div className="p-3 text-2xl">Không tìm thấy công việc</div> : 
+              {!(
+                jobQuery.data &&
+                jobQuery.data.data &&
+                jobQuery.data.data.length > 0 &&
+                jobQuery.data.data.filter((job) => job.jobStatus === 0).length >
+                  0
+              ) ? (
+                <div className="p-3 text-2xl">Không tìm thấy công việc</div>
+              ) : (
                 jobQuery.data.data
                   .filter((job) => job.jobStatus === 0)
                   .map((job, idx) => (
@@ -215,6 +201,9 @@ const Jobs = () => {
                                 disabled
                                 defaultValue={job.price}
                               />
+                            </span>
+                            <span className="badge badge-info text-white">
+                              {job.genre?.genreName}
                             </span>
                           </div>
                           <div className="p-2">
@@ -245,7 +234,8 @@ const Jobs = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ))
+              )}
             </div>
 
             {/* <div className="btn-group justify-center">

@@ -18,6 +18,7 @@ export const Endpoints = {
     "PROJECT":"/project",
     "RECRUITER": "/recruiter",
     "SKILL":"/skills",
+    "GENRE":"/genre",
     "TOPUP":"/payment/topup",
     "BALANCE":"/payment/balance",
     "PAYMENTHISTORY":"/payment/payment-history",

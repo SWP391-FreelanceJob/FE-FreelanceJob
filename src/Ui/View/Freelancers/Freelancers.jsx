@@ -46,6 +46,7 @@ const Freelancers = () => {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(e => e !== skill));
     } else setSelectedSkills([...selectedSkills, skill]);
+    setPageNo(1);
   };
 
   const goToNewPage = (newPageNo) => {

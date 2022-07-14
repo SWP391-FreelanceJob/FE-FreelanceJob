@@ -22,6 +22,7 @@ import MultipleSelect from "@/Ui/Components/MultipleSelect/MultipleSelect";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import { notyf } from "@/App/Utils/NotyfSetting";
+import { useGetGenresQuery } from "@/App/Models/Genre/Genre";
 
 const CreateJob = () => {
   registerLocale("vi", local);
@@ -34,6 +35,11 @@ const CreateJob = () => {
   const location = useLocation();
   const { state, pathname } = location;
   const [isEditingJob, setIsEditingJob] = useState(pathname == "/edit-job");
+  const {
+    data: genreData,
+    error: genreError,
+    isLoading: isGenreLoading,
+  } = useGetGenresQuery();
 
   const navigate = useNavigate();
 
@@ -72,6 +78,7 @@ const CreateJob = () => {
       price: data.jobBudget,
       duration: data.jobDeadline,
       skills: data.jobSkills.map((skill) => skill.skillId),
+      genreId: data.genre,
       recruiterId: userState.userId,
     };
     // console.log(jobData);
@@ -88,8 +95,8 @@ const CreateJob = () => {
       const result = await createJob(jobData);
       if (result.data) {
         navigate(`/job/${result.data.id}`);
-      }else{
-        notyf.error("Tạo việc thất bại. Vui lòng thử lại sau!"); 
+      } else {
+        notyf.error("Tạo việc thất bại. Vui lòng thử lại sau!");
       }
     }
   };
@@ -173,6 +180,32 @@ const CreateJob = () => {
                 {errors.jobSkills && (
                   <p className="text-red-400 text-xs">
                     Vui lòng chọn kỹ năng cần thiết
+                  </p>
+                )}
+              </div>
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Phân loại công việc</span>
+                </label>
+                <select
+                  {...register("genre", { required: true })}
+                  // onChange={(e) => setSelectedGenre(e.target.value)}
+                  className="select select-bordered w-full max-w-xs"
+                  defaultValue={state?.genre.id ?? "chon-cong-viec"}
+                >
+                  <option disabled value="chon-cong-viec">
+                    Chọn phân loại
+                  </option>
+                  {genreData &&
+                    genreData.map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.genreName}
+                      </option>
+                    ))}
+                </select>
+                {errors.genre && (
+                  <p className="text-red-400 text-xs">
+                    Vui lòng chọn phân loại
                   </p>
                 )}
               </div>

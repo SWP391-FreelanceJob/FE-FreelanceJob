@@ -22,6 +22,7 @@ import { useGetBalanceByIdQuery } from "@/App/Models/Payment/Payment";
 import { setLoading } from "@/App/Models/GlobalLoading/LoadingSlice";
 import TextareaAutosize from "react-textarea-autosize";
 import { notyf } from "@/App/Utils/NotyfSetting";
+import { useGetGenresQuery } from "@/App/Models/Genre/Genre";
 
 // const JobEdit = forwardRef(({},ref) => {
 
@@ -121,19 +122,6 @@ const JobDetail = () => {
     formState: { errors },
   } = useForm();
 
-  // /**
-  //  * @type {[IJob,Function]}
-  //  */
-  // const [loadedJob, setLoadedJob] = useState({});
-  // const [isLoadingJob, setIsLoadingJob] = useState(true);
-
-  // const loadInitialJob = async () => {
-  //   setIsLoadingJob(true);
-  //   const result = await getJobById(id);
-  //   setLoadedJob(result);
-  //   setIsLoadingJob(false);
-  // };
-  // const [loadedJob, setLoadedJob] = useState(jobQuery.data);
   return (
     <div>
       {jobQuery.isLoading ? (
@@ -182,11 +170,21 @@ const JobDetail = () => {
                           {jobQuery.data.skills.map((e, idx) => (
                             <div
                               key={idx}
-                              className="badge badge-info badge-outline text-white"
+                              className="badge badge-success badge-outline text-white"
                             >
                               {e.skillName}
                             </div>
                           ))}
+                        </div>
+                      </div>
+                      <div className="flex">
+                        <p className="mr-3">Phân loại</p>
+                        <div className="flex gap-2 mb-2 pt-1">
+                          {jobQuery.data && (
+                            <div className="badge badge-info text-white">
+                              {jobQuery.data.genre?.genreName}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

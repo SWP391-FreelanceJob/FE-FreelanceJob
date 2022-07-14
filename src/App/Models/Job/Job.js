@@ -14,10 +14,11 @@ export const jobApi = createApi({
         isAscending = true,
         skills,
         name,
+        genreId,
       }) => ({
         url: Endpoints.JOBS,
         method: "GET",
-        params: { isAscending, pageSize, pageNo, skill: skills, name },
+        params: { isAscending, pageSize, pageNo, skill: skills, name, genreId },
       }),
       providesTags: ["jobs"],
     }),
