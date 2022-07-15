@@ -3,6 +3,8 @@ import { useGetFreelancerByIdQuery } from "@/App/Models/Freelancer/Freelancer";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import defaultFile from "@/App/Assets/png/file.jpg";
+import defaultAva from "@/App/Assets/png/default.webp";
 import "./Profile.css";
 
 const Profile = () => {
@@ -12,13 +14,12 @@ const Profile = () => {
   // const [loadedFreelancer, setLoadedFreelancer] = useState({});
   // const [isLoadingFreelancer, setIsLoadingFreelancer] = useState(true);
 
- 
   const freelancerQuery = useGetFreelancerByIdQuery(id);
 
   return (
     <>
       {freelancerQuery.isLoading ? (
-        <LoadingOverlay/>
+        <LoadingOverlay />
       ) : (
         <div>
           <div className="flex">
@@ -29,7 +30,7 @@ const Profile = () => {
                     <div className="rounded-full">
                       <img
                         className="usr-avatar"
-                        src={freelancerQuery.data.avatar}
+                        src={freelancerQuery.data.avatar ?? defaultAva}
                         alt=""
                       />
                     </div>
@@ -77,30 +78,34 @@ const Profile = () => {
                 <h1 className="text-xl text-black mb-2 font-semibold">
                   Giới thiệu bản thân
                 </h1>
-                <div className="ml-1">{freelancerQuery.data.description}</div>
+                <div className="ml-1">{freelancerQuery.data.description ?? "Chưa có giới thiệu"}</div>
               </div>
               <div className="py-2">
                 <h1 className="text-xl text-black mb-2 font-semibold">
                   Hồ sơ năng lực
                 </h1>
                 <div className="inline-flex gap-3 flex-nowrap overflow-auto portfo-overflow">
-                  {freelancerQuery.data.projects.map((e) => {
+                  {freelancerQuery.data.projects.map((e,idx) => {
                     return (
                       <div
-                        key={e.id}
+                        key={idx}
                         onClick={() => navigate(`/project/${e.id}`)}
                         className="card card-compact bg-base-100 shadow-md mb-4 w-1/3 min-w-[30%] hover:cursor-pointer"
                       >
                         <figure>
-                          <img
-                            className="w-full object-cover"
-                            src={e.imageUrl}
-                            alt=""
-                          />
+                          {e.imageUrl && e.imageUrl.length > 0 ? (
+                            <img
+                              className="w-full object-cover"
+                              src={e.imageUrl ?? defaultFile}
+                              alt=""
+                            />
+                          ) : (
+                            <img src={defaultFile} className="w-24 object-cover" />
+                          )}
                         </figure>
                         <div className="inline-flex pl-1">
                           <div className="card-body">
-                            <h2 className="text-base">{""}</h2>
+                            <h2 className="text-base line-clamp-3">{e.description}</h2>
                           </div>
                         </div>
                       </div>
