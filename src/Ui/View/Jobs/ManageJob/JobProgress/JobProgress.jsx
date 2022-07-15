@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import {
   useGetMessageByAccountIdJobIdQuery,
   useGetMessageByIdQuery,
@@ -44,6 +46,8 @@ import { ref } from "firebase/storage";
 
 const JobProgress = () => {
   dayjs.locale("vi");
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
 
   const [isCantChat, setIsCantChat] = useState(false);
   const [isRejectedFL, setisRejectedFL] = useState(false);
@@ -353,7 +357,7 @@ const JobProgress = () => {
                     disabled={jobData.jobStatus != 4}
                     className="btn btn-sm btn-outline btn-primary hover:!text-white"
                   >
-                    Hoàn tất
+                    Hoàn thành
                   </button>
                 ) : (
                   <button
@@ -365,7 +369,7 @@ const JobProgress = () => {
                     }
                     className="btn btn-sm btn-outline btn-primary hover:!text-white"
                   >
-                    Yêu cầu hoàn tất
+                    Yêu cầu hoàn thành
                   </button>
                 )}
                 <span>
