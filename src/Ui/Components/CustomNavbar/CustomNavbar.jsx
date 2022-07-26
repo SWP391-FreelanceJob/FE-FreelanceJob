@@ -254,7 +254,7 @@ const CustomNavbar = () => {
                           onClick={updProfile}
                           className="flex gap-2 p-3 txt-black hover:bg-slate-200 rounded-md"
                         >
-                          <i className="bi bi-person" /> Sửa thông tin
+                          <i className="bi bi-person" /> Thông tin cá nhân
                         </div>
                         <div
                           onClick={logout}

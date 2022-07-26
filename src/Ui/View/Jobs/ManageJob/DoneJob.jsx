@@ -1,7 +1,6 @@
 import "./ManageJob.css";
 import CurrencyInput from "react-currency-input-field";
-import { useOutletContext } from "react-router-dom";
-import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import Rating from "react-rating";
 import { useRateJobMutation } from "@/App/Models/Rating/Rating";
 import { useSelector } from "react-redux";
@@ -11,6 +10,7 @@ export default function DoneJob() {
   const [_1, _2, jobData] = useOutletContext();
 
   const userInfo = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const [rateJob, { isRateJobLoading, isRateJobError }] = useRateJobMutation();
   const handleRatingClick = async (ratingVal, jobId) => {

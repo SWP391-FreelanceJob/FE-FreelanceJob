@@ -43,6 +43,8 @@ import {
 } from "@/Api/Service/Firebase/FBStorage";
 import { useStorage } from "reactfire";
 import { ref } from "firebase/storage";
+import Rating from "react-rating";
+import { useRateJobMutation } from "@/App/Models/Rating/Rating";
 
 const JobProgress = () => {
   dayjs.locale("vi");
@@ -64,6 +66,7 @@ const JobProgress = () => {
   const storage = useStorage();
 
   const modalBtnRef = useRef(null);
+  const ratingBtnRef = useRef(null);
 
   const offerTooltip = "Thông tin chào giá của freelancer hiện tại";
 
@@ -140,6 +143,7 @@ const JobProgress = () => {
   const [updateOfferStatus] = useUpdateOfferStatusByIdMutation();
   const [requestComplete] = useRequestToCompleteJobMutation();
   const [confirmComplete] = useCompleteJobMutation();
+  const [rateJob, { isRateJobLoading, isRateJobError }] = useRateJobMutation();
 
   const {
     register,
@@ -319,7 +323,17 @@ const JobProgress = () => {
     }
   };
 
-  const onReview = async () => {};
+  const onReview = async (ratingVal, jobId) => {
+    console.log(ratingVal, jobId);
+    const result = await rateJob({
+      jobId: jobId,
+      accountId: userState.accountId,
+      rating: ratingVal,
+    });
+    ratingBtnRef.current.click();
+    if (!isRateJobError) notyf.success("Đánh giá thành công.");
+    else notyf.error("Đánh giá thất bại.");
+  };
 
   const onCompleteJob = async () => {
     // Only FL can request to complete
@@ -394,13 +408,12 @@ const JobProgress = () => {
             )}
             {isCantChat && isDone && (
               <div className="flex gap-2 items-center">
-                <button
-                  onClick={onReview}
-                  // disabled={jobData.jobStatus != 4}
+                <label
+                  htmlFor="rating-modal"
                   className="btn btn-sm btn-outline yellow-btn !text-slate-600"
                 >
                   Đánh giá
-                </button>
+                </label>
                 <span>
                   Trạng thái:{" "}
                   <span
@@ -763,6 +776,33 @@ const JobProgress = () => {
                 className="btn btn-sm btn-outline"
               >
                 Đã hiểu
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+      <input ref={ratingBtnRef} type="checkbox" id="rating-modal" className="modal-toggle" />
+      {jobData && (
+        <div className="modal">
+          <div className="modal-box">
+            <div className="my-4">
+              <div className="font-bold">Đánh giá</div>
+              <div className="flex gap-1 flex-wrap">
+                <Rating
+                  initialRating={
+                    !isRecruiter
+                      ? jobData.freelancerRating
+                      : jobData.recruiterRating
+                  }
+                  onClick={(ratingVal) => onReview(ratingVal, jobData.id)}
+                  fullSymbol="bi bi-star-fill text-orange-400"
+                  emptySymbol="bi bi-star text-orange-300"
+                />
+              </div>
+            </div>
+            <div className="modal-action">
+              <label htmlFor="rating-modal" className="btn btn-sm btn-outline">
+                Xong
               </label>
             </div>
           </div>

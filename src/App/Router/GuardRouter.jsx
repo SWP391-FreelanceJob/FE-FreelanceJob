@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 // import { IAuthentication } from "../Interface/IAuthentication";
 // import { useTSSelector } from "../Store/hooksHelper";
 
@@ -9,7 +10,7 @@ const RequireAuth = ({ children, requiredRoles }) => {
   // const isLoggedIn = true;
   const role = useSelector((state) => state.user.role);
   const isLoggedIn = useSelector((state) => state.user.isLogin);
-  let location = useLocation();
+  const location = useLocation();
 
   if (!isLoggedIn) {
     // return <Navigate href="/login" state={{ from: location }} />;
@@ -19,7 +20,7 @@ const RequireAuth = ({ children, requiredRoles }) => {
   const correctRole = requiredRoles.includes(role);
 
   if (!correctRole) {
-    return <Navigate to="/forbid" />;
+    return <Navigate to="/forbidden" />;
   }
 
   return children;

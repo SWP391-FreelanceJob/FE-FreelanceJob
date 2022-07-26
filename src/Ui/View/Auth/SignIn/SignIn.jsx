@@ -61,7 +61,7 @@ const SignIn = () => {
             notyf.error(
               "Đã có lỗi xảy ra khi đăng nhập " + error.messages[0].err_msg
             );
-            ƒ;
+;
             break;
         }
       }

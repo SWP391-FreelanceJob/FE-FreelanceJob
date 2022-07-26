@@ -72,9 +72,9 @@ const EditProject = () => {
     <div className="flex flex-col w-[1000px] mx-auto">
       <button
         onClick={() => navigate(-1)}
-        className="border-2 border-red-400 w-20 px-2 rounded-lg bg-red-400 text-white"
+        className="border-2 border-red-400 w-20 px-2 rounded-lg bg-red-400 text-white mb-4"
       >
-        	Quay về
+        Quay về
       </button>
       <form onSubmit={handleSubmit(onSubmitUpdateProject)}>
         <div className="form-control gap-3">
@@ -84,13 +84,11 @@ const EditProject = () => {
             </span>
             <div>
               <div className="avatar">
-                <div className="w-24 rounded-xl">
-                  {selectedAvatar && previewAvatarLink ? (
+                {selectedAvatar && previewAvatarLink && (
+                  <div className="w-24 rounded-xl">
                     <img src={`${previewAvatarLink}`} />
-                  ) : (
-                    <img src={projectQuery.data.imageUrl ?? `${"https://i.pravatar.cc/300"}`} />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
               <div className="text-xs text-slate-400">
                 1. Kích thước không quá 2MB

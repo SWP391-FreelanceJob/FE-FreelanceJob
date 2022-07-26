@@ -78,23 +78,103 @@ function App() {
               <Route path="/" element={<MasterPage />}>
                 <Route path="" element={<LandingPage />} />
                 {/* <Route path="/manage-profile/*" element={<Settings />} /> */}
-                <Route path="/manage-project" element={<ManageProject />} />
-                <Route path="/edit-project/:id" element={<EditProject />} />
+                <Route
+                  path="/manage-project"
+                  element={
+                    <RequireAuth
+                      children={<ManageProject />}
+                      requiredRoles={["freelancer"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/edit-project/:id"
+                  element={
+                    <RequireAuth
+                      children={<EditProject />}
+                      requiredRoles={["freelancer"]}
+                    />
+                  }
+                />
                 <Route
                   path="/recruiter-profile/:id"
                   element={<RecruiterProfile />}
                 />
-                <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/setting/*" element={<Settings />} />
+                <Route
+                  path="/profile/:id"
+                  element={
+                    <RequireAuth
+                      children={<Profile />}
+                      requiredRoles={["freelancer", "recruiter"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/setting/*"
+                  element={
+                    <RequireAuth
+                      children={<Settings />}
+                      requiredRoles={["freelancer", "recruiter"]}
+                    />
+                  }
+                />
                 <Route path="/project/:id" element={<Project />} />
                 <Route path="/all-jobs" element={<Jobs />} />
-                <Route path="/manage-offer/*" element={<ManageOfferRoute />} />
-                <Route path="/manage-job/*" element={<ManageJobRoute />} />
-                <Route path="/create-job" element={<CreateJob />} />
-                <Route path="/edit-job" element={<CreateJob />} />
+                <Route
+                  path="/manage-offer/*"
+                  element={
+                    <RequireAuth
+                      children={<ManageOfferRoute />}
+                      requiredRoles={["freelancer"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/manage-job/*"
+                  element={
+                    <RequireAuth
+                      children={<ManageJobRoute />}
+                      requiredRoles={["recruiter"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/create-job"
+                  element={
+                    <RequireAuth
+                      children={<CreateJob />}
+                      requiredRoles={["recruiter"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/edit-job"
+                  element={
+                    <RequireAuth
+                      children={<CreateJob />}
+                      requiredRoles={["recruiter"]}
+                    />
+                  }
+                />
                 <Route path="/job/:id" element={<JobDetail />} />
-                <Route path="/job-progress/:id" element={<JobProgress />} />
-                <Route path="/offer/:jid" element={<ViewOffer />} />
+                <Route
+                  path="/job-progress/:id"
+                  element={
+                    <RequireAuth
+                      children={<JobProgress />}
+                      requiredRoles={["freelancer", "recruiter"]}
+                    />
+                  }
+                />
+                <Route
+                  path="/offer/:jid"
+                  element={
+                    <RequireAuth
+                      children={<ViewOffer />}
+                      requiredRoles={["recruiter"]}
+                    />
+                  }
+                />
                 <Route path="/all-freelancers" element={<Freelancers />} />
                 <Route path="/topup-guide" element={<TopupGuide />} />
                 <Route path="/bid-guide" element={<BidGuide />} />

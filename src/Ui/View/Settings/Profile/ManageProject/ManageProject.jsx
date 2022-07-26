@@ -141,9 +141,15 @@ const ManageProject = () => {
           <h3 className="font-bold text-lg">
             Bạn có chắc chắn muốn xoá project {selectedProject.name}?
           </h3>
-          <p className="py-4">Bạn <b>không thể</b> khôi phục project nếu bạn chọn xoá. Bạn có chắc chắn không?</p>
+          <p className="py-4">
+            Bạn <b>không thể</b> khôi phục project nếu bạn chọn xoá. Bạn có chắc
+            chắn không?
+          </p>
           <div className="modal-action">
-            <label htmlFor={`delete-project-confirmation-${selectedProject.prjId}`} className="btn">
+            <label
+              htmlFor={`delete-project-confirmation-${selectedProject.prjId}`}
+              className="btn"
+            >
               Không xoá
             </label>
             <label
@@ -169,13 +175,11 @@ const ManageProject = () => {
               </span>
               <div>
                 <div className="avatar">
-                  <div className="w-24 rounded-xl">
-                    {selectedAvatar && previewAvatarLink ? (
+                  {selectedAvatar && previewAvatarLink && (
+                    <div className="w-24 rounded-xl">
                       <img src={`${previewAvatarLink}`} />
-                    ) : (
-                      <img src={`${"https://i.pravatar.cc/300"}`} />
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 <div className="text-xs text-slate-400">
                   1. Kích thước không quá 2MB

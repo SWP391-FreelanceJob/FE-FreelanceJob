@@ -3,6 +3,7 @@ import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import { useNavigate, useParams } from "react-router-dom";
 import defaultAvatar from "@/App/Assets/png/default.webp";
 import "./Project.css";
+import ReactTextareaAutosize from "react-textarea-autosize";
 
 const Project = () => {
   const listOfSkills = [
@@ -42,7 +43,12 @@ const Project = () => {
             {projectQuery.data.freelancer.shortDescription}
           </p>
 
-          <div onClick={() => navigate(`/profile/${projectQuery.data.freelancer.freelancerId}`)} className="btn btn-sm btn-secondary mt-2 text-white">
+          <div
+            onClick={() =>
+              navigate(`/profile/${projectQuery.data.freelancer.freelancerId}`)
+            }
+            className="btn btn-sm btn-secondary mt-2 text-white"
+          >
             Xem hồ sơ
           </div>
         </div>
@@ -53,7 +59,10 @@ const Project = () => {
         </h1>
         <div className="flex gap-2 mb-2 flex-wrap ">
           {projectQuery.data.skills.map((e) => (
-            <div key={e.skillId} className="badge badge-info badge-outline text-white">
+            <div
+              key={e.skillId}
+              className="badge badge-info badge-outline text-white"
+            >
               {e.skillName}
             </div>
           ))}
@@ -64,7 +73,14 @@ const Project = () => {
           src={projectQuery.data.imageUrl}
           alt=""
         />
-        <p className="mt-1">{projectQuery.data.description}</p>
+        <ReactTextareaAutosize
+          name="project-content"
+          className="w-full min-h-fit pl-2 bg-white whitespace-pre-line resize-none"
+          id=""
+          disabled
+          rows={1}
+          defaultValue={projectQuery.data.description}
+        />
       </div>
     </div>
   );

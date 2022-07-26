@@ -97,7 +97,7 @@ const LandingPage = () => {
                         </div>
                       ))}
                     </div>
-                    <div>{job.offers} chào giá</div>
+                    {/* <div>{job.offers} chào giá</div> */}
                   </div>
                 </div>
               </div>
@@ -177,9 +177,9 @@ const LandingPage = () => {
       <div className="md:mx-7 pt-12 pb-16 my-10">
         <div className="pb-6 flex justify-between items-center">
           <h1 className="text-4xl text-black fvn-nunito font-bold ">
-            Hồ sơ năng lực nổi bật
+            Danh sách Freelancer
           </h1>
-          <a className="text-blue-500 pl-1 fvn-open-sans tracking-wide" href="">
+          <a className="text-blue-500 pl-1 fvn-open-sans tracking-wide" href="/all-freelancers">
             Xem thêm &gt;
           </a>
         </div>
