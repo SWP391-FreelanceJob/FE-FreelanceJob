@@ -243,6 +243,11 @@ const SignIn = () => {
                 Đăng ký bằng Google
               </button>
             </div>
+            <div className="flex w-full justify-center mt-3">
+              <button onClick={() => navigate("/")} className="btn offer-btn text-white">
+                Quay về trang chủ
+              </button>
+            </div>
           </div>
         </div>
       </div>

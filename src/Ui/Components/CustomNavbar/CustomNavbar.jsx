@@ -292,49 +292,39 @@ const CustomNavbar = () => {
           </div>
         </div>
       </header>
-      <div className="border-b-[1px] border-b-[#e4e5e7]">
-        <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
-          <div className="flex gap-8">
-            {userState.role === "freelancer" ? (
-              <p
-                onClick={() => navigate("/manage-offer")}
-                className="cursor-pointer font-semibold"
+      {userState.isLogin && (
+        <div className="border-b-[1px] border-b-[#e4e5e7]">
+          <div className="lg:mx-auto 2xl:px-0 px-8 py-2 flex w-[1400px] justify-between items-center">
+            <div className="flex gap-8">
+              {userState.role === "freelancer" ? (
+                <p
+                  onClick={() => navigate("/manage-offer")}
+                  className="cursor-pointer font-semibold"
+                >
+                  Quản lý chào giá
+                </p>
+              ) : (
+                <p
+                  onClick={() => navigate("/manage-job")}
+                  className="cursor-pointer font-semibold"
+                >
+                  Quản lý công việc
+                </p>
+              )}
+            </div>
+            {userState.role === "recruiter" ? (
+              <button
+                onClick={() => navigate("/create-job")}
+                className="btn btn-sm btn-info text-white"
               >
-                Quản lý chào giá
-              </p>
+                Đăng công việc
+              </button>
             ) : (
-              <p
-                onClick={() => navigate("/manage-job")}
-                className="cursor-pointer font-semibold"
-              >
-                Quản lý công việc
-              </p>
+              <></>
             )}
           </div>
-          {userState.role === "recruiter" ? (
-            <button
-              onClick={() => navigate("/create-job")}
-              className="btn btn-sm btn-info text-white"
-            >
-              Đăng công việc
-            </button>
-          ) : (
-            <></>
-          )}
         </div>
-      </div>
-      {/* <div className="categories py-2">
-        <div className="fvn-categories-nav">
-          <ul className="fvn-categories">
-            <li>
-              <a href="">Quản lý công việc</a>
-            </li>
-            <li>
-              <a href="">C# & .NET</a>
-            </li>
-          </ul>
-        </div>
-      </div> */}
+      )}
     </>
   );
 };
