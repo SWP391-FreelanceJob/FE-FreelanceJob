@@ -67,17 +67,26 @@ const PublishedJob = () => {
                     // onValueChange={(value, name) => console.log(value, name)}
                   />
                 </td>
-                <td>{val.jobStatus === 0 ? "Đã đăng" : ""}</td>
+                <td>
+                  {val.jobStatus === 0
+                    ? "Đã đăng"
+                    : val.jobStatus === 5
+                    ? "Đã hết hạn"
+                    : ""}
+                </td>
                 <td>
                   <span className="flex gap-5">
                     <i
                       onClick={() => navigate(`/offer/${val.id}`)}
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
-                    <i
-                      onClick={() => navigate(`/edit-job`, { state: val })}
-                      className="bi bi-pencil text-lg text-yellow-600 cursor-pointer"
-                    ></i>
+                    {val.jobStatus === 0 && (
+                      <i
+                        onClick={() => navigate(`/edit-job`, { state: val })}
+                        className="bi bi-pencil text-lg text-yellow-600 cursor-pointer"
+                      ></i>
+                    )}
+
                     <i
                       onClick={() => navigate(`/job-progress/${val.id}`)}
                       className="bi bi-chat-dots-fill text-lg text-blue-600 cursor-pointer"

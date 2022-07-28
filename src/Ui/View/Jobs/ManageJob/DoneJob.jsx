@@ -57,16 +57,25 @@ export default function DoneJob() {
                     // onValueChange={(value, name) => console.log(value, name)}
                   />
                 </td>
-                <td>{val.jobStatus === 2 ? "Đã hoàn thành" : ""}</td>
+                <td>
+                  {val.jobStatus === 2
+                    ? "Đã hoàn thành"
+                    : val.jobStatus === 4
+                    ? "Yêu cầu hoàn thành"
+                    : ""}
+                </td>
                 <td className="flex flex-col">
-                  {/* <span className="flex gap-5">
-                    <i className="bi bi-eye text-lg text-black cursor-pointer"></i>
-                    <i className="bi bi-star-fill text-lg text-yellow-300 cursor-pointer"></i>
-                  </span> */}
+                  <span className="flex gap-5">
+                    <i
+                      onClick={() => navigate(`/job-progress/${val.id}`)}
+                      className="bi bi-eye text-lg text-black cursor-pointer"
+                    ></i>
+                  </span>
                   <div>
                     <p>Nhà tuyển dụng đánh giá:</p>{" "}
                     <Rating
                       initialRating={val.recruiterRating}
+                      readonly={val.jobStatus !== 2}
                       onClick={(ratingVal) =>
                         handleRatingClick(ratingVal, val.id)
                       }

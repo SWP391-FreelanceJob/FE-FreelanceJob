@@ -35,7 +35,8 @@ export const JobStatus = {
   ACCEPTED: "Đang thực hiện",
   DONE: "Đã hoàn thành",
   BANNED: "Việc bị khoá",
-  REQUEST_FOR_COMPLETE: "Yêu cầu hoàn thành"
+  REQUEST_FOR_COMPLETE: "Yêu cầu hoàn thành",
+  EXPIRED: "Việc đã hết hạn",
 }
 
 export const AppoinmentStatus = {

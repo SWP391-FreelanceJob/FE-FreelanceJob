@@ -46,23 +46,33 @@ const SignIn = () => {
     if (idToken) {
       try {
         const user = await login(idToken);
+        if (user && user.role === "admin") {
+          throw new Error("Unauthorized");
+        }
         // console.log(user);
         dispatch(userLogin(user));
         localStorage.setItem("token", user.jwt);
         navigate("/");
       } catch (error) {
-        switch (error.messages[0].err_msg) {
-          case "User not found in DB!":
-            notyf.error(
-              "Tài khoản chưa được đăng ký, vui lòng đăng ký tài khoản mới!"
-            );
-            break;
-          default:
-            notyf.error(
-              "Đã có lỗi xảy ra khi đăng nhập " + error.messages[0].err_msg
-            );
-;
-            break;
+        if (error && error.messages) {
+          switch (error.messages[0].err_msg) {
+            case "User not found in DB!":
+              notyf.error(
+                "Tài khoản chưa được đăng ký, vui lòng đăng ký tài khoản mới!"
+              );
+              break;
+            default:
+              notyf.error(
+                "Đã có lỗi xảy ra khi đăng nhập " + error.messages[0].err_msg
+              );
+              break;
+          }
+        } else {
+          if (error.message === "Unauthorized") {
+            notyf.error("Admin không có quyền truy cập vào trang này!");
+          } else {
+            notyf.error("Đã có lỗi xảy ra khi đăng nhập!");
+          }
         }
       }
     } else {
@@ -244,7 +254,10 @@ const SignIn = () => {
               </button>
             </div>
             <div className="flex w-full justify-center mt-3">
-              <button onClick={() => navigate("/")} className="btn offer-btn text-white">
+              <button
+                onClick={() => navigate("/")}
+                className="btn offer-btn text-white"
+              >
                 Quay về trang chủ
               </button>
             </div>

@@ -51,9 +51,9 @@ export default function RejectedOffer() {
                 </td>
                 <td>{OfferStatus[val.status]}</td>
                 <td>
-                  <span className="flex gap-5">
+                  {/* <span className="flex gap-5">
                     <i className="bi bi-eye text-lg text-black cursor-pointer"></i>
-                  </span>
+                  </span> */}
                 </td>
               </tr>
             ))}

@@ -34,7 +34,9 @@ const CreateJob = () => {
 
   const location = useLocation();
   const { state, pathname } = location;
-  const [isEditingJob, setIsEditingJob] = useState(pathname == "/edit-job");
+  const [isEditingJob, setIsEditingJob] = useState(
+    pathname.includes("edit-job")
+  );
   const {
     data: genreData,
     error: genreError,
@@ -294,20 +296,41 @@ const CreateJob = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
-            <input
-              type="submit"
-              value={isEditingJob ? "Cập nhật công việc" : "Đăng việc"}
-              className="btn btn-secondary btn-md mt-3 text-white"
-            />
-            {isEditingJob && (
-              <input
-                type="button"
-                onClick={() => navigate(-1)}
-                value="Hủy và quay về"
-                className="btn offer-btn btn-md mt-3 text-white"
-              />
+          <div className="flex flex-col">
+            {isEditingJob && !state && (
+              <p className="text-sm mt-2 text-slate-300">
+                Không tìm thấy công việc cần sửa. Có phải bạn muốn tìm{" "}
+                <a className="link link-primary" href="create-job">
+                  Đăng việc
+                </a>
+              </p>
             )}
+            <div className="flex gap-2 justify-center">
+              {isEditingJob ? (
+                state &&
+                state.jobStatus == 0 && (
+                  <input
+                    type="submit"
+                    value="Cập nhật công việc"
+                    className="btn btn-secondary btn-md mt-3 text-white"
+                  />
+                )
+              ) : (
+                <input
+                  type="submit"
+                  value="Đăng việc"
+                  className="btn btn-secondary btn-md mt-3 text-white"
+                />
+              )}
+              {isEditingJob && (
+                <input
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  value="Hủy và quay về"
+                  className="btn offer-btn btn-md mt-3 text-white"
+                />
+              )}
+            </div>
           </div>
         </div>
       </form>

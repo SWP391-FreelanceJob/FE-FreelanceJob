@@ -79,27 +79,32 @@ export default function AcceptedOffer() {
                       className="bi bi-eye text-lg text-black cursor-pointer"
                     ></i>
                   </span>
-                  <div>
-                    <p>Nhà tuyển dụng đánh giá:</p>{" "}
-                    <Rating
-                      readonly
-                      initialRating={val.recruiterRating}
-                      fullSymbol="bi bi-star-fill text-orange-400"
-                      emptySymbol="bi bi-star text-orange-300"
-                    />
-                  </div>
-                  <br />
-                  <div>
-                    <p>Freelancer đánh giá:</p>{" "}
-                    <Rating
-                      initialRating={val.freelancerRating}
-                      onClick={(ratingVal) =>
-                        handleRatingClick(ratingVal, val.jobId)
-                      }
-                      fullSymbol="bi bi-star-fill text-orange-400"
-                      emptySymbol="bi bi-star text-orange-300"
-                    />
-                  </div>
+                  {val.jobStatus === "DONE" && (
+                    <>
+                      <div>
+                        <p>Nhà tuyển dụng đánh giá:</p>{" "}
+                        <Rating
+                          readonly
+                          initialRating={val.recruiterRating}
+                          fullSymbol="bi bi-star-fill text-orange-400"
+                          emptySymbol="bi bi-star text-orange-300"
+                        />
+                      </div>
+                      <br />
+                      <div>
+                        <p>Freelancer đánh giá:</p>{" "}
+                        <Rating
+                          initialRating={val.freelancerRating}
+                          readonly={val.jobStatus !== "DONE"}
+                          onClick={(ratingVal) =>
+                            handleRatingClick(ratingVal, val.jobId)
+                          }
+                          fullSymbol="bi bi-star-fill text-orange-400"
+                          emptySymbol="bi bi-star text-orange-300"
+                        />
+                      </div>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
