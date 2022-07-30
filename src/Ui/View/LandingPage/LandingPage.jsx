@@ -41,7 +41,7 @@ const LandingPage = () => {
               Nơi tìm kiếm những công việc, những ứng cử viên tài năng giúp bạn xử lý mọi vấn đề.
             </p>
             <button className="btn btn-outline btn-info">
-              <a href="#browse-skill">Getting started</a>
+              <a href="#browse-skill">Bắt đầu</a>
             </button>
           </div>
           <div className="w-2/3">
