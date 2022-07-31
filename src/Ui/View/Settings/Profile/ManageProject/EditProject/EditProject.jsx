@@ -1,4 +1,4 @@
-import { uploadAvatarToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
+import { uploadAvatarToFirebaseGetDownloadUrl, uploadProjImgToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
 import {
   useGetProjectByProjectIdQuery,
   useUpdateProjectMutation,
@@ -39,9 +39,9 @@ const EditProject = () => {
 
   const onSubmitUpdateProject = async (data) => {
     if (selectedAvatar) {
-      const avatarUrl = await uploadAvatarToFirebaseGetDownloadUrl(
+      const avatarUrl = await uploadProjImgToFirebaseGetDownloadUrl(
         storage,
-        _.uniqueId("project-"), // for unique
+        userInfo.userId, // for unique
         selectedAvatar[0]
       );
       data.imageUrl = avatarUrl;

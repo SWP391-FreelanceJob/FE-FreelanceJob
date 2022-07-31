@@ -1,4 +1,4 @@
-import { uploadAvatarToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
+import { uploadAvatarToFirebaseGetDownloadUrl, uploadProjImgToFirebaseGetDownloadUrl } from "@/Api/Service/Firebase/FBStorage";
 import {
   useCreateProjectMutation,
   useDeleteProjectMutation,
@@ -45,9 +45,9 @@ const ManageProject = () => {
   } = useForm();
   const onSubmitNewProject = async (data) => {
     if (selectedAvatar) {
-      const avatarUrl = await uploadAvatarToFirebaseGetDownloadUrl(
+      const avatarUrl = await uploadProjImgToFirebaseGetDownloadUrl(
         storage,
-        _.uniqueId("project-"), // for unique
+        userInfo.userId, // for unique
         selectedAvatar[0]
       );
       data.imageUrl = avatarUrl;
@@ -66,6 +66,7 @@ const ManageProject = () => {
       // navigate(`/job/${result.data.id}`);
       notyf.success("Thêm hồ sơ năng lực mới thành công.");
       reset();
+      setSelectedAvatar(null);
     }
   };
 
