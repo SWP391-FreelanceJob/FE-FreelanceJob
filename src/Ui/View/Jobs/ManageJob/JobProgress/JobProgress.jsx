@@ -188,7 +188,7 @@ const JobProgress = () => {
   }, [message]);
 
   useEffect(() => {
-    if (!isRecruiter && msgInfData) {
+    if (!isRecruiter && msgInfData && msgInfData.length > 0) {
       setSelectedMessages(msgInfData[0].messages);
       setSelectedAccId(msgInfData[0].targetUser.accId);
     }
