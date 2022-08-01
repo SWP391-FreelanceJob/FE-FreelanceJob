@@ -52,7 +52,7 @@ const LandingPage = () => {
       </div>
       <div className="mt-5 md:mx-7" id="browse-skill">
         <h1 className="font-bold text-4xl text-black font-nunito pb-2">
-          Các công việc mới nhất
+          Danh sách các công việc
         </h1>
       </div>
       <div className="flex flex-wrap md:mx-7 mb-8">
