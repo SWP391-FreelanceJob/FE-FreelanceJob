@@ -230,9 +230,9 @@ const LandingPage = () => {
                         </div> */}
                         <div className="card-body">
                           <h2 className="card-title !text-lg truncate">
-                            {freelancer.shortDescription}
+                            {freelancer.name}
                           </h2>
-                          <p>{freelancer.name}</p>
+                          {/* <p>{freelancer.name}</p> */}
                         </div>
                       </div>
                     </div>
