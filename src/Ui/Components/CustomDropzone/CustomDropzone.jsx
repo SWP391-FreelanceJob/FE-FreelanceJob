@@ -60,7 +60,7 @@ const CustomDropzone = ({
         {isDragAccept && <p>Thả file vào ô</p>}
         {isDragReject && <p>File bị từ chối</p>}
         {!isDragActive && noDrag ? (
-          <p className="link link-secondary">Đính kèm tệm tin</p>
+          <p className="link link-secondary">Đính kèm tệp tin</p>
         ) : (
           <p>Kéo file vào đây hoặc nhấn để chọn...</p>
         )}

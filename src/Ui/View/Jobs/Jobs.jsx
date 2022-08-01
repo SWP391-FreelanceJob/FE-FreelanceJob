@@ -25,6 +25,7 @@ const Jobs = () => {
     skills: selectedSkills.map((e) => e.skillId),
     genreId: selectedGenre,
     name: flNameState,
+    status: "PUBLISHED",
   });
   const goToNewPage = (newPageNo) => {
     setPageNo(newPageNo);
