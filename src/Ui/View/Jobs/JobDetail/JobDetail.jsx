@@ -303,7 +303,7 @@ const JobDetail = () => {
                 </div>
               </div>
             </div>
-            {userState.role === "freelancer" && jobQuery.data.jobStatus == 0 && offerData && (
+            {userState.role === "freelancer" && jobQuery.data.jobStatus == 0 &&(
               <form className="relative" onSubmit={handleSubmit(onSubmit)}>
                 <div className="card card-compact all-shadow px-8 py-5">
                   <div className="flex justify-between">
