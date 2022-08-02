@@ -185,32 +185,34 @@ const CreateJob = () => {
                   </p>
                 )}
               </div>
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Phân loại công việc</span>
-                </label>
-                <select
-                  {...register("genre", { required: true })}
-                  // onChange={(e) => setSelectedGenre(e.target.value)}
-                  className="select select-bordered w-full max-w-xs"
-                  defaultValue={state?.genre.id ?? "chon-cong-viec"}
-                >
-                  <option disabled value="chon-cong-viec">
-                    Chọn phân loại
-                  </option>
-                  {genreData &&
-                    genreData.map((genre) => (
-                      <option key={genre.id} value={genre.id}>
-                        {genre.genreName}
-                      </option>
-                    ))}
-                </select>
-                {errors.genre && (
-                  <p className="text-red-400 text-xs">
-                    Vui lòng chọn phân loại
-                  </p>
-                )}
-              </div>
+              {!isGenreLoading && (
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Phân loại công việc</span>
+                  </label>
+                  <select
+                    {...register("genre", { required: true })}
+                    // onChange={(e) => setSelectedGenre(e.target.value)}
+                    className="select select-bordered w-full max-w-xs"
+                    defaultValue={state?.genre.id ?? "chon-cong-viec"}
+                  >
+                    <option disabled value="chon-cong-viec">
+                      Chọn phân loại
+                    </option>
+                    {genreData &&
+                      genreData.map((genre) => (
+                        <option key={genre.id} value={genre.id}>
+                          {genre.genreName}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.genre && (
+                    <p className="text-red-400 text-xs">
+                      Vui lòng chọn phân loại
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex w-full mt-5">
