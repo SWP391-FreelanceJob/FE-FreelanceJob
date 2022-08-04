@@ -174,7 +174,7 @@ const Freelancers = () => {
                         <div className="pl-2 py-2">{job.roleAtWork}</div>
                       </div>
                       <div className="flex items-center mr-3">
-                        <CustomRating name={idx} rating={job.rating} />
+                        {/* <CustomRating name={idx} rating={job.rating} /> */}
                         {/* <Rating
                         emptySymbol="bi bi-star text-orange-300"
                         fullSymbol="bi bi-star-fill text-orange-400"

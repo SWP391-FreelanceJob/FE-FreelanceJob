@@ -5,7 +5,6 @@ import { getJobById } from "@/Api/Service/Job";
 import LoadingOverlay from "@/Ui/Components/LoadingOverlay/LoadingOverlay";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
-import ReadOnlyRating from "@/Ui/Components/Rating/ReadOnlyRating";
 import "dayjs/locale/vi";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";

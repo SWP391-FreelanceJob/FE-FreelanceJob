@@ -303,7 +303,7 @@ const JobDetail = () => {
                 </div>
               </div>
             </div>
-            {userState.role === "freelancer" && jobQuery.data.jobStatus == 0 &&(
+            {userState.role === "freelancer" && jobQuery.data.jobStatus == 0 && (
               <form className="relative" onSubmit={handleSubmit(onSubmit)}>
                 <div className="card card-compact all-shadow px-8 py-5">
                   <div className="flex justify-between">
@@ -524,7 +524,10 @@ const JobDetail = () => {
                                   />
                                 </div>
                               </div>
-                              <ReadOnlyRating name={0} rating={4} />
+                              {/* <ReadOnlyRating
+                                name={offer.freelancer.freelancerId}
+                                rating={offer.freelancer.rating}
+                              /> */}
                             </div>
                             <div className="w-5/6">
                               <div className="flex">

@@ -148,7 +148,10 @@ const ViewOffer = () => {
                           />
                         </div>
                       </div>
-                      <ReadOnlyRating name={0} rating={4} />
+                      {/* <ReadOnlyRating
+                        name={offer.freelancer.freelancerId}
+                        rating={offer.freelancer.rating}
+                      /> */}
                     </div>
                     <div className="flex flex-col gap-x-3">
                       <h1 className="text-xl text-blue-600 mt-2 mr-2">
@@ -233,7 +236,10 @@ const ViewOffer = () => {
                         />
                       </div>
                     </div>
-                    <ReadOnlyRating name={0} rating={4} />
+                    {/* <ReadOnlyRating
+                      name={offer.freelancer.freelancerId}
+                      rating={offer.freelancer.rating}
+                    /> */}
                   </div>
                   <div className="flex flex-col gap-x-3">
                     <h1 className="text-xl text-blue-600 mt-2 mr-2">
@@ -320,7 +326,10 @@ const ViewOffer = () => {
                           />
                         </div>
                       </div>
-                      <ReadOnlyRating name={0} rating={4} />
+                      {/* <ReadOnlyRating
+                        name={offer.freelancer.freelancerId}
+                        rating={offer.freelancer.rating}
+                      /> */}
                     </div>
                     <div className="flex flex-col gap-x-3">
                       <h1 className="text-xl text-blue-600 mt-2 mr-2">

@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 
 const ReadOnlyRating = (props) => {
   // Get number part
-  const [evenRating, setEvenRating] = useState(Math.floor(props.rating));
+  const [evenRating, setEvenRating] = useState(Math.floor(props.rating ?? 5));
   // Get 1 decimal fraction
   const [fractionPart, setFractionPart] = useState(
     Math.floor((props.rating % 1) * 100) / 100
@@ -20,7 +20,7 @@ const ReadOnlyRating = (props) => {
         <Fragment key={idx}>
           <input
             type="radio"
-            name={`rating-10-star-` + props.name}
+            name={`rating-10-star-` + props.name ?? 0}
             disabled
             className="bg-orange-500 mask mask-star-2 cursor-default"
             checked={evenRating === idx + 1}
