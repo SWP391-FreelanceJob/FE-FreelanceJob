@@ -175,12 +175,12 @@ function App() {
                     />
                   }
                 />
-                <Route path="/all-freelancers" element={<Freelancers />} />
-                <Route path="/topup-guide" element={<TopupGuide />} />
-                <Route path="/bid-guide" element={<BidGuide />} />
-                <Route path="/contact-guide" element={<ContactGuide />} />
-                <Route path="/selectfc-guide" element={<SelectFCGuide />} />
-                <Route path="/post-guide" element={<PostGuide />} />
+                <Route path="all-freelancers" element={<Freelancers />} />
+                <Route path="topup-guide" element={<TopupGuide />} />
+                <Route path="bid-guide" element={<BidGuide />} />
+                <Route path="contact-guide" element={<ContactGuide />} />
+                <Route path="selectfc-guide" element={<SelectFCGuide />} />
+                <Route path="post-guide" element={<PostGuide />} />
               </Route>
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/sign-up" element={<SignUp />} />
